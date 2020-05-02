@@ -1,0 +1,9 @@
+.vs/
+BuildHelperTests/obj/
+Codefarts.BuildHelperConsoleApp/bin/
+Codefarts.BuildHelperConsoleApp/obj/
+Codefarts.BuildHelperLib/bin/
+Codefarts.BuildHelperLib/obj/
+Codefarts.BuildHelperWPF/obj/
+packages/
+codealike.json

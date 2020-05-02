@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<inline>
+    <deploy path="P:\Codefarts Assemblies\$(ProjectName)\Latest\$(ConfigurationName)\" clean="true" >
+        <condition value1="true" operator="=" value2="true" />
+    </deploy>
+    <deploy path="E:\BuildHelper\" clean="false" />
+</inline>
