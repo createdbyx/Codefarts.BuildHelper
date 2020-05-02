@@ -1,13 +1,16 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+// <copyright file="DeployTests.cs" company="Codefarts">
+// Copyright (c) Codefarts
+// contact@codefarts.com
+// http://www.codefarts.com
+// </copyright>
 
 namespace BuildHelperTests
 {
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass]
     public class DeployTests
     {
-        [TestMethod]
-        public void TestMethod1()
-        {
-        }
+        
     }
 }

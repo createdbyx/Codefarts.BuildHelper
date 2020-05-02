@@ -2,18 +2,21 @@
 // Copyright (c) Codefarts
 // </copyright>
 
-using System;
-
 namespace Codefarts.BuildHelper
 {
+    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Xml.Linq;
 
     public static class Extensions
     {
         public static string GetValue(this XElement element, string name)
         {
+            if (element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
+
             var attr = element.Attribute(name);
             if (attr != null)
             {
@@ -28,7 +31,7 @@ namespace Codefarts.BuildHelper
         {
             if (string.IsNullOrWhiteSpace(text))
             {
-                return null;
+                return text;
             }
 
             foreach (var item in variables)
@@ -41,36 +44,96 @@ namespace Codefarts.BuildHelper
 
         public static bool SatifiesConditions(this XElement element, IDictionary<string, string> variables)
         {
-            var conditions = element.Elements().Where(x => x.Name.LocalName == "condition");
-            foreach (var condition in conditions)
+            foreach (var condition in element.Elements())
             {
-                var value1 = condition.GetValue("value1").ReplaceBuildVariableStrings(variables);
-                var value2 = condition.GetValue("value2").ReplaceBuildVariableStrings(variables);
-                var op = condition.GetValue("operator");
-                var ignoreCaseValue = condition.GetValue("ignorecase");
-                bool ignoreCase;
-                bool.TryParse(ignoreCaseValue, out ignoreCase);
-
-                switch (op)
+                if (condition.Name.LocalName != "condition")
                 {
-                    case "=":
-                    case "equals":
-                        if (ignoreCase ? string.Equals(value1, value2, StringComparison.OrdinalIgnoreCase) : string.Equals(value1, value2))
-                        {
-                            continue;
-                        }
-
-                        return false;
-
-                    case "!=":
-                    case "notequal":
-                        if (ignoreCase ? !string.Equals(value1, value2, StringComparison.OrdinalIgnoreCase) : !string.Equals(value1, value2))
-                        {
-                            continue;
-                        }
-
-                        return false;
+                    continue;
                 }
+
+                if (!condition.SatifiesCondition(variables))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static bool SatifiesCondition(this XElement condition, IDictionary<string, string> variables)
+        {
+            if (condition == null)
+            {
+                throw new ArgumentNullException(nameof(condition));
+            }
+
+            if (condition.Name.LocalName != "condition")
+            {
+                throw new ArgumentException("Condition element name is not 'condition'.", nameof(condition));
+            }
+
+            var value1 = condition.GetValue("value1").ReplaceBuildVariableStrings(variables);
+            var value2 = condition.GetValue("value2").ReplaceBuildVariableStrings(variables);
+            var operatorValue = condition.GetValue("operator");
+            var ignoreCaseValue = condition.GetValue("ignorecase");
+            var ignoreCase = true;
+            if (ignoreCaseValue != null && !bool.TryParse(ignoreCaseValue, out ignoreCase))
+            {
+                throw new ArgumentOutOfRangeException("'ignorecase' attribute exists but it's value could not be parsed as a bool value.");
+            }
+
+            switch (operatorValue)
+            {
+                case "=":
+                case "equals":
+                case "equalto":
+                    if (ignoreCase ? string.Equals(value1, value2, StringComparison.OrdinalIgnoreCase) : string.Equals(value1, value2))
+                    {
+                        return true;
+                    }
+
+                    return false;
+
+                case "!=":
+                case "notequal":
+                case "notequalto":
+                    if (ignoreCase ? !string.Equals(value1, value2, StringComparison.OrdinalIgnoreCase) : !string.Equals(value1, value2))
+                    {
+                        return true;
+                    }
+
+                    return false;
+
+                case "startswith":
+                    if (ignoreCase ? value1.StartsWith(value2, StringComparison.OrdinalIgnoreCase) : value1.StartsWith(value2))
+                    {
+                        return true;
+                    }
+
+                    return false;
+
+                case "endswith":
+                    if (ignoreCase ? value1.EndsWith(value2, StringComparison.OrdinalIgnoreCase) : value1.EndsWith(value2))
+                    {
+                        return true;
+                    }
+
+                    return false;
+
+                case "contains":       //this.IndexOf(value, comparisonType) >= 0
+                    //if (ignoreCase ? !value1.Contains(value2, StringComparison.OrdinalIgnoreCase) >= 0 : !value1.Contains(value2))
+                    if (ignoreCase ? value1.IndexOf(value2, StringComparison.OrdinalIgnoreCase) >= 0 : value1.Contains(value2))
+                    {
+                        return true;
+                    }
+
+                    return false;
+
+                case null:
+                    throw new ArgumentNullException("Condition is missing 'operator' attribute.");
+
+                default:
+                    throw new ArgumentOutOfRangeException("'operator' attribute exists but it's meaning could not determined.");
             }
 
             return true;

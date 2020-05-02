@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Codefarts.BuildHelper</RootNamespace>
-    <AssemblyVersion>2020.4.30.0</AssemblyVersion>
-    <FileVersion>2020.4.30.0</FileVersion>
+    <AssemblyVersion>2020.5.2.0</AssemblyVersion>
+    <FileVersion>2020.5.2.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,11 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="stylecop.json" />
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>
