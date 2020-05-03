@@ -2,6 +2,8 @@
 // Copyright (c) Codefarts
 // </copyright>
 
+using System.Linq;
+
 namespace Codefarts.BuildHelper
 {
     using System;
@@ -44,20 +46,19 @@ namespace Codefarts.BuildHelper
 
         public static bool SatifiesConditions(this XElement element, IDictionary<string, string> variables)
         {
-            foreach (var condition in element.Elements())
-            {
-                if (condition.Name.LocalName != "condition")
-                {
-                    continue;
-                }
+            return element.SatifiesConditions(variables, true);
+        }
 
-                if (!condition.SatifiesCondition(variables))
-                {
-                    return false;
-                }
+        public static bool SatifiesConditions(this XElement element, IDictionary<string, string> variables, bool allConditions)
+        {
+            if (allConditions)
+            {
+                return element.Elements().Where(condition => condition.Name.LocalName == "condition")
+                    .All(condition => condition.SatifiesCondition(variables));
             }
 
-            return true;
+            return element.Elements().Where(condition => condition.Name.LocalName == "condition")
+                .Any(condition => condition.SatifiesCondition(variables));
         }
 
         public static bool SatifiesCondition(this XElement condition, IDictionary<string, string> variables)
@@ -82,6 +83,17 @@ namespace Codefarts.BuildHelper
                 throw new ArgumentOutOfRangeException("'ignorecase' attribute exists but it's value could not be parsed as a bool value.");
             }
 
+            if (value1 == null)
+            {
+                throw new ArgumentOutOfRangeException("'value1' is missing.", nameof(value1));
+            }
+
+            if (value2 == null)
+            {
+                throw new ArgumentOutOfRangeException("'value2' is missing.", nameof(value2));
+            }
+
+            operatorValue = operatorValue == null ? operatorValue : operatorValue.ToLowerInvariant().Trim();
             switch (operatorValue)
             {
                 case "=":

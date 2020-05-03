@@ -13,15 +13,9 @@ namespace Codefarts.BuildHelper
 
     public class CopyDirCommand : BuildCommandBase
     {
-        public CopyDirCommand(BuildHelper buildHelper)
-            : base(buildHelper)
+        public CopyDirCommand(Action<string> writeOutput)
+            : base(writeOutput)
         {
-            this.BuildHelper = buildHelper;
-        }
-
-        public BuildHelper BuildHelper
-        {
-            get;
         }
 
         public override string Name => "copydir";

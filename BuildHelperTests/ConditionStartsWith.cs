@@ -1,20 +1,13 @@
-// <copyright file="ConditionEquality.cs" company="Codefarts">
-// Copyright (c) Codefarts
-// contact@codefarts.com
-// http://www.codefarts.com
-// </copyright>
-
 using System;
+using System.Collections.Generic;
+using System.Xml.Linq;
+using Codefarts.BuildHelper;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BuildHelperTests
 {
-    using System.Collections.Generic;
-    using System.Xml.Linq;
-    using Codefarts.BuildHelper;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-
     [TestClass, TestCategory("Extension Methods")]
-    public class ConditionEquality
+    public class ConditionStartsWith
     {
         private XElement goodConditionEquality;
         private XElement goodConditionEqualityWithTrueIgnore;
@@ -38,86 +31,86 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
-        public void GoodButValues2NotPresent_MissingIgnore()
+        public void GoodButValue1IsPartialMatch_MissingIgnore()
         {
-            var item = XElement.Parse("<condition value1=\"Test\" operator=\"=\" />");
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => item.SatifiesCondition(this.varibles));
+            var item = XElement.Parse("<condition value1=\"te\" operator=\"startswith\" value2=\"Test\" />");
+            Assert.IsFalse(item.SatifiesCondition(this.varibles));
         }
 
         [TestMethod]
-        public void GoodButValues1NotPresent_MissingIgnore()
+        public void GoodButValueIsPartialMatch_MissingIgnore()
         {
-            var item = XElement.Parse("<condition operator=\"=\" value2=\"Test\" />");
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => item.SatifiesCondition(this.varibles));
+            var item = XElement.Parse("<condition value1=\"Test\" operator=\"startswith\" value2=\"te\" />");
+            Assert.IsTrue(item.SatifiesCondition(this.varibles));
         }
 
         [TestMethod]
         public void GoodButMissingValues2_MissingIgnore()
         {
-            var item = XElement.Parse("<condition value1=\"Test\" operator=\"=\" value2=\"\" />");
-            Assert.IsFalse(item.SatifiesCondition(this.varibles));
+            var item = XElement.Parse("<condition value1=\"Test\" operator=\"startswith\" value2=\"\" />");
+            Assert.IsTrue(item.SatifiesCondition(this.varibles));
         }
 
         [TestMethod]
         public void GoodButMissingValues1_MissingIgnore()
         {
-            var item = XElement.Parse("<condition value1=\"\" operator=\"=\" value2=\"Test\" />");
+            var item = XElement.Parse("<condition value1=\"\" operator=\"startswith\" value2=\"Test\" />");
             Assert.IsFalse(item.SatifiesCondition(this.varibles));
         }
 
         [TestMethod]
         public void GoodButValuesDiffer_MissingIgnore()
         {
-            var item = XElement.Parse("<condition value1=\"Zest\" operator=\"=\" value2=\"Test\" />");
+            var item = XElement.Parse("<condition value1=\"Zest\" operator=\"startswith\" value2=\"Test\" />");
             Assert.IsFalse(item.SatifiesCondition(this.varibles));
         }
 
         [TestMethod]
         public void SameValuesSameCasing_MissingIgnore()
         {
-            var item = XElement.Parse("<condition value1=\"Test\" operator=\"=\" value2=\"Test\" />");
+            var item = XElement.Parse("<condition value1=\"Test\" operator=\"startswith\" value2=\"Test\" />");
             Assert.IsTrue(item.SatifiesCondition(this.varibles));
         }
 
         [TestMethod]
         public void SameValuesDiffernentCasing_MissingIgnore()
         {
-            var item = XElement.Parse("<condition value1=\"test\" operator=\"=\" value2=\"Test\" />");
+            var item = XElement.Parse("<condition value1=\"test\" operator=\"startswith\" value2=\"Test\" />");
             Assert.IsTrue(item.SatifiesCondition(this.varibles));
         }
 
         [TestMethod]
         public void SameValuesDiffernentCasing_IgnoreSetToFalse()
         {
-            var item = XElement.Parse("<condition value1=\"test\" operator=\"=\" value2=\"Test\" ignorecase=\"false\" />");
+            var item = XElement.Parse("<condition value1=\"test\" operator=\"startswith\" value2=\"Test\" ignorecase=\"false\" />");
             Assert.IsFalse(item.SatifiesCondition(this.varibles));
         }
 
         [TestMethod]
         public void SameValuesDiffernentCasing_IgnoreSetToTrue()
         {
-            var item = XElement.Parse("<condition value1=\"test\" operator=\"=\" value2=\"Test\" ignorecase=\"true\" />");
+            var item = XElement.Parse("<condition value1=\"test\" operator=\"startswith\" value2=\"Test\" ignorecase=\"true\" />");
             Assert.IsTrue(item.SatifiesCondition(this.varibles));
         }
 
         [TestMethod]
         public void SameValuesDiffernentCasing_IgnoreSetToTRUE()
         {
-            var item = XElement.Parse("<condition value1=\"test\" operator=\"=\" value2=\"Test\" ignorecase=\"TRUE\" />");
+            var item = XElement.Parse("<condition value1=\"test\" operator=\"startswith\" value2=\"Test\" ignorecase=\"TRUE\" />");
             Assert.IsTrue(item.SatifiesCondition(this.varibles));
         }
 
         [TestMethod]
         public void GoodButMissingValues_MissingIgnore()
         {
-            var item = XElement.Parse("<condition value1=\"\" operator=\"=\" value2=\"\" />");
+            var item = XElement.Parse("<condition value1=\"\" operator=\"startswith\" value2=\"\" />");
             Assert.IsTrue(item.SatifiesCondition(this.varibles));
         }
 
         [TestMethod]
         public void GoodButMissingValues_IgnoreNotSpecified()
         {
-            var item = XElement.Parse("<condition value1=\"\" operator=\"=\" value2=\"\" ignorecase=\"\" />");
+            var item = XElement.Parse("<condition value1=\"\" operator=\"startswith\" value2=\"\" ignorecase=\"\" />");
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => item.SatifiesCondition(this.varibles));
         }
 
@@ -138,34 +131,15 @@ namespace BuildHelperTests
         [TestMethod]
         public void GoodButMissingValues_BadIgnoreValueSpecified()
         {
-            var item = XElement.Parse("<condition value1=\"\" operator=\"=\" value2=\"\" ignorecase=\"Bad\" />");
+            var item = XElement.Parse("<condition value1=\"\" operator=\"startswith\" value2=\"\" ignorecase=\"Bad\" />");
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => item.SatifiesCondition(this.varibles));
-        }
-
-        [TestMethod]
-        public void NullArgs()
-        {
-            Assert.ThrowsException<ArgumentNullException>(() => Codefarts.BuildHelper.Extensions.SatifiesCondition(null, null));
         }
 
         [TestMethod]
         public void VariblesArgNull()
         {
-            var item = XElement.Parse("<condition value1=\"\" operator=\"=\" value2=\"\" />");
+            var item = XElement.Parse("<condition value1=\"\" operator=\"startswith\" value2=\"\" />");
             Assert.IsTrue(Codefarts.BuildHelper.Extensions.SatifiesCondition(item, null));
-        }
-
-        [TestMethod]
-        public void ElementArgNull()
-        {
-            Assert.ThrowsException<ArgumentNullException>(() => Codefarts.BuildHelper.Extensions.SatifiesCondition(null, this.varibles));
-        }
-
-        [TestMethod]
-        public void ElementNameNotCondition()
-        {
-            var item = XElement.Parse("<badcondition value1=\"\" operator=\"=\" value2=\"\" />");
-            Assert.ThrowsException<ArgumentException>(() => item.SatifiesCondition(this.varibles));
         }
     }
 }

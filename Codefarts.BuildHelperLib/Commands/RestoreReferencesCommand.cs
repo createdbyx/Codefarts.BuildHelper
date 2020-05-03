@@ -1,9 +1,12 @@
 // <copyright file="RestoreReferencesCommand.cs" company="Codefarts">
 // Copyright (c) Codefarts
+// contact@codefarts.com
+// http://www.codefarts.com
 // </copyright>
 
 namespace Codefarts.BuildHelper
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Xml;
@@ -11,17 +14,12 @@ namespace Codefarts.BuildHelper
 
     public class RestoreReferencesCommand : BuildCommandBase
     {
-        public RestoreReferencesCommand(BuildHelper buildHelper)
-            : base(buildHelper)
+        public RestoreReferencesCommand(Action<string> writeOutput)
+            : base(writeOutput)
         {
-            this.BuildHelper = buildHelper;
+            this.WriteOutput = writeOutput;
         }
-
-        public BuildHelper BuildHelper
-        {
-            get;
-        }
-
+               
         public override string Name => "restorereferences";
 
         public override void Execute(IDictionary<string, string> variables, XElement data)

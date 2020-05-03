@@ -2,6 +2,8 @@
 // Copyright (c) Codefarts
 // </copyright>
 
+//using System.Diagnostics;
+
 namespace Codefarts.BuildHelper
 {
     using System;
@@ -39,10 +41,11 @@ namespace Codefarts.BuildHelper
             // load commands
             var commands = new IBuildCommand[]
                 {
-                    new DeployCommand(this),
-                    new CopyDirCommand(this),
-                    new ExcludeReferenceCommand(this),
-                    new RestoreReferencesCommand(this),
+                    new DeployCommand(o => this.Output(o)),
+                    new CopyDirCommand(o => this.Output(o)),
+                    new ExcludeReferenceCommand(o => this.Output(o)),
+                    new RestoreReferencesCommand(o => this.Output(o)),
+                    new PurgeCommand(o => this.Output(o)),
                 };
 
             // process elements

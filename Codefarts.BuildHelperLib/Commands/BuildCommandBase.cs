@@ -1,22 +1,26 @@
 // <copyright file="BuildCommandBase.cs" company="Codefarts">
 // Copyright (c) Codefarts
+// contact@codefarts.com
+// http://www.codefarts.com
 // </copyright>
 
 namespace Codefarts.BuildHelper
 {
+    using System;
     using System.Collections.Generic;
     using System.Xml.Linq;
 
     public abstract class BuildCommandBase : IBuildCommand
     {
-        private BuildHelper BuildHelper
+        protected Action<string> WriteOutput
         {
             get;
+            set;
         }
 
-        public BuildCommandBase(BuildHelper buildHelper)
+        public BuildCommandBase(Action<string> writeOutput)
         {
-            this.BuildHelper = buildHelper;
+            this.WriteOutput = writeOutput;
         }
 
         public abstract string Name
@@ -26,7 +30,7 @@ namespace Codefarts.BuildHelper
 
         public void Output(string message, params object[] args)
         {
-            this.BuildHelper.Output(this.Name + ": " + message, args);
+            this.WriteOutput(string.Format(this.Name + ": " + message, args));
         }
 
         public abstract void Execute(IDictionary<string, string> variables, XElement data);

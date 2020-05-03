@@ -1,8 +1,8 @@
 // <copyright file="DeployCommand.cs" company="Codefarts">
 // Copyright (c) Codefarts
+// contact@codefarts.com
+// http://www.codefarts.com
 // </copyright>
-
-using System.Diagnostics;
 
 namespace Codefarts.BuildHelper
 {
@@ -15,15 +15,9 @@ namespace Codefarts.BuildHelper
 
     public class DeployCommand : BuildCommandBase
     {
-        public DeployCommand(BuildHelper buildHelper)
-            : base(buildHelper)
+        public DeployCommand(Action<string> writeOutput)
+            : base(writeOutput)
         {
-            this.BuildHelper = buildHelper;
-        }
-
-        public BuildHelper BuildHelper
-        {
-            get;
         }
 
         public override string Name => "deploy";
@@ -38,15 +32,30 @@ namespace Codefarts.BuildHelper
                 throw new XmlException($"Command: {nameof(DeployCommand)} value: path  - Value not found");
             }
 
+            var message = data.GetValue("message");
+
             // check if we should clear the folder first
             value = data.GetValue("clean");
             var doClear = string.IsNullOrWhiteSpace(value) ? false : value.Trim().ToLowerInvariant() == "true";
 
+            // check type of conditions
+            var conditionsValue = data.GetValue("allconditions");
+            var allConditions = true;
+            if (conditionsValue != null && !bool.TryParse(conditionsValue, out allConditions))
+            {
+                throw new ArgumentOutOfRangeException($"'{allConditions}' attribute exists but it's value could not be parsed as a bool value.");
+            }
+
             // check conditions
-            if (!data.SatifiesConditions(variables))
+            if (!data.SatifiesConditions(variables, allConditions))
             {
                 this.Output("Conditions not satisfied.");
                 return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                this.Output($"Deploy Message: {message}");
             }
 
             this.Output($"Clearing before deploy ({doClear}): {destPath}");
@@ -68,7 +77,7 @@ namespace Codefarts.BuildHelper
 
             var srcPath = "$(ProjectDir)$(OutDir)".ReplaceBuildVariableStrings(variables);
             // Console.WriteLine($"srcPath: {srcPath}");
-            var allFiles = Directory.GetFiles(srcPath, "*.*", SearchOption.AllDirectories).Select(d => d.Remove(0, srcPath.Length));
+            var allFiles = Directory.GetFiles(srcPath, "*.*", SearchOption.AllDirectories).Select(d => Path.GetFileName(d));
             foreach (var file in allFiles)
             {
                 var src = Path.Combine(srcPath, file);

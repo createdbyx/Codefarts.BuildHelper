@@ -13,17 +13,11 @@ namespace Codefarts.BuildHelper
 
     public class ExcludeReferenceCommand : BuildCommandBase
     {
-        public ExcludeReferenceCommand(BuildHelper buildHelper)
-            : base(buildHelper)
+        public ExcludeReferenceCommand(Action<string> writeOutput)
+            : base(writeOutput)
         {
-            this.BuildHelper = buildHelper;
         }
 
-        public BuildHelper BuildHelper
-        {
-            get;
-        }
-        
         public override string Name => "excludereference";
 
         public override void Execute(IDictionary<string, string> variables, XElement data)
