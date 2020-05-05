@@ -108,6 +108,13 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
+        public void GoodButMissingValues_MixedCaseOperator_MissingIgnore()
+        {
+            var item = XElement.Parse("<condition value1=\"\" operator=\"StartsWith\" value2=\"\" />");
+            Assert.IsTrue(item.SatifiesCondition(this.varibles));
+        }
+
+        [TestMethod]
         public void GoodButMissingValues_IgnoreNotSpecified()
         {
             var item = XElement.Parse("<condition value1=\"\" operator=\"startswith\" value2=\"\" ignorecase=\"\" />");

@@ -25,6 +25,8 @@ namespace Codefarts.BuildHelper
             // Debugger.Launch();
             var srcPath = data.GetValue("source");
             var destPath = data.GetValue("destination");
+            var message = data.GetValue("message");
+
             if (destPath == null)
             {
                 throw new XmlException($"Command: {nameof(CopyDirCommand)} value: destination  - Value not found");
@@ -37,6 +39,12 @@ namespace Codefarts.BuildHelper
 
             srcPath = srcPath.ReplaceBuildVariableStrings(variables);
             destPath = destPath.ReplaceBuildVariableStrings(variables);
+
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                message = message.ReplaceBuildVariableStrings(variables);
+                this.Output($"Message: {message}");
+            }
 
             // check if we should clear the folder first
             var value = data.GetValue("clean");

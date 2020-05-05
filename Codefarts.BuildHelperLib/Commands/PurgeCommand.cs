@@ -26,7 +26,7 @@ namespace Codefarts.BuildHelper
 
         public override void Execute(IDictionary<string, string> variables, XElement data)
         {
-           // Debugger.Launch();
+            // Debugger.Launch();
             var srcPath = data.GetValue("path");
             if (srcPath == null)
             {
@@ -86,10 +86,11 @@ namespace Codefarts.BuildHelper
 
             if (!string.IsNullOrWhiteSpace(message))
             {
-                this.Output($"Purging Message: {message}");
+                message = message.ReplaceBuildVariableStrings(variables);
+                this.Output($"Message: {message}");
             }
 
-            this.Output($"Purging (Sub Folders->{subfolders}): {srcPath}");
+            this.Output($"(Sub Folders->{subfolders}): {srcPath}");
 
             var getEntries = new Func<string, IEnumerable<string>>(p =>
             {

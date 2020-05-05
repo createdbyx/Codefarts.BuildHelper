@@ -117,6 +117,7 @@ namespace Codefarts.BuildHelper
                     return false;
 
                 case "startswith":
+                case "beginswith":
                     if (ignoreCase ? value1.StartsWith(value2, StringComparison.OrdinalIgnoreCase) : value1.StartsWith(value2))
                     {
                         return true;

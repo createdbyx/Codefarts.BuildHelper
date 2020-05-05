@@ -56,6 +56,25 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
+        public void Purge2Files_FullPathsTrue()
+        {
+            var purge = new PurgeCommand(o => { });
+            var data = "<purge path=\"$(TempPath)\" subfolders=\"true\" allconditions=\"false\" fullpaths=\"true\" type=\"files\">\r\n" +
+                       "    <condition value1=\"$(PurgeEntry)\" operator=\"startswith\" value2=\"System.\" ignorecase=\"true\" />\r\n" +
+                       "    <condition value1=\"$(PurgeEntry)\" operator=\"startswith\" value2=\"Microsoft.\" ignorecase=\"true\" />\r\n" +
+                       "    <condition value1=\"$(PurgeEntry)\" operator=\"endswith\" value2=\".xml\" ignorecase=\"true\" />\r\n" +
+                       "</purge>";
+
+            var item = XElement.Parse(data);
+            purge.Execute(this.varibles, item);
+            Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File1.txt")));
+            Assert.IsFalse(File.Exists(Path.Combine(this.tempDir, "File2.xml")));
+            Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "System.File3.dat")));
+            Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "SubFolder", "Microsoft.File4.db")));
+            Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "SubFolder", "Sub2", "Taxi.File5.pdb")));
+        }
+
+        [TestMethod]
         public void PurgeSubFolder()
         {
             var purge = new PurgeCommand(o => { });

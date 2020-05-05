@@ -55,7 +55,8 @@ namespace Codefarts.BuildHelper
 
             if (!string.IsNullOrWhiteSpace(message))
             {
-                this.Output($"Deploy Message: {message}");
+                message = message.ReplaceBuildVariableStrings(variables);
+                this.Output($"Message: {message}");
             }
 
             this.Output($"Clearing before deploy ({doClear}): {destPath}");
