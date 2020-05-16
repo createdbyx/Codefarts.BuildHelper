@@ -1,12 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Xml.Linq;
-using Codefarts.BuildHelper;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+// <copyright file="PurgeFiles.cs" company="Codefarts">
+// Copyright (c) Codefarts
+// contact@codefarts.com
+// http://www.codefarts.com
+// </copyright>
 
 namespace BuildHelperTests
 {
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Xml.Linq;
+    using Codefarts.BuildHelper;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass, TestCategory("Build Commands")]
     public class PurgeFiles
     {
@@ -39,7 +44,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void Purge2Files()
         {
-            var purge = new PurgeCommand(o => { });
+            var purge = new PurgeCommand();
             var data = "<purge path=\"$(TempPath)\" subfolders=\"true\" allconditions=\"false\" fullpaths=\"false\" type=\"files\">\r\n" +
                        "    <condition value1=\"$(PurgeEntry)\" operator=\"startswith\" value2=\"System.\" ignorecase=\"true\" />\r\n" +
                        "    <condition value1=\"$(PurgeEntry)\" operator=\"startswith\" value2=\"Microsoft.\" ignorecase=\"true\" />\r\n" +
@@ -47,7 +52,7 @@ namespace BuildHelperTests
                        "</purge>";
 
             var item = XElement.Parse(data);
-            purge.Execute(this.varibles, item);
+            purge.Execute(new ExecuteCommandArgs(msg => { }, this.varibles, item));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File1.txt")));
             Assert.IsFalse(File.Exists(Path.Combine(this.tempDir, "File2.xml")));
             Assert.IsFalse(File.Exists(Path.Combine(this.tempDir, "System.File3.dat")));
@@ -58,7 +63,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void Purge2Files_FullPathsTrue()
         {
-            var purge = new PurgeCommand(o => { });
+            var purge = new PurgeCommand();
             var data = "<purge path=\"$(TempPath)\" subfolders=\"true\" allconditions=\"false\" fullpaths=\"true\" type=\"files\">\r\n" +
                        "    <condition value1=\"$(PurgeEntry)\" operator=\"startswith\" value2=\"System.\" ignorecase=\"true\" />\r\n" +
                        "    <condition value1=\"$(PurgeEntry)\" operator=\"startswith\" value2=\"Microsoft.\" ignorecase=\"true\" />\r\n" +
@@ -66,7 +71,7 @@ namespace BuildHelperTests
                        "</purge>";
 
             var item = XElement.Parse(data);
-            purge.Execute(this.varibles, item);
+            purge.Execute(new ExecuteCommandArgs(msg => { }, this.varibles, item));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File1.txt")));
             Assert.IsFalse(File.Exists(Path.Combine(this.tempDir, "File2.xml")));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "System.File3.dat")));
@@ -77,13 +82,13 @@ namespace BuildHelperTests
         [TestMethod]
         public void PurgeSubFolder()
         {
-            var purge = new PurgeCommand(o => { });
+            var purge = new PurgeCommand();
             var data = "<purge path=\"$(TempPath)\" subfolders=\"true\" allconditions=\"false\" fullpaths=\"false\" type=\"folders\">\r\n" +
                        "    <condition value1=\"$(PurgeEntry)\" operator=\"Contains\" value2=\"Folder\" ignorecase=\"false\" />\r\n" +
                        "</purge>";
 
             var item = XElement.Parse(data);
-            purge.Execute(this.varibles, item);
+            purge.Execute(new ExecuteCommandArgs(msg => { }, this.varibles, item));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File1.txt")));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File2.xml")));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "System.File3.dat")));

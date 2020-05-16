@@ -1,8 +1,11 @@
+// <copyright file="IBuildCommand.cs" company="Codefarts">
+// Copyright (c) Codefarts
+// contact@codefarts.com
+// http://www.codefarts.com
+// </copyright>
+
 namespace Codefarts.BuildHelper
 {
-    using System.Collections.Generic;
-    using System.Xml.Linq;
-
     public interface IBuildCommand
     {
         string Name
@@ -10,6 +13,6 @@ namespace Codefarts.BuildHelper
             get;
         }
 
-        void Execute(IDictionary<string, string> variables, XElement data);
+        void Execute(ExecuteCommandArgs args);
     }
 }

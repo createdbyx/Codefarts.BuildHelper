@@ -11,34 +11,26 @@ namespace Codefarts.BuildHelper
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Xml;
-    using System.Xml.Linq;
 
-    public class PurgeCommand : BuildCommandBase
+    public class PurgeCommand : IBuildCommand
     {
-        public PurgeCommand(Action<string> writeOutput)
-            : base(writeOutput)
-        {
-        }
+        public string Name => "purge";
 
-        public override string Name => "purge";
-
-        public override void Execute(IDictionary<string, string> variables, XElement data)
+        public void Execute(ExecuteCommandArgs args)
         {
-            // Debugger.Launch();
-            var srcPath = data.GetValue("path");
+            var srcPath = args.Element.GetValue("path");
             if (srcPath == null)
             {
                 throw new XmlException($"Command: {nameof(PurgeCommand)} value: path  - Value not found");
             }
 
-            srcPath = srcPath.ReplaceBuildVariableStrings(variables);
+            srcPath = srcPath.ReplaceBuildVariableStrings(args.Variables);
 
-            var message = data.GetValue("message");
+            var message = args.Element.GetValue("message");
 
             // check type of purge
-            var typeValue = data.GetValue("type");
+            var typeValue = args.Element.GetValue("type");
             typeValue = typeValue == null ? typeValue : typeValue.ToLowerInvariant().Trim();
             switch (typeValue)
             {
@@ -54,7 +46,7 @@ namespace Codefarts.BuildHelper
             }
 
             // check type of conditions
-            var conditionsValue = data.GetValue("allconditions");
+            var conditionsValue = args.Element.GetValue("allconditions");
             var allConditions = true;
             if (conditionsValue != null && !bool.TryParse(conditionsValue, out allConditions))
             {
@@ -62,7 +54,7 @@ namespace Codefarts.BuildHelper
             }
 
             // check to use full file paths 
-            var fullPathsValue = data.GetValue("fullpaths");
+            var fullPathsValue = args.Element.GetValue("fullpaths");
             var fullPaths = false;
             if (fullPathsValue != null && !bool.TryParse(fullPathsValue, out fullPaths))
             {
@@ -70,7 +62,7 @@ namespace Codefarts.BuildHelper
             }
 
             // check if we should clear subfolders as well
-            var subFoldersValue = data.GetValue("subfolders");
+            var subFoldersValue = args.Element.GetValue("subfolders");
             var subfolders = true;
             if (subFoldersValue != null && !bool.TryParse(subFoldersValue, out subfolders))
             {
@@ -80,17 +72,17 @@ namespace Codefarts.BuildHelper
             var di = new DirectoryInfo(srcPath);
             if (!di.Exists)
             {
-                this.Output($"Purging folder failed! (Reason: Does not exist!): {srcPath}");
+                args.Output($"Purging folder failed! (Reason: Does not exist!): {srcPath}");
                 return;
             }
 
             if (!string.IsNullOrWhiteSpace(message))
             {
-                message = message.ReplaceBuildVariableStrings(variables);
-                this.Output($"Message: {message}");
+                message = message.ReplaceBuildVariableStrings(args.Variables);
+                args.Output($"Message: {message}");
             }
 
-            this.Output($"(Sub Folders->{subfolders}): {srcPath}");
+            args.Output($"(Sub Folders->{subfolders}): {srcPath}");
 
             var getEntries = new Func<string, IEnumerable<string>>(p =>
             {
@@ -115,16 +107,16 @@ namespace Codefarts.BuildHelper
 
             // TODO: need option to specify weather or not $(PurgeFile) is just the filename or full path
             var allEntries = getEntries(srcPath);
-            var modifiedVars = new Dictionary<string, string>(variables);
+            var modifiedVars = new Dictionary<string, string>(args.Variables);
             foreach (var file in allEntries)
             {
                 var src = fullPaths ? file : Path.GetFileName(file);
                 modifiedVars["PurgeEntry"] = src;
 
-                if (data.SatifiesConditions(modifiedVars, allConditions))
+                if (args.Element.SatifiesConditions(modifiedVars, allConditions))
                 {
                     // TODO: need ability to purge folder as well
-                    this.Output("Purging: " + file);
+                    args.Output("Purging: " + file);
                     deleteEntry(file);
                 }
             }

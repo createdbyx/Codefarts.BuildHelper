@@ -1,13 +1,14 @@
 // <copyright file="ExtensionMethods.cs" company="Codefarts">
 // Copyright (c) Codefarts
+// contact@codefarts.com
+// http://www.codefarts.com
 // </copyright>
-
-using System.Linq;
 
 namespace Codefarts.BuildHelper
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Xml.Linq;
 
     public static class Extensions

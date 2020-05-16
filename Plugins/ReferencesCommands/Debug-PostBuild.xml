@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<inline>
+    <deploy path="$(SolutionDir)Codefarts.BuildHelperConsoleApp\bin\$(ConfigurationName)\netcoreapp3.1\Plugins\$(ProjectName)" clean="true" 
+            message="Deploying to project plugin folder...">
+        <!--<condition value1="$(Application)" operator="!=" value2="buildhelper.exe" ignorecase="true" />-->
+    </deploy>
+
+    <deploy path="E:\BuildHelper\Plugins\$(ProjectName)" clean="true" 
+            message="Deploying to E:\BuildHelper plugin folder...">
+        <!--<condition value1="$(Application)" operator="!=" value2="buildhelper.exe" ignorecase="true" />-->
+    </deploy>
+</inline>

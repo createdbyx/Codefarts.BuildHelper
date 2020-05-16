@@ -11,6 +11,6 @@ namespace BuildHelperTests
     [TestClass]
     public class DeployTests
     {
-        
+
     }
 }

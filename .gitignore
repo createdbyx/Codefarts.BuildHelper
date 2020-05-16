@@ -8,3 +8,11 @@ Codefarts.BuildHelperWPF/obj/
 packages/
 codealike.json
 BuildHelperTests/bin/
+Plugins/DeployCommand/obj/
+Plugins/PurgeCommand/bin/
+Plugins/PurgeCommand/obj/
+Plugins/ReferencesCommands/obj/
+Plugins/CopyDirCommand/obj/
+Plugins/CopyDirCommand/bin/
+Plugins/DeployCommand/bin/
+Plugins/ReferencesCommands/bin/

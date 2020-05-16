@@ -1,11 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
-using Codefarts.BuildHelper;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+// <copyright file="ConditionContains.cs" company="Codefarts">
+// Copyright (c) Codefarts
+// contact@codefarts.com
+// http://www.codefarts.com
+// </copyright>
 
 namespace BuildHelperTests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Xml.Linq;
+    using Codefarts.BuildHelper;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     [TestClass, TestCategory("Extension Methods")]
     public class ConditionContains
     {

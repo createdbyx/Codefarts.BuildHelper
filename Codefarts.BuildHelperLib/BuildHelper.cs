@@ -21,32 +21,38 @@ namespace Codefarts.BuildHelper
             this.OnOutputMessage(string.Format(message, args));
         }
 
-        public void Build(string buildFile)
+        public void OutputHeader(string message, params object[] args)
         {
+            var formattedString = string.Format(message, args);
+            var maxLen = Math.Max(formattedString.Length + 10, 100);
+            var headPartLen = (maxLen - (formattedString.Length + 2)) / 2;
+            var headerChars = new string('#', headPartLen);
+            this.Output(string.Format($"{headerChars} {message} {headerChars}", args));
+        }
+
+        public void Build(string buildFile, IEnumerable<IBuildCommand> commands)
+        {
+            if (commands == null)
+            {
+                commands = Enumerable.Empty<IBuildCommand>();
+            }
+
             // Debugger.Launch();
-            this.Output("{0} START BUILD {1}", new string('#', 6), new string('#', 25));
 
             // read build file
             IDictionary<string, string> variables;
             XElement root;
             if (!this.TryReadBuildFile(buildFile, out variables, out root))
             {
-                this.Output("{0} END BUILD {1}", new string('#', 6), new string('#', 23));
+                this.Output($"ERROR: Reading Build File. {buildFile}");
                 Environment.ExitCode = 1;
                 return;
             }
 
-            this.Output("Performing " + variables["BuildEvent"] + " build event ...");
+            string buildEventValue;
+            variables.TryGetValue("BuildEvent", out buildEventValue);
 
-            // load commands
-            var commands = new IBuildCommand[]
-                {
-                    new DeployCommand(o => this.Output(o)),
-                    new CopyDirCommand(o => this.Output(o)),
-                    new ExcludeReferenceCommand(o => this.Output(o)),
-                    new RestoreReferencesCommand(o => this.Output(o)),
-                    new PurgeCommand(o => this.Output(o)),
-                };
+            this.OutputHeader($"START {buildEventValue} BUILD");
 
             // process elements
             foreach (var element in root.Elements())
@@ -57,10 +63,11 @@ namespace Codefarts.BuildHelper
                     continue;
                 }
 
-                com.Execute(variables, element);
+                var executeCommandArgs = new ExecuteCommandArgs(msg => this.Output(msg), new Dictionary<string, string>(variables), element);
+                com.Execute(executeCommandArgs);
             }
 
-            this.Output("{0} END BUILD {1}", new string('#', 6), new string('#', 23));
+            this.OutputHeader($"END {buildEventValue} BUILD");
         }
 
         private bool TryReadBuildFile(string buildFile, out IDictionary<string, string> variables, out XElement root)

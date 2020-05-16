@@ -1,5 +1,7 @@
 // <copyright file="CopyDirCommand.cs" company="Codefarts">
 // Copyright (c) Codefarts
+// contact@codefarts.com
+// http://www.codefarts.com
 // </copyright>
 
 namespace Codefarts.BuildHelper
@@ -11,21 +13,15 @@ namespace Codefarts.BuildHelper
     using System.Xml;
     using System.Xml.Linq;
 
-    public class CopyDirCommand : BuildCommandBase
+    public class CopyDirCommand : IBuildCommand
     {
-        public CopyDirCommand(Action<string> writeOutput)
-            : base(writeOutput)
-        {
-        }
+        public string Name => "copydir";
 
-        public override string Name => "copydir";
-
-        public override void Execute(IDictionary<string, string> variables, XElement data)
+        public void Execute(ExecuteCommandArgs args)
         {
-            // Debugger.Launch();
-            var srcPath = data.GetValue("source");
-            var destPath = data.GetValue("destination");
-            var message = data.GetValue("message");
+            var srcPath = args.Element.GetValue("source");
+            var destPath = args.Element.GetValue("destination");
+            var message = args.Element.GetValue("message");
 
             if (destPath == null)
             {
@@ -37,19 +33,19 @@ namespace Codefarts.BuildHelper
                 throw new XmlException($"Command: {nameof(CopyDirCommand)} value: source  - Value not found");
             }
 
-            srcPath = srcPath.ReplaceBuildVariableStrings(variables);
-            destPath = destPath.ReplaceBuildVariableStrings(variables);
+            srcPath = srcPath.ReplaceBuildVariableStrings(args.Variables);
+            destPath = destPath.ReplaceBuildVariableStrings(args.Variables);
 
             if (!string.IsNullOrWhiteSpace(message))
             {
-                message = message.ReplaceBuildVariableStrings(variables);
-                this.Output($"Message: {message}");
+                message = message.ReplaceBuildVariableStrings(args.Variables);
+                args.Output($"Message: {message}");
             }
 
             // check if we should clear the folder first
-            var value = data.GetValue("clean");
+            var value = args.Element.GetValue("clean");
             var doClear = string.IsNullOrWhiteSpace(value) ? false : value.Trim().ToLowerInvariant() == "true";
-            this.Output($"Clearing before copy ({doClear}): {destPath}");
+            args.Output($"Clearing before copy ({doClear}): {destPath}");
             var di = new DirectoryInfo(destPath);
             if (doClear && di.Exists)
             {
@@ -71,7 +67,7 @@ namespace Codefarts.BuildHelper
                 var dest = Path.Combine(destPath, file);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(dest));
-                this.Output("Copying: " + src + " ==> " + dest);
+                args.Output("Copying: " + src + " ==> " + dest);
                 File.Copy(src, dest, true);
             }
         }

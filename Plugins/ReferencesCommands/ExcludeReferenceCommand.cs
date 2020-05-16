@@ -1,36 +1,31 @@
 // <copyright file="ExcludeReferenceCommand.cs" company="Codefarts">
 // Copyright (c) Codefarts
+// contact@codefarts.com
+// http://www.codefarts.com
 // </copyright>
 
 namespace Codefarts.BuildHelper
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Xml;
     using System.Xml.Linq;
 
-    public class ExcludeReferenceCommand : BuildCommandBase
+    public class ExcludeReferenceCommand : IBuildCommand
     {
-        public ExcludeReferenceCommand(Action<string> writeOutput)
-            : base(writeOutput)
-        {
-        }
+        public string Name => "excludereference";
 
-        public override string Name => "excludereference";
-
-        public override void Execute(IDictionary<string, string> variables, XElement data)
+        public void Execute(ExecuteCommandArgs args)
         {
-            //  Debugger.Launch();
-            var path = data.GetValue("path");
-            var destPath = path != null ? path.ReplaceBuildVariableStrings(variables) : null;
+            var path = args.Element.GetValue("path");
+            var destPath = path != null ? path.ReplaceBuildVariableStrings(args.Variables) : null;
             if (destPath == null)
             {
                 throw new XmlException($"Command: {nameof(ExcludeReferenceCommand)} value: path  - Value not found");
             }
 
-            var type = data.GetValue("type");
+            var type = args.Element.GetValue("type");
             if (string.IsNullOrWhiteSpace(type))
             {
                 throw new XmlException($"Command: {nameof(ExcludeReferenceCommand)} value: type  - not specified");
@@ -39,13 +34,13 @@ namespace Codefarts.BuildHelper
             switch (type)
             {
                 case "project":
-                    var name = data.GetValue("name");
+                    var name = args.Element.GetValue("name");
                     if (string.IsNullOrWhiteSpace(name))
                     {
                         throw new XmlException($"Command: {nameof(ExcludeReferenceCommand)} value: name  - not specified");
                     }
 
-                    var appendValue = data.GetValue("append");
+                    var appendValue = args.Element.GetValue("append");
                     if (string.IsNullOrWhiteSpace(appendValue))
                     {
                         throw new XmlException($"Command: {nameof(ExcludeReferenceCommand)} value: append  - not specified");
@@ -58,7 +53,7 @@ namespace Codefarts.BuildHelper
                     }
 
                     // open project file
-                    var projectFile = variables["ProjectPath"];
+                    var projectFile = args.Variables["ProjectPath"];
                     var proj = XDocument.Load(projectFile);
 
                     // search for project reference with matching name

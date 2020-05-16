@@ -1,32 +1,58 @@
 ﻿// <copyright file="Program.cs" company="Codefarts">
 // Copyright (c) Codefarts
+// contact@codefarts.com
+// http://www.codefarts.com
 // </copyright>
-
-using System.Diagnostics;
 
 namespace Codefarts.BuildHelperConsoleApp
 {
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
     using System.Linq;
+    using System.Reflection;
     using Codefarts.BuildHelper;
 
     partial class Program
     {
         static void Main(string[] args)
         {
-           // Debugger.Launch();
+            // Debugger.Launch();
             var build = new BuildHelper();
             build.OutputMessage += (s, e) => { Console.WriteLine(e.Message); };
 
             var buildFile = args.FirstOrDefault(x => x.StartsWith("-b:"));
 
             buildFile = string.IsNullOrWhiteSpace(buildFile) ? null : buildFile.Substring(3);
-            //if (buildFile == null)
-            //{
-            //    build.Output("Build");
-            //}
 
-            build.Build(buildFile);
+            // load command plugins
+            var commands = LoadPlugins().ToArray();
+            build.Build(buildFile, commands);
+        }
+
+        private static IEnumerable<IBuildCommand> LoadPlugins()
+        {
+            var appPath = Process.GetCurrentProcess().MainModule.FileName;
+            var appDir = Path.GetDirectoryName(appPath);
+            var pluginFolder = Path.Combine(appDir, "Plugins");
+
+            if (!Directory.Exists(pluginFolder))
+            {
+                return Enumerable.Empty<IBuildCommand>();
+            }
+
+            var asmFiles = Directory.GetFiles(pluginFolder, "*.dll", SearchOption.AllDirectories);
+
+            // load them
+            var pluginTypes = asmFiles.SelectMany(f =>
+            {
+                var asm = Assembly.LoadFrom(f);
+                return asm.GetTypes().Where(t => t.IsPublic && t.IsClass && !t.IsSealed && typeof(IBuildCommand).IsAssignableFrom(t));
+            }).ToArray();
+
+            var plugins = pluginTypes.Select(t => (IBuildCommand)t.Assembly.CreateInstance(t.FullName));
+            return plugins;
         }
     }
 

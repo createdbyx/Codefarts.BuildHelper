@@ -3,13 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Codefarts.BuildHelper</RootNamespace>
-    <AssemblyVersion>2020.5.3.4</AssemblyVersion>
-    <FileVersion>2020.5.3.4</FileVersion>
+    <AssemblyVersion>2020.5.15.0</AssemblyVersion>
+    <FileVersion>2020.5.15.0</FileVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Commands\IBuildCommand.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />

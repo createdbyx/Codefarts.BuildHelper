@@ -6,27 +6,18 @@
 
 namespace Codefarts.BuildHelper
 {
-    using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Xml;
     using System.Xml.Linq;
 
-    public class RestoreReferencesCommand : BuildCommandBase
+    public class RestoreReferencesCommand : IBuildCommand
     {
-        public RestoreReferencesCommand(Action<string> writeOutput)
-            : base(writeOutput)
-        {
-            this.WriteOutput = writeOutput;
-        }
-               
-        public override string Name => "restorereferences";
+        public string Name => "restorereferences";
 
-        public override void Execute(IDictionary<string, string> variables, XElement data)
+        public void Execute(ExecuteCommandArgs args)
         {
-            //  Debugger.Launch();
-            var path = data.GetValue("path");
-            var destPath = path != null ? path.ReplaceBuildVariableStrings(variables) : null;
+            var path = args.Element.GetValue("path");
+            var destPath = path != null ? path.ReplaceBuildVariableStrings(args.Variables) : null;
             if (destPath == null)
             {
                 throw new XmlException($"Command: {nameof(RestoreReferencesCommand)} value: path  - Value not found");
@@ -39,7 +30,7 @@ namespace Codefarts.BuildHelper
             }
 
             // open project file
-            var projectFile = variables["ProjectPath"];
+            var projectFile = args.Variables["ProjectPath"];
             var proj = XDocument.Load(projectFile);
 
             // open references file
@@ -52,7 +43,7 @@ namespace Codefarts.BuildHelper
             proj.Save(projectFile);
 
             // check to delete file afterward
-            var deleteValue = data.GetValue("delete");
+            var deleteValue = args.Element.GetValue("delete");
             if (string.IsNullOrWhiteSpace(deleteValue))
             {
                 throw new XmlException($"Command: {nameof(RestoreReferencesCommand)} value: delete  - not specified");

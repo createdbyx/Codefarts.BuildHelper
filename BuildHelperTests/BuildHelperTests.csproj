@@ -29,4 +29,11 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Plugins\CopyDirCommand\CopyDirCommand.csproj" />
+    <ProjectReference Include="..\Plugins\DeployCommand\DeployCommand.csproj" />
+    <ProjectReference Include="..\Plugins\PurgeCommand\PurgeCommand.csproj" />
+    <ProjectReference Include="..\Plugins\ReferencesCommands\ReferencesCommands.csproj" />
+  </ItemGroup>
+
 </Project>
