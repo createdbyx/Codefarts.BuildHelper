@@ -8,12 +8,20 @@ namespace Codefarts.BuildHelper
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Xml.Linq;
 
     public static class Extensions
     {
-        public static string GetValue(this XElement element, string name)
+        /// <summary>
+        /// Gets the value of a <see cref="XElement"/>.
+        /// </summary>
+        /// <param name="element">The element to get the value from.</param>
+        /// <param name="name">The name of the attribute.</param>
+        /// <returns>Value of the <see cref="XElement"/>, otherwise null.</returns>
+        /// <remarks>Will return null if no value found.</remarks>
+        public static string GetAttributeValue(this XElement element, string name)
         {
             if (element == null)
             {
@@ -28,6 +36,57 @@ namespace Codefarts.BuildHelper
 
             var ele = element.Element(name);
             return ele != null ? ele.Value : null;
+        }
+
+        public static T GetParameter<T>(this IDictionary<string, object> parameters, string name)
+        {
+            return GetParameter<T>(parameters, name, default);
+        }
+
+        public static T GetParameter<T>(this Node node, string name)
+        {
+            return node.Parameters.GetParameter<T>(name, default);
+        }
+
+        public static T GetParameter<T>(this IDictionary<string, object> parameters, string name, T defaultValue)
+        {
+            if (parameters == null)
+            {
+                throw new ArgumentNullException(nameof(parameters));
+            }
+
+            object value;
+            if (parameters.TryGetValue(name, out value))
+            {
+                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.CurrentCulture);
+            }
+
+            return defaultValue;
+        }
+
+        public static T GetParameter<T>(this ExecuteCommandArgs args, string name)
+        {
+            return args.Parameters.GetParameter<T>(name, default);
+        }
+
+        public static T GetParameter<T>(this ExecuteCommandArgs args, string name, T defaultValue)
+        {
+            if (args == null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
+            return args.Parameters.GetParameter(name, defaultValue);
+        }
+
+        public static T GetParameter<T>(this Node node, string name, T defaultValue)
+        {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
+            return node.Parameters.GetParameter(name, defaultValue);
         }
 
         public static string ReplaceBuildVariableStrings(this string text, IDictionary<string, string> variables)
@@ -45,44 +104,128 @@ namespace Codefarts.BuildHelper
             return text;
         }
 
-        public static bool SatifiesConditions(this XElement element, IDictionary<string, string> variables)
+        public static bool SatifiesConditions(this Node element, IDictionary<string, string> variables)
         {
             return element.SatifiesConditions(variables, true);
         }
 
-        public static bool SatifiesConditions(this XElement element, IDictionary<string, string> variables, bool allConditions)
+        public static bool SatifiesConditions(this Node element, IDictionary<string, string> variables, bool allConditions)
         {
             if (allConditions)
             {
-                return element.Elements().Where(condition => condition.Name.LocalName == "condition")
+                return element.Children.Where(condition => condition.Name == "condition")
                     .All(condition => condition.SatifiesCondition(variables));
             }
 
-            return element.Elements().Where(condition => condition.Name.LocalName == "condition")
+            return element.Children.Where(condition => condition.Name == "condition")
                 .Any(condition => condition.SatifiesCondition(variables));
         }
 
-        public static bool SatifiesCondition(this XElement condition, IDictionary<string, string> variables)
+        public static bool SatifiesCondition(this Node condition, IDictionary<string, string> variables)
         {
             if (condition == null)
             {
                 throw new ArgumentNullException(nameof(condition));
             }
 
-            if (condition.Name.LocalName != "condition")
+            if (condition.Name != "condition")
             {
                 throw new ArgumentException("Condition element name is not 'condition'.", nameof(condition));
             }
 
-            var value1 = condition.GetValue("value1").ReplaceBuildVariableStrings(variables);
-            var value2 = condition.GetValue("value2").ReplaceBuildVariableStrings(variables);
-            var operatorValue = condition.GetValue("operator");
-            var ignoreCaseValue = condition.GetValue("ignorecase");
+            var value1 = condition.GetParameter<string>("value1").ReplaceBuildVariableStrings(variables);
+            var value2 = condition.GetParameter<string>("value2").ReplaceBuildVariableStrings(variables);
+            var operatorValue = condition.GetParameter<string>("operator");
+            var ignoreCaseValue = condition.GetParameter<string>("ignorecase");
             var ignoreCase = true;
             if (ignoreCaseValue != null && !bool.TryParse(ignoreCaseValue, out ignoreCase))
             {
                 throw new ArgumentOutOfRangeException("'ignorecase' attribute exists but it's value could not be parsed as a bool value.");
             }
+
+            return SatifiesCondition(variables, value1, value2, operatorValue, ignoreCase);
+
+            //if (value1 == null)
+            //{
+            //    throw new ArgumentOutOfRangeException("'value1' is missing.", nameof(value1));
+            //}
+
+            //if (value2 == null)
+            //{
+            //    throw new ArgumentOutOfRangeException("'value2' is missing.", nameof(value2));
+            //}
+
+
+            //operatorValue = operatorValue == null ? operatorValue : operatorValue.ToLowerInvariant().Trim();
+            //switch (operatorValue)
+            //{
+            //    case "=":
+            //    case "equals":
+            //    case "equalto":
+            //        if (ignoreCase ? string.Equals(value1, value2, StringComparison.OrdinalIgnoreCase) : string.Equals(value1, value2))
+            //        {
+            //            return true;
+            //        }
+
+            //        return false;
+
+            //    case "!=":
+            //    case "notequal":
+            //    case "notequalto":
+            //        if (ignoreCase ? !string.Equals(value1, value2, StringComparison.OrdinalIgnoreCase) : !string.Equals(value1, value2))
+            //        {
+            //            return true;
+            //        }
+
+            //        return false;
+
+            //    case "startswith":
+            //    case "beginswith":
+            //        if (ignoreCase ? value1.StartsWith(value2, StringComparison.OrdinalIgnoreCase) : value1.StartsWith(value2))
+            //        {
+            //            return true;
+            //        }
+
+            //        return false;
+
+            //    case "endswith":
+            //        if (ignoreCase ? value1.EndsWith(value2, StringComparison.OrdinalIgnoreCase) : value1.EndsWith(value2))
+            //        {
+            //            return true;
+            //        }
+
+            //        return false;
+
+            //    case "contains":       //this.IndexOf(value, comparisonType) >= 0
+            //        //if (ignoreCase ? !value1.Contains(value2, StringComparison.OrdinalIgnoreCase) >= 0 : !value1.Contains(value2))
+            //        if (ignoreCase ? value1.IndexOf(value2, StringComparison.OrdinalIgnoreCase) >= 0 : value1.Contains(value2))
+            //        {
+            //            return true;
+            //        }
+
+            //        return false;
+
+            //    case null:
+            //        throw new ArgumentNullException("Condition is missing 'operator' attribute.");
+
+            //    default:
+            //        throw new ArgumentOutOfRangeException("'operator' attribute exists but it's meaning could not determined.");
+            //}
+
+            //return true;
+        }
+
+        public static bool SatifiesCondition(this IDictionary<string, string> variables, string value1, string value2, string operatorValue, bool ignoreCase)
+        {
+            //var value1 = condition.GetParameter<string>("value1").ReplaceBuildVariableStrings(variables);
+            //var value2 = condition.GetParameter<string>("value2").ReplaceBuildVariableStrings(variables);
+            //var operatorValue = condition.GetParameter<string>("operator");
+            //var ignoreCaseValue = condition.GetParameter<string>("ignorecase");
+            //var ignoreCase = true;
+            //if (ignoreCaseValue != null && !bool.TryParse(ignoreCaseValue, out ignoreCase))
+            //{
+            //    throw new ArgumentOutOfRangeException("'ignorecase' attribute exists but it's value could not be parsed as a bool value.");
+            //}
 
             if (value1 == null)
             {
@@ -144,13 +287,11 @@ namespace Codefarts.BuildHelper
                     return false;
 
                 case null:
-                    throw new ArgumentNullException("Condition is missing 'operator' attribute.");
+                    throw new ArgumentNullException("Condition is missing 'operator' value.");
 
                 default:
                     throw new ArgumentOutOfRangeException("'operator' attribute exists but it's meaning could not determined.");
             }
-
-            return true;
         }
     }
 }

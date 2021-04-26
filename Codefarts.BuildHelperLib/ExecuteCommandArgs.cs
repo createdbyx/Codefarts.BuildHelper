@@ -8,18 +8,41 @@ namespace Codefarts.BuildHelper
 {
     using System;
     using System.Collections.Generic;
-    using System.Xml.Linq;
+    using System.ComponentModel;
 
-    public class ExecuteCommandArgs
+    public class ExecuteCommandArgs : INotifyPropertyChanged
     {
-        public ExecuteCommandArgs(Action<string> output, IDictionary<string, string> variables, XElement element)
+        public ExecuteCommandArgs(Action<string> output, IDictionary<string, string> variables, Node command)
         {
-            this.Output = output;
+            // we wrap output callback here to ensure any call to it does not throw null reference exceptions
+            this.Output = msg =>
+            {
+                if (output != null)
+                {
+                    output(msg);
+                }
+            };
             this.Variables = variables;
-            this.Element = element;
+            this.Command = command;
         }
 
-        public XElement Element
+        //public ExecuteCommandArgs(Action<string> output, IDictionary<string, string> variables, IDictionary<string, object> parameters)
+        //{
+        //    // we wrap output callback here to ensure any call to it does not throw null reference exceptions
+        //    this.Output = msg =>
+        //    {
+        //        if (output != null)
+        //        {
+        //            output(msg);
+        //        }
+        //    };
+        //    this.Variables = variables;
+        //    this.parameters = parameters;
+        //}
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public Node Command
         {
             get;
         }
@@ -29,9 +52,26 @@ namespace Codefarts.BuildHelper
             get;
         }
 
+        public IDictionary<string, object> Parameters
+        {
+            get
+            {
+                return this.Command.Parameters;
+            }
+        }
+
         public IDictionary<string, string> Variables
         {
             get;
+        }
+
+        protected virtual void OnPropertyChanged(string propertyName = null)
+        {
+            var handler = this.PropertyChanged;
+            if (handler != null)
+            {
+                handler.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

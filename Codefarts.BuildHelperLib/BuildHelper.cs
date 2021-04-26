@@ -4,6 +4,8 @@
 
 //using System.Diagnostics;
 
+using System.Collections.ObjectModel;
+
 namespace Codefarts.BuildHelper
 {
     using System;
@@ -30,11 +32,11 @@ namespace Codefarts.BuildHelper
             this.Output(string.Format($"{headerChars} {message} {headerChars}", args));
         }
 
-        public void Build(string buildFile, IEnumerable<IBuildCommand> commands)
+        public void Build(string buildFile, IEnumerable<IBuildCommand> commandPlugins)
         {
-            if (commands == null)
+            if (commandPlugins == null)
             {
-                commands = Enumerable.Empty<IBuildCommand>();
+                commandPlugins = Enumerable.Empty<IBuildCommand>();
             }
 
             // Debugger.Launch();
@@ -54,20 +56,78 @@ namespace Codefarts.BuildHelper
 
             this.OutputHeader($"START {buildEventValue} BUILD");
 
-            // process elements
-            foreach (var element in root.Elements())
+            var buildFileCommands = root.Elements().Select(x => this.BuildCommandNode(x, null));
+
+            // process file elements
+            foreach (var buildFileCommand in buildFileCommands)
             {
-                var com = commands.FirstOrDefault(c => c.Name.Equals(element.Name.LocalName, StringComparison.OrdinalIgnoreCase));
-                if (com == null)
+                // find the first plugin with the matching name
+                var plugin = commandPlugins.FirstOrDefault(c => c.Name.Equals(buildFileCommand.Name, StringComparison.OrdinalIgnoreCase));
+                if (plugin == null)
                 {
                     continue;
                 }
 
-                var executeCommandArgs = new ExecuteCommandArgs(msg => this.Output(msg), new Dictionary<string, string>(variables), element);
-                com.Execute(executeCommandArgs);
+                // setup executing args
+                var executeCommandArgs = new ExecuteCommandArgs(
+                    msg => this.Output(msg),
+                    variables,
+                    buildFileCommand);
+                try
+                {
+                    // check if the command has an attached message and if so output the message before executing
+                    var message = buildFileCommand.GetParameter("message", string.Empty);
+                    if (!string.IsNullOrWhiteSpace(message))
+                    {
+                        message = message.ReplaceBuildVariableStrings(variables);
+                        this.Output($"Message: {message}");
+                    }
+
+                    // check to ignore conditions
+                    var ignoreConditions = buildFileCommand.GetParameter("ignoreconditions", false);
+                    if (!ignoreConditions)
+                    {
+                        // check type of conditions
+                        var allConditions = buildFileCommand.GetParameter("allconditions", true);
+                        // var allConditions = true;
+                        //if (conditionsValue != null && !bool.TryParse(conditionsValue, out allConditions))
+                        //{
+                        //    throw new ArgumentOutOfRangeException($"'{allConditions}' attribute exists but it's value could not be parsed as a bool value.");
+                        //}
+
+                        // check conditions
+                        if (!buildFileCommand.SatifiesConditions(variables, allConditions))
+                        {
+                            this.Output($"Conditions not satisfied for command '{buildFileCommand.Name}'.");
+                            return;
+                        }
+                    }
+
+                    // execute the command plugin
+                    plugin.Execute(executeCommandArgs);
+                }
+                catch (Exception ex)
+                {
+                    this.Output($"Command {plugin.Name} threw an exception.");
+                    this.Output(ex.ToString());
+                }
             }
 
             this.OutputHeader($"END {buildEventValue} BUILD");
+        }
+
+        private Node BuildCommandNode(XElement xElement, Node parent)
+        {
+            var node = new Node(xElement.Name.LocalName);
+            foreach (var attribute in xElement.Attributes())
+            {
+                node.Parameters[attribute.Name.LocalName] = attribute.Value;
+            }
+
+            node.Parent = parent;
+            node.Children = new ObservableCollection<Node>(xElement.Elements().Select(x => this.BuildCommandNode(x, node)));
+
+            return node;
         }
 
         private bool TryReadBuildFile(string buildFile, out IDictionary<string, string> variables, out XElement root)
