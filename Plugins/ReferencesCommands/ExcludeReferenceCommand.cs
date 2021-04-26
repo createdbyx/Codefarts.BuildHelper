@@ -18,14 +18,14 @@ namespace Codefarts.BuildHelper
 
         public void Execute(ExecuteCommandArgs args)
         {
-            var path = args.Element.GetValue("path");
+            var path = args.GetParameter<string>("path");
             var destPath = path != null ? path.ReplaceBuildVariableStrings(args.Variables) : null;
             if (destPath == null)
             {
                 throw new XmlException($"Command: {nameof(ExcludeReferenceCommand)} value: path  - Value not found");
             }
 
-            var type = args.Element.GetValue("type");
+            var type = args.GetParameter<string>("type");
             if (string.IsNullOrWhiteSpace(type))
             {
                 throw new XmlException($"Command: {nameof(ExcludeReferenceCommand)} value: type  - not specified");
@@ -34,23 +34,23 @@ namespace Codefarts.BuildHelper
             switch (type)
             {
                 case "project":
-                    var name = args.Element.GetValue("name");
+                    var name = args.GetParameter<string>("name");
                     if (string.IsNullOrWhiteSpace(name))
                     {
                         throw new XmlException($"Command: {nameof(ExcludeReferenceCommand)} value: name  - not specified");
                     }
 
-                    var appendValue = args.Element.GetValue("append");
-                    if (string.IsNullOrWhiteSpace(appendValue))
-                    {
-                        throw new XmlException($"Command: {nameof(ExcludeReferenceCommand)} value: append  - not specified");
-                    }
+                    var append = args.GetParameter("append", false);
+                    //if (string.IsNullOrWhiteSpace(appendValue))
+                    //{
+                    //    throw new XmlException($"Command: {nameof(ExcludeReferenceCommand)} value: append  - not specified");
+                    //}
 
-                    var append = false;
-                    if (!bool.TryParse(appendValue, out append))
-                    {
-                        throw new XmlException($"Command: {nameof(ExcludeReferenceCommand)} value: append  - could not determine bool value.");
-                    }
+                    //var append = false;
+                    //if (!bool.TryParse(appendValue, out append))
+                    //{
+                    //    throw new XmlException($"Command: {nameof(ExcludeReferenceCommand)} value: append  - could not determine bool value.");
+                    //}
 
                     // open project file
                     var projectFile = args.Variables["ProjectPath"];
