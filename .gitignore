@@ -16,3 +16,6 @@ Plugins/CopyDirCommand/obj/
 Plugins/CopyDirCommand/bin/
 Plugins/DeployCommand/bin/
 Plugins/ReferencesCommands/bin/
+Plugins/VariableCommand/obj/
+Plugins/VariableCommand/bin/
+Codefarts.BuildHelper.sln.DotSettings.user
