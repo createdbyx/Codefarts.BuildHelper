@@ -19,7 +19,7 @@ namespace Codefarts.BuildHelper
 
         public void Execute(ExecuteCommandArgs args)
         {
-            var srcPath = args.Element.GetValue("path");
+            var srcPath = args.GetParameter<string>("path");
             if (srcPath == null)
             {
                 throw new XmlException($"Command: {nameof(PurgeCommand)} value: path  - Value not found");
@@ -27,10 +27,10 @@ namespace Codefarts.BuildHelper
 
             srcPath = srcPath.ReplaceBuildVariableStrings(args.Variables);
 
-            var message = args.Element.GetValue("message");
+            // var message = args.Element.GetAttributeValue("message");
 
             // check type of purge
-            var typeValue = args.Element.GetValue("type");
+            var typeValue = args.GetParameter<string>("type");
             typeValue = typeValue == null ? typeValue : typeValue.ToLowerInvariant().Trim();
             switch (typeValue)
             {
@@ -46,28 +46,28 @@ namespace Codefarts.BuildHelper
             }
 
             // check type of conditions
-            var conditionsValue = args.Element.GetValue("allconditions");
-            var allConditions = true;
-            if (conditionsValue != null && !bool.TryParse(conditionsValue, out allConditions))
-            {
-                throw new ArgumentOutOfRangeException($"'{allConditions}' attribute exists but it's value could not be parsed as a bool value.");
-            }
+            var allConditions = args.GetParameter("allconditions", true);
+            //var allConditions = true;
+            //if (conditionsValue != null && !bool.TryParse(conditionsValue, out allConditions))
+            //{
+            //    throw new ArgumentOutOfRangeException($"'{allConditions}' attribute exists but it's value could not be parsed as a bool value.");
+            //}
 
             // check to use full file paths 
-            var fullPathsValue = args.Element.GetValue("fullpaths");
-            var fullPaths = false;
-            if (fullPathsValue != null && !bool.TryParse(fullPathsValue, out fullPaths))
-            {
-                throw new ArgumentOutOfRangeException($"'{fullPaths}' attribute exists but it's value could not be parsed as a bool value.");
-            }
+            var fullPaths = args.GetParameter("fullpaths", false);
+            //var fullPaths = false;
+            //if (fullPathsValue != null && !bool.TryParse(fullPathsValue, out fullPaths))
+            //{
+            //    throw new ArgumentOutOfRangeException($"'{fullPaths}' attribute exists but it's value could not be parsed as a bool value.");
+            //}
 
             // check if we should clear subfolders as well
-            var subFoldersValue = args.Element.GetValue("subfolders");
-            var subfolders = true;
-            if (subFoldersValue != null && !bool.TryParse(subFoldersValue, out subfolders))
-            {
-                throw new ArgumentOutOfRangeException($"'{subfolders}' attribute exists but it's value could not be parsed as a bool value.");
-            }
+            var subfolders = args.GetParameter("subfolders", true);
+            //var subfolders = true;
+            //if (subFoldersValue != null && !bool.TryParse(subFoldersValue, out subfolders))
+            //{
+            //    throw new ArgumentOutOfRangeException($"'{subfolders}' attribute exists but it's value could not be parsed as a bool value.");
+            //}
 
             var di = new DirectoryInfo(srcPath);
             if (!di.Exists)
@@ -76,11 +76,11 @@ namespace Codefarts.BuildHelper
                 return;
             }
 
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                message = message.ReplaceBuildVariableStrings(args.Variables);
-                args.Output($"Message: {message}");
-            }
+            //if (!string.IsNullOrWhiteSpace(message))
+            //{
+            //    message = message.ReplaceBuildVariableStrings(args.Variables);
+            //    args.Output($"Message: {message}");
+            //}
 
             args.Output($"(Sub Folders->{subfolders}): {srcPath}");
 
@@ -113,7 +113,7 @@ namespace Codefarts.BuildHelper
                 var src = fullPaths ? file : Path.GetFileName(file);
                 modifiedVars["PurgeEntry"] = src;
 
-                if (args.Element.SatifiesConditions(modifiedVars, allConditions))
+                if (args.Command.SatifiesConditions(modifiedVars, allConditions))
                 {
                     // TODO: need ability to purge folder as well
                     args.Output("Purging: " + file);

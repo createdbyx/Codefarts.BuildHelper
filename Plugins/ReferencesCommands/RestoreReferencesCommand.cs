@@ -16,7 +16,7 @@ namespace Codefarts.BuildHelper
 
         public void Execute(ExecuteCommandArgs args)
         {
-            var path = args.Element.GetValue("path");
+            var path = args.GetParameter<string>("path");
             var destPath = path != null ? path.ReplaceBuildVariableStrings(args.Variables) : null;
             if (destPath == null)
             {
@@ -43,20 +43,20 @@ namespace Codefarts.BuildHelper
             proj.Save(projectFile);
 
             // check to delete file afterward
-            var deleteValue = args.Element.GetValue("delete");
-            if (string.IsNullOrWhiteSpace(deleteValue))
-            {
-                throw new XmlException($"Command: {nameof(RestoreReferencesCommand)} value: delete  - not specified");
-            }
+            var doDelete = args.GetParameter("delete", false);
+            //if (string.IsNullOrWhiteSpace(deleteValue))
+            //{
+            //    throw new XmlException($"Command: {nameof(RestoreReferencesCommand)} value: delete  - not specified");
+            //}
 
             // check to cleanup reference file
-            var doDelete = false;
-            if (!bool.TryParse(deleteValue, out doDelete))
-            {
-                throw new XmlException($"Command: {nameof(RestoreReferencesCommand)} value: delete  - could not determine bool value.");
-            }
+            //var doDelete = false;
+            //if (!bool.TryParse(deleteValue, out doDelete))
+            //{
+            //    throw new XmlException($"Command: {nameof(RestoreReferencesCommand)} value: delete  - could not determine bool value.");
+            //}
 
-            File.Delete(destPath);
+            //File.Delete(destPath);
         }
 
         private XElement CloneAttributes(XElement r)
