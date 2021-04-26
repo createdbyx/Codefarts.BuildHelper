@@ -27,11 +27,11 @@ namespace Codefarts.BuildHelperConsoleApp
             buildFile = string.IsNullOrWhiteSpace(buildFile) ? null : buildFile.Substring(3);
 
             // load command plugins
-            var commands = LoadPlugins().ToArray();
+            var commands = LoadCommandPlugins(build).ToArray();
             build.Build(buildFile, commands);
         }
 
-        private static IEnumerable<IBuildCommand> LoadPlugins()
+        private static IEnumerable<IBuildCommand> LoadCommandPlugins(BuildHelper buildHelper)
         {
             var appPath = Process.GetCurrentProcess().MainModule.FileName;
             var appDir = Path.GetDirectoryName(appPath);
@@ -51,7 +51,20 @@ namespace Codefarts.BuildHelperConsoleApp
                 return asm.GetTypes().Where(t => t.IsPublic && t.IsClass && !t.IsSealed && typeof(IBuildCommand).IsAssignableFrom(t));
             }).ToArray();
 
-            var plugins = pluginTypes.Select(t => (IBuildCommand)t.Assembly.CreateInstance(t.FullName));
+            var plugins = pluginTypes.Select(t =>
+            {
+                try
+                {
+                    return (IBuildCommand)t.Assembly.CreateInstance(t.FullName);
+                }
+                catch
+                {
+                    buildHelper.Output($"Failed to instantiate {t.FullName} from assembly '{t.Assembly.Location}'.");
+                    return null;
+                }
+            }).Where(x => x != null);
+            buildHelper.Output($"{plugins.Count()} plugins loaded.");
+            buildHelper.Output(string.Join("\r\n", plugins.Select(x => x.Name)));
             return plugins;
         }
     }
