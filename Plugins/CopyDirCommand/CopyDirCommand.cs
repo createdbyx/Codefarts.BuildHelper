@@ -19,9 +19,9 @@ namespace Codefarts.BuildHelper
 
         public void Execute(ExecuteCommandArgs args)
         {
-            var srcPath = args.Element.GetValue("source");
-            var destPath = args.Element.GetValue("destination");
-            var message = args.Element.GetValue("message");
+            var srcPath = args.GetParameter<string>("source");
+            var destPath = args.GetParameter<string>("destination");
+            //var message = args.Element.GetAttributeValue("message");
 
             if (destPath == null)
             {
@@ -36,15 +36,15 @@ namespace Codefarts.BuildHelper
             srcPath = srcPath.ReplaceBuildVariableStrings(args.Variables);
             destPath = destPath.ReplaceBuildVariableStrings(args.Variables);
 
-            if (!string.IsNullOrWhiteSpace(message))
-            {
-                message = message.ReplaceBuildVariableStrings(args.Variables);
-                args.Output($"Message: {message}");
-            }
+            //if (!string.IsNullOrWhiteSpace(message))
+            //{
+            //    message = message.ReplaceBuildVariableStrings(args.Variables);
+            //    args.Output($"Message: {message}");
+            //}
 
             // check if we should clear the folder first
-            var value = args.Element.GetValue("clean");
-            var doClear = string.IsNullOrWhiteSpace(value) ? false : value.Trim().ToLowerInvariant() == "true";
+            var doClear = args.GetParameter("clean", false);
+            // var doClear = string.IsNullOrWhiteSpace(value) ? false : value.Trim().ToLowerInvariant() == "true";
             args.Output($"Clearing before copy ({doClear}): {destPath}");
             var di = new DirectoryInfo(destPath);
             if (doClear && di.Exists)
