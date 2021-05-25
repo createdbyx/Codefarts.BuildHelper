@@ -7,11 +7,7 @@
 namespace Codefarts.BuildHelperConsoleApp
 {
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
     using System.Linq;
-    using System.Reflection;
     using Codefarts.BuildHelper;
 
     partial class Program
@@ -20,52 +16,20 @@ namespace Codefarts.BuildHelperConsoleApp
         {
             // Debugger.Launch();
             var build = new BuildHelper();
-            build.OutputMessage += (s, e) => { Console.WriteLine(e.Message); };
+            build.OutputMessage += (s, e) =>
+            {
+                var categoryText = string.IsNullOrWhiteSpace(e.Category) ? string.Empty : $"(Category: {e.Category}) ";
+                var typeText = string.IsNullOrWhiteSpace(e.Type) ? string.Empty : $"(Type: {e.Type}) ";
+                Console.WriteLine($"{categoryText}{typeText}{e.Message}");
+            };
 
             var buildFile = args.FirstOrDefault(x => x.StartsWith("-b:"));
 
             buildFile = string.IsNullOrWhiteSpace(buildFile) ? null : buildFile.Substring(3);
 
             // load command plugins
-            var commands = LoadCommandPlugins(build).ToArray();
+            var commands = PluginLoader.LoadCommandPlugins(build).ToArray();
             build.Build(buildFile, commands);
-        }
-
-        private static IEnumerable<IBuildCommand> LoadCommandPlugins(BuildHelper buildHelper)
-        {
-            var appPath = Process.GetCurrentProcess().MainModule.FileName;
-            var appDir = Path.GetDirectoryName(appPath);
-            var pluginFolder = Path.Combine(appDir, "Plugins");
-
-            if (!Directory.Exists(pluginFolder))
-            {
-                return Enumerable.Empty<IBuildCommand>();
-            }
-
-            var asmFiles = Directory.GetFiles(pluginFolder, "*.dll", SearchOption.AllDirectories);
-
-            // load them
-            var pluginTypes = asmFiles.SelectMany(f =>
-            {
-                var asm = Assembly.LoadFrom(f);
-                return asm.GetTypes().Where(t => t.IsPublic && t.IsClass && !t.IsSealed && typeof(IBuildCommand).IsAssignableFrom(t));
-            }).ToArray();
-
-            var plugins = pluginTypes.Select(t =>
-            {
-                try
-                {
-                    return (IBuildCommand)t.Assembly.CreateInstance(t.FullName);
-                }
-                catch
-                {
-                    buildHelper.Output($"Failed to instantiate {t.FullName} from assembly '{t.Assembly.Location}'.");
-                    return null;
-                }
-            }).Where(x => x != null);
-            buildHelper.Output($"{plugins.Count()} plugins loaded.");
-            buildHelper.Output(string.Join("\r\n", plugins.Select(x => x.Name)));
-            return plugins;
         }
     }
 
