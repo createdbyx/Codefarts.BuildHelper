@@ -1,21 +1,29 @@
 ﻿// <copyright file="BuildHelper.cs" company="Codefarts">
 // Copyright (c) Codefarts
+// contact@codefarts.com
+// http://www.codefarts.com
 // </copyright>
-
-//using System.Diagnostics;
-
-using System.Collections.ObjectModel;
 
 namespace Codefarts.BuildHelper
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Xml.Linq;
 
     public class BuildHelper
     {
+        private readonly BuildFileReader buildFileReader;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BuildHelper"/> class.
+        /// </summary>
+        public BuildHelper()
+        {
+            this.buildFileReader = new BuildFileReader(this);
+        }
+
         public event OutputEventHandler OutputMessage;
 
         public void Output(string message, params object[] args)
@@ -44,7 +52,7 @@ namespace Codefarts.BuildHelper
             // read build file
             IDictionary<string, string> variables;
             XElement root;
-            if (!this.TryReadBuildFile(buildFile, out variables, out root))
+            if (!this.buildFileReader.TryReadBuildFile(buildFile, out variables, out root))
             {
                 this.Output($"ERROR: Reading Build File. {buildFile}");
                 Environment.ExitCode = 1;
@@ -84,7 +92,7 @@ namespace Codefarts.BuildHelper
                     }
 
                     // check to ignore conditions
-                    var ignoreConditions = buildFileCommand.GetParameter("ignoreconditions", false);
+                    var ignoreConditions = buildFileCommand.GetParameter("ignoreconditions", true);
                     if (!ignoreConditions)
                     {
                         // check type of conditions
@@ -116,89 +124,18 @@ namespace Codefarts.BuildHelper
             this.OutputHeader($"END {buildEventValue} BUILD");
         }
 
-        private Node BuildCommandNode(XElement xElement, Node parent)
+        private CommandData BuildCommandNode(XElement xElement, CommandData parent)
         {
-            var node = new Node(xElement.Name.LocalName);
+            var node = new CommandData(xElement.Name.LocalName);
             foreach (var attribute in xElement.Attributes())
             {
                 node.Parameters[attribute.Name.LocalName] = attribute.Value;
             }
 
             node.Parent = parent;
-            node.Children = new ObservableCollection<Node>(xElement.Elements().Select(x => this.BuildCommandNode(x, node)));
+            node.Children = new ObservableCollection<CommandData>(xElement.Elements().Select(x => this.BuildCommandNode(x, node)));
 
             return node;
-        }
-
-        private bool TryReadBuildFile(string buildFile, out IDictionary<string, string> variables, out XElement root)
-        {
-            // var args = Environment.GetCommandLineArgs();
-            // var buildFile = args.FirstOrDefault(x => x.StartsWith("-bf:"));
-            variables = null;
-
-            // ensure file exists
-            if (buildFile == null)
-            {
-                this.Output("Build file not specified.");
-                root = null;
-                return false;
-            }
-
-            var buildFileInfo = new FileInfo(buildFile);
-
-            // ensure file exists
-            if (!buildFileInfo.Exists)
-            {
-                this.Output("Missing build file: " + buildFileInfo.FullName);
-                root = null;
-                return false;
-            }
-
-            this.Output("Reading build file: {0}", buildFileInfo.FullName);
-
-            // read file
-            XDocument doc;
-            try
-            {
-                doc = XDocument.Parse(File.ReadAllText(buildFileInfo.FullName));
-            }
-            catch (Exception ex)
-            {
-                this.Output("Error reading file: " + buildFileInfo.FullName);
-                this.Output(ex.Message);
-                root = null;
-                return false;
-            }
-
-            if (!doc.Root.Name.LocalName.Equals("build", StringComparison.OrdinalIgnoreCase))
-            {
-                this.Output("Error parsing build file: " + buildFileInfo.FullName);
-                this.Output("Root node not 'build'.");
-                root = null;
-                return false;
-            }
-
-            // find variables node
-            var varNodes = doc.Root.Elements("buildvaribles");
-            var varNode = varNodes.SelectMany(r => r.Elements());
-
-            // parse data from file
-            variables = varNode.ToDictionary(k => k.Name.LocalName, v => v.Value);
-
-            foreach (var node in varNodes)
-            {
-                node.Remove();
-            }
-
-            if (varNodes != null)
-            {
-                varNodes.Remove();
-            }
-
-            variables["Application"] = Path.GetFileName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
-            this.Output("... Success!");
-            root = doc.Root;
-            return true;
         }
 
         protected virtual void OnOutputMessage(string message)

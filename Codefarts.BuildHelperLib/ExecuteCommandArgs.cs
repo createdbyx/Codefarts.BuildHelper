@@ -12,7 +12,7 @@ namespace Codefarts.BuildHelper
 
     public class ExecuteCommandArgs : INotifyPropertyChanged
     {
-        public ExecuteCommandArgs(Action<string> output, IDictionary<string, string> variables, Node command)
+        public ExecuteCommandArgs(Action<string> output, IDictionary<string, string> variables, CommandData command)
         {
             // we wrap output callback here to ensure any call to it does not throw null reference exceptions
             this.Output = msg =>
@@ -42,7 +42,7 @@ namespace Codefarts.BuildHelper
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Node Command
+        public CommandData Command
         {
             get;
         }

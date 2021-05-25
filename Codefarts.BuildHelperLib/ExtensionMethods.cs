@@ -12,7 +12,7 @@ namespace Codefarts.BuildHelper
     using System.Linq;
     using System.Xml.Linq;
 
-    public static class Extensions
+    public static class ExtensionMethods
     {
         /// <summary>
         /// Gets the value of a <see cref="XElement"/>.
@@ -43,9 +43,9 @@ namespace Codefarts.BuildHelper
             return GetParameter<T>(parameters, name, default);
         }
 
-        public static T GetParameter<T>(this Node node, string name)
+        public static T GetParameter<T>(this CommandData commandData, string name)
         {
-            return node.Parameters.GetParameter<T>(name, default);
+            return commandData.Parameters.GetParameter<T>(name, default);
         }
 
         public static T GetParameter<T>(this IDictionary<string, object> parameters, string name, T defaultValue)
@@ -79,14 +79,35 @@ namespace Codefarts.BuildHelper
             return args.Parameters.GetParameter(name, defaultValue);
         }
 
-        public static T GetParameter<T>(this Node node, string name, T defaultValue)
+        public static T GetVariable<T>(this ExecuteCommandArgs args, string name)
         {
-            if (node == null)
+            return args.GetVariable<T>(name, default);
+        }
+
+        public static T GetVariable<T>(this ExecuteCommandArgs args, string name, T defaultValue)
+        {
+            if (args == null)
             {
-                throw new ArgumentNullException(nameof(node));
+                throw new ArgumentNullException(nameof(args));
             }
 
-            return node.Parameters.GetParameter(name, defaultValue);
+            string value;
+            if (args.Variables.TryGetValue(name, out value))
+            {
+                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.CurrentCulture);
+            }
+
+            return defaultValue;
+        }
+
+        public static T GetParameter<T>(this CommandData commandData, string name, T defaultValue)
+        {
+            if (commandData == null)
+            {
+                throw new ArgumentNullException(nameof(commandData));
+            }
+
+            return commandData.Parameters.GetParameter(name, defaultValue);
         }
 
         public static string ReplaceBuildVariableStrings(this string text, IDictionary<string, string> variables)
@@ -104,12 +125,12 @@ namespace Codefarts.BuildHelper
             return text;
         }
 
-        public static bool SatifiesConditions(this Node element, IDictionary<string, string> variables)
+        public static bool SatifiesConditions(this CommandData element, IDictionary<string, string> variables)
         {
             return element.SatifiesConditions(variables, true);
         }
 
-        public static bool SatifiesConditions(this Node element, IDictionary<string, string> variables, bool allConditions)
+        public static bool SatifiesConditions(this CommandData element, IDictionary<string, string> variables, bool allConditions)
         {
             if (allConditions)
             {
@@ -121,7 +142,7 @@ namespace Codefarts.BuildHelper
                 .Any(condition => condition.SatifiesCondition(variables));
         }
 
-        public static bool SatifiesCondition(this Node condition, IDictionary<string, string> variables)
+        public static bool SatifiesCondition(this CommandData condition, IDictionary<string, string> variables)
         {
             if (condition == null)
             {
@@ -215,7 +236,8 @@ namespace Codefarts.BuildHelper
             //return true;
         }
 
-        public static bool SatifiesCondition(this IDictionary<string, string> variables, string value1, string value2, string operatorValue, bool ignoreCase)
+        public static bool SatifiesCondition(this IDictionary<string, string> variables, string value1, string value2, string operatorValue,
+            bool ignoreCase)
         {
             //var value1 = condition.GetParameter<string>("value1").ReplaceBuildVariableStrings(variables);
             //var value2 = condition.GetParameter<string>("value2").ReplaceBuildVariableStrings(variables);
@@ -277,7 +299,7 @@ namespace Codefarts.BuildHelper
 
                     return false;
 
-                case "contains":       //this.IndexOf(value, comparisonType) >= 0
+                case "contains": //this.IndexOf(value, comparisonType) >= 0
                     //if (ignoreCase ? !value1.Contains(value2, StringComparison.OrdinalIgnoreCase) >= 0 : !value1.Contains(value2))
                     if (ignoreCase ? value1.IndexOf(value2, StringComparison.OrdinalIgnoreCase) >= 0 : value1.Contains(value2))
                     {

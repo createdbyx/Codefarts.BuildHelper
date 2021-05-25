@@ -1,4 +1,4 @@
-﻿// <copyright file="Node.cs" company="Codefarts">
+﻿// <copyright file="CommandData.cs" company="Codefarts">
 // Copyright (c) Codefarts
 // contact@codefarts.com
 // http://www.codefarts.com
@@ -10,28 +10,28 @@ namespace Codefarts.BuildHelper
     using System.Collections.ObjectModel;
     using System.ComponentModel;
 
-    public class Node : INotifyPropertyChanged
+    public class CommandData : INotifyPropertyChanged
     {
         private string name;
-        private ObservableCollection<Node> children;
+        private ObservableCollection<CommandData> children;
         private IDictionary<string, object> parameters;
-        private Node parent;
+        private CommandData parent;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Node"/> class.
+        /// Initializes a new instance of the <see cref="CommandData"/> class.
         /// </summary>
-        public Node()
+        public CommandData()
         {
             this.parameters = new Dictionary<string, object>();
         }
 
-        public Node(string name, IDictionary<string, object> parameters)
+        public CommandData(string name, IDictionary<string, object> parameters)
             : this(name)
         {
             this.parameters = parameters;
         }
 
-        public Node(string name)
+        public CommandData(string name)
         {
             this.name = name;
             this.parameters = new Dictionary<string, object>();
@@ -57,7 +57,7 @@ namespace Codefarts.BuildHelper
             }
         }
 
-        public Node Parent
+        public CommandData Parent
         {
             get
             {
@@ -75,7 +75,7 @@ namespace Codefarts.BuildHelper
             }
         }
 
-        public ObservableCollection<Node> Children
+        public ObservableCollection<CommandData> Children
         {
             get
             {
