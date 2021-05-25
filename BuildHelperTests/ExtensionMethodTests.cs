@@ -12,6 +12,7 @@ namespace BuildHelperTests
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
+    [TestCategory(nameof(ExtensionMethods))]
     public class ExtensionMethodTests
     {
         [TestMethod]

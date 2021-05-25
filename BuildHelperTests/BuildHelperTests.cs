@@ -10,6 +10,7 @@ namespace BuildHelperTests
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
+    [TestCategory(nameof(BuildHelper))]
     public class BuildHelperTests
     {
         [TestMethod]

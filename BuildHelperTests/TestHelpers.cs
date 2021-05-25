@@ -15,16 +15,16 @@ namespace BuildHelperTests
     public class TestHelpers
     {
 
-        public static Node BuildCommandNode(XElement xElement, Node parent)
+        public static CommandData BuildCommandNode(XElement xElement, CommandData parent)
         {
-            var node = new Node(xElement.Name.LocalName);
+            var node = new CommandData(xElement.Name.LocalName);
             foreach (var attribute in xElement.Attributes())
             {
                 node.Parameters[attribute.Name.LocalName] = attribute.Value;
             }
 
             node.Parent = parent;
-            node.Children = new ObservableCollection<Node>(xElement.Elements().Select(x => BuildCommandNode(x, node)));
+            node.Children = new ObservableCollection<CommandData>(xElement.Elements().Select(x => BuildCommandNode(x, node)));
 
             return node;
         }

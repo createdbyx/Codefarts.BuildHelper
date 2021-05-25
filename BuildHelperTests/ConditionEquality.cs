@@ -160,7 +160,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void NullArgs()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => Codefarts.BuildHelper.Extensions.SatifiesCondition(null, null));
+            Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.SatifiesCondition(null, null));
         }
 
         [TestMethod]
@@ -174,7 +174,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void ElementArgNull()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => Codefarts.BuildHelper.Extensions.SatifiesCondition(null, this.varibles));
+            Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.SatifiesCondition(null, this.varibles));
         }
 
         [TestMethod]

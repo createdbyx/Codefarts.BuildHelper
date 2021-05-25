@@ -30,10 +30,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Plugins\AutoVersionUpdater\AutoVersionUpdater.csproj" />
     <ProjectReference Include="..\Plugins\CopyDirCommand\CopyDirCommand.csproj" />
     <ProjectReference Include="..\Plugins\DeployCommand\DeployCommand.csproj" />
     <ProjectReference Include="..\Plugins\PurgeCommand\PurgeCommand.csproj" />
     <ProjectReference Include="..\Plugins\ReferencesCommands\ReferencesCommands.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="SampleData\SampleProject.csproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

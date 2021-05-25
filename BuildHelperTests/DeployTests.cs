@@ -14,6 +14,7 @@ namespace BuildHelperTests
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
+    [TestCategory(nameof(DeployCommand))]
     public class DeployTests
     {
         private string tempFolder;
@@ -47,7 +48,7 @@ namespace BuildHelperTests
             parameters["clean"] = "true";
             parameters["message"] = "Test Message.";
 
-            var cmdNode = new Node("deploy", parameters);
+            var cmdNode = new CommandData("deploy", parameters);
             var args = new ExecuteCommandArgs(null, vars, cmdNode);
 
             Assert.ThrowsException<BuildException>(() => deploy.Execute(args));
@@ -67,7 +68,7 @@ namespace BuildHelperTests
             parameters["clean"] = "true";
             parameters["message"] = "Test Message.";
 
-            var cmdNode = new Node("deploy", parameters);
+            var cmdNode = new CommandData("deploy", parameters);
             var args = new ExecuteCommandArgs(null, vars, cmdNode);
 
             Assert.ThrowsException<BuildException>(() => deploy.Execute(args));
@@ -84,7 +85,7 @@ namespace BuildHelperTests
             parameters["clean"] = "true";
             parameters["message"] = "Test Message.";
 
-            var cmdNode = new Node("deploy", parameters);
+            var cmdNode = new CommandData("deploy", parameters);
             var args = new ExecuteCommandArgs(null, vars, cmdNode);
 
             Assert.ThrowsException<BuildException>(() => deploy.Execute(args));
@@ -100,7 +101,7 @@ namespace BuildHelperTests
             parameters["clean"] = "true";
             parameters["message"] = "Test Message.";
 
-            var cmdNode = new Node("deploy", parameters);
+            var cmdNode = new CommandData("deploy", parameters);
             var args = new ExecuteCommandArgs(null, null, cmdNode);
 
             Assert.ThrowsException<BuildException>(() => deploy.Execute(args));
@@ -128,7 +129,7 @@ namespace BuildHelperTests
             parameters["message"] = "Test Message.";
 
             //  <deploy path="$(SolutionDir)StockWatchWpfCore\bin\$(ConfigurationName)\$(ProjFolder)\Views\Settings\$(ProjectName)" clean="true" >
-            var cmdNode = new Node("deploy", parameters);
+            var cmdNode = new CommandData("deploy", parameters);
 
             var args = new ExecuteCommandArgs(null, vars, cmdNode);
             deploy.Execute(args);
@@ -152,7 +153,7 @@ namespace BuildHelperTests
             parameters["clean"] = "true";
             parameters["message"] = "Test Message.";
 
-            var cmdNode = new Node("deploy", parameters);
+            var cmdNode = new CommandData("deploy", parameters);
 
             var args = new ExecuteCommandArgs(null, vars, cmdNode);
 
