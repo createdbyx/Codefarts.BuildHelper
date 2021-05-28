@@ -12,7 +12,7 @@ namespace Codefarts.BuildHelper
     using System.Linq;
     using System.Xml.Linq;
 
-    internal class BuildFileReader
+    public class BuildFileReader
     {
         private BuildHelper buildHelper;
 

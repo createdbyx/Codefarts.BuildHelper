@@ -8,20 +8,15 @@ namespace Codefarts.BuildHelper
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Linq;
-    using System.Xml.Linq;
 
     public class BuildHelper
     {
-        private readonly BuildFileReader buildFileReader;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BuildHelper"/> class.
         /// </summary>
         public BuildHelper()
         {
-            this.buildFileReader = new BuildFileReader(this);
         }
 
         public event OutputEventHandler OutputMessage;
@@ -40,31 +35,21 @@ namespace Codefarts.BuildHelper
             this.Output(string.Format($"{headerChars} {message} {headerChars}", args));
         }
 
-        public void Build(string buildFile, IEnumerable<IBuildCommand> commandPlugins)
+        public void Run(
+            IEnumerable<CommandData> buildFileCommands,
+            IDictionary<string, string> variables,
+            IEnumerable<IBuildCommand> commandPlugins)
         {
-            if (commandPlugins == null)
-            {
-                commandPlugins = Enumerable.Empty<IBuildCommand>();
-            }
+            buildFileCommands = buildFileCommands ?? Enumerable.Empty<CommandData>();
 
-            // Debugger.Launch();
+            variables = variables ?? new Dictionary<string, string>();
 
-            // read build file
-            IDictionary<string, string> variables;
-            XElement root;
-            if (!this.buildFileReader.TryReadBuildFile(buildFile, out variables, out root))
-            {
-                this.Output($"ERROR: Reading Build File. {buildFile}");
-                Environment.ExitCode = 1;
-                return;
-            }
+            commandPlugins = commandPlugins ?? Enumerable.Empty<IBuildCommand>();
 
             string buildEventValue;
             variables.TryGetValue("BuildEvent", out buildEventValue);
 
             this.OutputHeader($"START {buildEventValue} BUILD");
-
-            var buildFileCommands = root.Elements().Select(x => this.BuildCommandNode(x, null));
 
             // process file elements
             foreach (var buildFileCommand in buildFileCommands)
@@ -80,7 +65,8 @@ namespace Codefarts.BuildHelper
                 var executeCommandArgs = new ExecuteCommandArgs(
                     msg => this.Output(msg),
                     variables,
-                    buildFileCommand);
+                    buildFileCommand,
+                    this);
                 try
                 {
                     // check if the command has an attached message and if so output the message before executing
@@ -122,20 +108,6 @@ namespace Codefarts.BuildHelper
             }
 
             this.OutputHeader($"END {buildEventValue} BUILD");
-        }
-
-        private CommandData BuildCommandNode(XElement xElement, CommandData parent)
-        {
-            var node = new CommandData(xElement.Name.LocalName);
-            foreach (var attribute in xElement.Attributes())
-            {
-                node.Parameters[attribute.Name.LocalName] = attribute.Value;
-            }
-
-            node.Parent = parent;
-            node.Children = new ObservableCollection<CommandData>(xElement.Elements().Select(x => this.BuildCommandNode(x, node)));
-
-            return node;
         }
 
         protected virtual void OnOutputMessage(string message)

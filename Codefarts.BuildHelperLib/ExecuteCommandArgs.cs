@@ -12,7 +12,7 @@ namespace Codefarts.BuildHelper
 
     public class ExecuteCommandArgs : INotifyPropertyChanged
     {
-        public ExecuteCommandArgs(Action<string> output, IDictionary<string, string> variables, CommandData command)
+        public ExecuteCommandArgs(Action<string> output, IDictionary<string, string> variables, CommandData command, BuildHelper buildHelper)
         {
             // we wrap output callback here to ensure any call to it does not throw null reference exceptions
             this.Output = msg =>
@@ -22,8 +22,10 @@ namespace Codefarts.BuildHelper
                     output(msg);
                 }
             };
+
             this.Variables = variables;
             this.Command = command;
+            this.BuildHelper = buildHelper;
         }
 
         //public ExecuteCommandArgs(Action<string> output, IDictionary<string, string> variables, IDictionary<string, object> parameters)
@@ -42,15 +44,11 @@ namespace Codefarts.BuildHelper
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public CommandData Command
-        {
-            get;
-        }
+        public BuildHelper BuildHelper { get; }
 
-        public Action<string> Output
-        {
-            get;
-        }
+        public CommandData Command { get; }
+
+        public Action<string> Output { get; }
 
         public IDictionary<string, object> Parameters
         {
@@ -60,10 +58,7 @@ namespace Codefarts.BuildHelper
             }
         }
 
-        public IDictionary<string, string> Variables
-        {
-            get;
-        }
+        public IDictionary<string, string> Variables { get; }
 
         protected virtual void OnPropertyChanged(string propertyName = null)
         {

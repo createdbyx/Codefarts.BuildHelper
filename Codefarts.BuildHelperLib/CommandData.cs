@@ -7,13 +7,12 @@
 namespace Codefarts.BuildHelper
 {
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.ComponentModel;
 
     public class CommandData : INotifyPropertyChanged
     {
         private string name;
-        private ObservableCollection<CommandData> children;
+        private CommandDataCollection children;
         private IDictionary<string, object> parameters;
         private CommandData parent;
 
@@ -23,6 +22,7 @@ namespace Codefarts.BuildHelper
         public CommandData()
         {
             this.parameters = new Dictionary<string, object>();
+            this.children = new CommandDataCollection(this);
         }
 
         public CommandData(string name, IDictionary<string, object> parameters)
@@ -35,6 +35,7 @@ namespace Codefarts.BuildHelper
         {
             this.name = name;
             this.parameters = new Dictionary<string, object>();
+            this.children = new CommandDataCollection(this);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -46,7 +47,7 @@ namespace Codefarts.BuildHelper
                 return this.parameters;
             }
 
-            set
+            internal set
             {
                 var currentValue = this.parameters;
                 if (currentValue != value)
@@ -66,6 +67,20 @@ namespace Codefarts.BuildHelper
 
             set
             {
+                if (this.parent != value)
+                {
+                    if (value != null && value.Children != null)
+                    {
+                        value.Children.Add(this);
+                        return;
+                    }
+
+                    if (this.parent.Children != null)
+                    {
+                        this.parent.Children.Remove(this);
+                    }
+                }
+
                 var currentValue = this.parent;
                 if (currentValue != value)
                 {
@@ -75,14 +90,14 @@ namespace Codefarts.BuildHelper
             }
         }
 
-        public ObservableCollection<CommandData> Children
+        public CommandDataCollection Children
         {
             get
             {
                 return this.children;
             }
 
-            set
+            internal set
             {
                 var currentValue = this.children;
                 if (currentValue != value)
@@ -117,6 +132,19 @@ namespace Codefarts.BuildHelper
             if (handler != null)
             {
                 handler.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        /// <summary>
+        /// Assigns the parent to the internal <see cref="parent"/> field.
+        /// </summary>
+        /// <param name="owner">The control that will be the owner/parent of this control.</param>
+        internal virtual void AssignParent(CommandData owner)
+        {
+            if (this.parent != owner)
+            {
+                this.parent = owner;
+                this.OnPropertyChanged(nameof(this.Parent));
             }
         }
     }
