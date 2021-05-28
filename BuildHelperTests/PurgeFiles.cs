@@ -54,7 +54,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            purge.Execute(new ExecuteCommandArgs(msg => { }, this.varibles, buildFileCommand));
+            purge.Execute(new ExecuteCommandArgs(msg => { }, this.varibles, buildFileCommand,null));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File1.txt")));
             Assert.IsFalse(File.Exists(Path.Combine(this.tempDir, "File2.xml")));
             Assert.IsFalse(File.Exists(Path.Combine(this.tempDir, "System.File3.dat")));
@@ -74,7 +74,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            purge.Execute(new ExecuteCommandArgs(msg => { }, this.varibles, buildFileCommand));
+            purge.Execute(new ExecuteCommandArgs(msg => { }, this.varibles, buildFileCommand,null));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File1.txt")));
             Assert.IsFalse(File.Exists(Path.Combine(this.tempDir, "File2.xml")));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "System.File3.dat")));
@@ -92,7 +92,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            purge.Execute(new ExecuteCommandArgs(msg => { }, this.varibles, buildFileCommand));
+            purge.Execute(new ExecuteCommandArgs(msg => { }, this.varibles, buildFileCommand,null));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File1.txt")));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File2.xml")));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "System.File3.dat")));

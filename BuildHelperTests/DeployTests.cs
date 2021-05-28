@@ -49,7 +49,7 @@ namespace BuildHelperTests
             parameters["message"] = "Test Message.";
 
             var cmdNode = new CommandData("deploy", parameters);
-            var args = new ExecuteCommandArgs(null, vars, cmdNode);
+            var args = new ExecuteCommandArgs(null, vars, cmdNode,null);
 
             Assert.ThrowsException<BuildException>(() => deploy.Execute(args));
         }
@@ -69,7 +69,7 @@ namespace BuildHelperTests
             parameters["message"] = "Test Message.";
 
             var cmdNode = new CommandData("deploy", parameters);
-            var args = new ExecuteCommandArgs(null, vars, cmdNode);
+            var args = new ExecuteCommandArgs(null, vars, cmdNode,null);
 
             Assert.ThrowsException<BuildException>(() => deploy.Execute(args));
         }
@@ -86,7 +86,7 @@ namespace BuildHelperTests
             parameters["message"] = "Test Message.";
 
             var cmdNode = new CommandData("deploy", parameters);
-            var args = new ExecuteCommandArgs(null, vars, cmdNode);
+            var args = new ExecuteCommandArgs(null, vars, cmdNode,null);
 
             Assert.ThrowsException<BuildException>(() => deploy.Execute(args));
         }
@@ -102,7 +102,7 @@ namespace BuildHelperTests
             parameters["message"] = "Test Message.";
 
             var cmdNode = new CommandData("deploy", parameters);
-            var args = new ExecuteCommandArgs(null, null, cmdNode);
+            var args = new ExecuteCommandArgs(null, null, cmdNode,null);
 
             Assert.ThrowsException<BuildException>(() => deploy.Execute(args));
         }
@@ -131,7 +131,7 @@ namespace BuildHelperTests
             //  <deploy path="$(SolutionDir)StockWatchWpfCore\bin\$(ConfigurationName)\$(ProjFolder)\Views\Settings\$(ProjectName)" clean="true" >
             var cmdNode = new CommandData("deploy", parameters);
 
-            var args = new ExecuteCommandArgs(null, vars, cmdNode);
+            var args = new ExecuteCommandArgs(null, vars, cmdNode,null);
             deploy.Execute(args);
 
             Assert.IsFalse(File.Exists(Path.Combine(this.tempFolder, "bin", "DEBUG", "file1.txt")));
@@ -155,7 +155,7 @@ namespace BuildHelperTests
 
             var cmdNode = new CommandData("deploy", parameters);
 
-            var args = new ExecuteCommandArgs(null, vars, cmdNode);
+            var args = new ExecuteCommandArgs(null, vars, cmdNode,null);
 
             var srcPath = parameters["path"].ToString().ReplaceBuildVariableStrings(vars);
             Assert.IsFalse(Directory.Exists(srcPath));

@@ -6,15 +6,12 @@
 
 namespace BuildHelperTests
 {
-    using System.Collections.ObjectModel;
     using System.IO;
-    using System.Linq;
     using System.Xml.Linq;
     using Codefarts.BuildHelper;
 
     public class TestHelpers
     {
-
         public static CommandData BuildCommandNode(XElement xElement, CommandData parent)
         {
             var node = new CommandData(xElement.Name.LocalName);
@@ -24,7 +21,11 @@ namespace BuildHelperTests
             }
 
             node.Parent = parent;
-            node.Children = new ObservableCollection<CommandData>(xElement.Elements().Select(x => BuildCommandNode(x, node)));
+            foreach (var childItem in xElement.Elements())
+            {
+                var newData = BuildCommandNode(childItem, node);
+                node.Children.Add(newData);
+            }
 
             return node;
         }
