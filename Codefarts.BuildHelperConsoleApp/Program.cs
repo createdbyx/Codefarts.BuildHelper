@@ -4,13 +4,17 @@
 // http://www.codefarts.com
 // </copyright>
 
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Xml.Linq;
+
 namespace Codefarts.BuildHelperConsoleApp
 {
     using System;
     using System.Linq;
     using Codefarts.BuildHelper;
 
-    partial class Program
+    class Program
     {
         static void Main(string[] args)
         {
@@ -29,7 +33,39 @@ namespace Codefarts.BuildHelperConsoleApp
 
             // load command plugins
             var commands = PluginLoader.LoadCommandPlugins(build).ToArray();
-            build.Build(buildFile, commands);
+
+            // read build file
+            IDictionary<string, string> variables;
+            XElement root;
+            var buildFileReader = new BuildFileReader(build);
+            if (!buildFileReader.TryReadBuildFile(buildFile, out variables, out root))
+            {
+                build.Output($"ERROR: Reading Build File. {buildFile}");
+                Environment.ExitCode = 1;
+                return;
+            }
+
+            var buildFileCommands = root.Elements().Select(x => BuildCommandNode(x, null));
+
+            build.Run(buildFileCommands, variables, commands);
+        }
+
+        private static CommandData BuildCommandNode(XElement xElement, CommandData parent)
+        {
+            var node = new CommandData(xElement.Name.LocalName);
+            foreach (var attribute in xElement.Attributes())
+            {
+                node.Parameters[attribute.Name.LocalName] = attribute.Value;
+            }
+
+            node.Parent = parent;
+            foreach (var childItem in xElement.Elements())
+            {
+                var newData = BuildCommandNode(childItem, node);
+                node.Children.Add(newData);
+            }
+
+            return node;
         }
     }
 
