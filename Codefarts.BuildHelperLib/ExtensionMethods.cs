@@ -110,7 +110,7 @@ namespace Codefarts.BuildHelper
             return commandData.Parameters.GetParameter(name, defaultValue);
         }
 
-        public static string ReplaceBuildVariableStrings(this string text, IDictionary<string, string> variables)
+        public static string ReplaceVariableStrings(this string text, IDictionary<string, string> variables)
         {
             if (string.IsNullOrWhiteSpace(text))
             {
@@ -154,8 +154,8 @@ namespace Codefarts.BuildHelper
                 throw new ArgumentException("Condition element name is not 'condition'.", nameof(condition));
             }
 
-            var value1 = condition.GetParameter<string>("value1").ReplaceBuildVariableStrings(variables);
-            var value2 = condition.GetParameter<string>("value2").ReplaceBuildVariableStrings(variables);
+            var value1 = condition.GetParameter<string>("value1").ReplaceVariableStrings(variables);
+            var value2 = condition.GetParameter<string>("value2").ReplaceVariableStrings(variables);
             var operatorValue = condition.GetParameter<string>("operator");
             var ignoreCaseValue = condition.GetParameter<string>("ignorecase");
             var ignoreCase = true;

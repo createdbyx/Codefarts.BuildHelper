@@ -28,7 +28,7 @@ namespace Codefarts.BuildHelper
             }
 
             var destPath = args.GetParameter<string>("path", null);
-            destPath = destPath != null ? destPath.ReplaceBuildVariableStrings(args.Variables) : null;
+            destPath = destPath != null ? destPath.ReplaceVariableStrings(args.Variables) : null;
             if (destPath == null)
             {
                 throw new BuildException($"Command: {nameof(DeployCommand)} value: path  - Value not found");
@@ -63,8 +63,8 @@ namespace Codefarts.BuildHelper
                 throw new BuildException("Deploy command requires a 'OutDir' variable to run.");
             }
 
-            var srcPath = Path.Combine("$(ProjectDir)".ReplaceBuildVariableStrings(args.Variables),
-                                       "$(OutDir)".ReplaceBuildVariableStrings(args.Variables));
+            var srcPath = Path.Combine("$(ProjectDir)".ReplaceVariableStrings(args.Variables),
+                                       "$(OutDir)".ReplaceVariableStrings(args.Variables));
             if (Directory.Exists(srcPath))
             {
                 var allFiles = Directory.GetFiles(srcPath, "*.*", SearchOption.AllDirectories);//.Select(d => Path.GetFileName(d));

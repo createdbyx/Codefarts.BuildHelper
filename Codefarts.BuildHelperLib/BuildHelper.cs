@@ -73,7 +73,7 @@ namespace Codefarts.BuildHelper
                     var message = buildFileCommand.GetParameter("message", string.Empty);
                     if (!string.IsNullOrWhiteSpace(message))
                     {
-                        message = message.ReplaceBuildVariableStrings(variables);
+                        message = message.ReplaceVariableStrings(variables);
                         this.Output($"Message: {message}");
                     }
 

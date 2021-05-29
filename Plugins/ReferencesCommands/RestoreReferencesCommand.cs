@@ -17,7 +17,7 @@ namespace Codefarts.BuildHelper
         public void Execute(ExecuteCommandArgs args)
         {
             var path = args.GetParameter<string>("path");
-            var destPath = path != null ? path.ReplaceBuildVariableStrings(args.Variables) : null;
+            var destPath = path != null ? path.ReplaceVariableStrings(args.Variables) : null;
             if (destPath == null)
             {
                 throw new XmlException($"Command: {nameof(RestoreReferencesCommand)} value: path  - Value not found");

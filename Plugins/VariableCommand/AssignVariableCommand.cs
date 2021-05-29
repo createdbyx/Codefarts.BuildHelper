@@ -26,8 +26,8 @@ namespace Codefarts.BuildHelper
                 throw new XmlException($"Command: {nameof(AssignVariableCommand)} value: value - Value not found");
             }
 
-            nameValue = nameValue.ReplaceBuildVariableStrings(args.Variables);
-            valueValue = valueValue.ReplaceBuildVariableStrings(args.Variables);
+            nameValue = nameValue.ReplaceVariableStrings(args.Variables);
+            valueValue = valueValue.ReplaceVariableStrings(args.Variables);
 
             var existing = args.Variables.ContainsKey(nameValue);
             var oldValue = existing ? args.Variables[nameValue] : null;

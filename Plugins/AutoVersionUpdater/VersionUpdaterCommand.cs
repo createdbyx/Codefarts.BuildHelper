@@ -34,7 +34,7 @@ namespace AutoVersionUpdater
             }
 
             var projectFilePath = args.GetVariable<string>("ProjectFileName", null);
-            projectFilePath = projectFilePath != null ? projectFilePath.ReplaceBuildVariableStrings(args.Variables) : null;
+            projectFilePath = projectFilePath != null ? projectFilePath.ReplaceVariableStrings(args.Variables) : null;
             if (string.IsNullOrWhiteSpace(projectFilePath))
             {
                 throw new BuildException($"Command: {nameof(VersionUpdaterCommand)} value: ProjectFileName  - Value not found");

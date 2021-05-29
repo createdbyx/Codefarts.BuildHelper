@@ -20,7 +20,7 @@ namespace Codefarts.BuildHelper
                 throw new XmlException($"Command: {nameof(RemoveVariableCommand)} value: name - Value not found");
             }
 
-            nameValue = nameValue.ReplaceBuildVariableStrings(args.Variables);
+            nameValue = nameValue.ReplaceVariableStrings(args.Variables);
 
             if (args.Variables.Remove(nameValue))
             {

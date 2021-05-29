@@ -25,7 +25,7 @@ namespace Codefarts.BuildHelper
                 throw new XmlException($"Command: {nameof(PurgeCommand)} value: path  - Value not found");
             }
 
-            srcPath = srcPath.ReplaceBuildVariableStrings(args.Variables);
+            srcPath = srcPath.ReplaceVariableStrings(args.Variables);
 
             // var message = args.Element.GetAttributeValue("message");
 
@@ -88,10 +88,14 @@ namespace Codefarts.BuildHelper
             {
                 if (typeValue == "files")
                 {
-                    return Directory.GetFiles(srcPath, "*.*", subfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);//.Select(d => fullPaths ? d : Path.GetFileName(d));
+                    return Directory.GetFiles(srcPath, "*.*",
+                        subfolders
+                            ? SearchOption.AllDirectories
+                            : SearchOption.TopDirectoryOnly); //.Select(d => fullPaths ? d : Path.GetFileName(d));
                 }
 
-                return Directory.GetDirectories(srcPath, "*.*", subfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);//.Select(d => fullPaths ? d : Path.GetFileName(d));
+                return Directory.GetDirectories(srcPath, "*.*",
+                    subfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly); //.Select(d => fullPaths ? d : Path.GetFileName(d));
             });
 
             var deleteEntry = new Action<string>(p =>

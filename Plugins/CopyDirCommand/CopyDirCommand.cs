@@ -33,8 +33,8 @@ namespace Codefarts.BuildHelper
                 throw new XmlException($"Command: {nameof(CopyDirCommand)} value: source  - Value not found");
             }
 
-            srcPath = srcPath.ReplaceBuildVariableStrings(args.Variables);
-            destPath = destPath.ReplaceBuildVariableStrings(args.Variables);
+            srcPath = srcPath.ReplaceVariableStrings(args.Variables);
+            destPath = destPath.ReplaceVariableStrings(args.Variables);
 
             //if (!string.IsNullOrWhiteSpace(message))
             //{
