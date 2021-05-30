@@ -14,7 +14,7 @@ namespace Codefarts.BuildHelper
     {
         public string Name => "restorereferences";
 
-        public void Execute(ExecuteCommandArgs args)
+        public void Run(ExecuteCommandArgs args)
         {
             var path = args.GetParameter<string>("path");
             var destPath = path != null ? path.ReplaceVariableStrings(args.Variables) : null;

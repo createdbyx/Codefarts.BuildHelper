@@ -6,18 +6,17 @@
 
 namespace Codefarts.BuildHelper
 {
-    using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Xml;
-    using System.Xml.Linq;
 
+    [NamedParameter("source", typeof(string), true, "The source folder that will be copied.")]
+    [NamedParameter("destination", typeof(string), true, "The destination folder where files and folder will be copied to.")]
+    [NamedParameter("clean", typeof(bool), false, "If true will delete contents from the destination before copying. Default is false.")]
     public class CopyDirCommand : IBuildCommand
     {
         public string Name => "copydir";
 
-        public void Execute(ExecuteCommandArgs args)
+        public void Run(ExecuteCommandArgs args)
         {
             var srcPath = args.GetParameter<string>("source");
             var destPath = args.GetParameter<string>("destination");
@@ -25,12 +24,12 @@ namespace Codefarts.BuildHelper
 
             if (destPath == null)
             {
-                throw new XmlException($"Command: {nameof(CopyDirCommand)} value: destination  - Value not found");
+                throw new MissingParameterException($"Command: {nameof(CopyDirCommand)} value: destination  - Value not found");
             }
 
             if (srcPath == null)
             {
-                throw new XmlException($"Command: {nameof(CopyDirCommand)} value: source  - Value not found");
+                throw new MissingParameterException($"Command: {nameof(CopyDirCommand)} value: source  - Value not found");
             }
 
             srcPath = srcPath.ReplaceVariableStrings(args.Variables);

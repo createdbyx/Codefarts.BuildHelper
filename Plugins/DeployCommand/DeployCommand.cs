@@ -4,18 +4,20 @@
 // http://www.codefarts.com
 // </copyright>
 
-using System;
-
 namespace Codefarts.BuildHelper
 {
+    using System;
     using System.IO;
-    using System.Linq;
 
+    [NamedParameter("path", typeof(string), true, "The full directory path to be purged.")]
+    [NamedParameter("clean", typeof(bool), false, "If true will delete contents from the destination before copying. Default is false.")]
+    [NamedVariable("ProjectDir", typeof(string), true, "The full project directory path to be deployed from.")]
+    [NamedVariable("OutDir", typeof(string), true, "The full output directory path to be deployed to.")]
     public class DeployCommand : IBuildCommand
     {
         public string Name => "deploy";
 
-        public void Execute(ExecuteCommandArgs args)
+        public void Run(ExecuteCommandArgs args)
         {
             if (args == null)
             {
@@ -41,33 +43,33 @@ namespace Codefarts.BuildHelper
             var di = new DirectoryInfo(destPath);
             if (doClean && di.Exists)
             {
-                foreach (var file in di.EnumerateFiles())
-                {
-                    file.Delete();
-                }
-
                 foreach (var dir in di.GetDirectories())
                 {
                     dir.Delete(true);
+                }
+
+                foreach (var file in di.EnumerateFiles())
+                {
+                    file.Delete();
                 }
             }
 
             // ensure there is a ProjectDir and OutDir variables
             if (!args.Variables.ContainsKey("ProjectDir"))
             {
-                throw new BuildException("Deploy command requires a 'ProjectDir' variable to run.");
+                throw new MissingVariableException("Deploy command requires a 'ProjectDir' variable to run.");
             }
 
             if (!args.Variables.ContainsKey("OutDir"))
             {
-                throw new BuildException("Deploy command requires a 'OutDir' variable to run.");
+                throw new MissingVariableException("Deploy command requires a 'OutDir' variable to run.");
             }
 
             var srcPath = Path.Combine("$(ProjectDir)".ReplaceVariableStrings(args.Variables),
-                                       "$(OutDir)".ReplaceVariableStrings(args.Variables));
+                "$(OutDir)".ReplaceVariableStrings(args.Variables));
             if (Directory.Exists(srcPath))
             {
-                var allFiles = Directory.GetFiles(srcPath, "*.*", SearchOption.AllDirectories);//.Select(d => Path.GetFileName(d));
+                var allFiles = Directory.GetFiles(srcPath, "*.*", SearchOption.AllDirectories);
                 foreach (var file in allFiles)
                 {
                     var filePath = file.Substring(srcPath.Length).Trim();

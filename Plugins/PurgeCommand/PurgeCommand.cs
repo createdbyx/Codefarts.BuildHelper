@@ -4,8 +4,6 @@
 // http://www.codefarts.com
 // </copyright>
 
-//using System.Diagnostics;
-
 namespace Codefarts.BuildHelper
 {
     using System;
@@ -13,11 +11,16 @@ namespace Codefarts.BuildHelper
     using System.IO;
     using System.Xml;
 
+    [NamedParameter("path", typeof(string), true, "The full directory path to be purged.")]
+    [NamedParameter("type", typeof(string), true, "The type of items to e purged. 'files' or 'folders'.")]
+    [NamedParameter("allconditions", typeof(bool), false, "Specifies weather or not all conditions must be satisfied. Default is true.")]
+    [NamedParameter("fullpaths", typeof(bool), false, "Specifies weather to use fully qualified paths. Default is false.")]
+    [NamedParameter("subfolders", typeof(bool), false, "Specifies weather to purge sub folders. Default is true.")]
     public class PurgeCommand : IBuildCommand
     {
         public string Name => "purge";
 
-        public void Execute(ExecuteCommandArgs args)
+        public void Run(ExecuteCommandArgs args)
         {
             var srcPath = args.GetParameter<string>("path");
             if (srcPath == null)

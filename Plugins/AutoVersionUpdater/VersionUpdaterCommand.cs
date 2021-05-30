@@ -14,14 +14,21 @@ namespace AutoVersionUpdater
     /// <summary>
     /// Provides a command for automatically updating a projects file or assembly version.
     /// </summary>
+    [NamedParameter("ProjectFileName", typeof(string), true, "The file path to the project file.")]
+    [NamedParameter("file", typeof(bool), false, "If true will increment the file version. Default is true.")]
+    [NamedParameter("assembly", typeof(bool), false, "If true will increment the assembly version. Default is true.")]
+    [NamedVariable("ProjectFileName", typeof(string), true, "Specifies the full path to the project file.")]
     public class VersionUpdaterCommand : IBuildCommand
     {
         public string Name
         {
-            get { return "UpdateVersion"; }
+            get
+            {
+                return "UpdateVersion";
+            }
         }
 
-        public void Execute(ExecuteCommandArgs args)
+        public void Run(ExecuteCommandArgs args)
         {
             if (args == null)
             {
@@ -30,14 +37,14 @@ namespace AutoVersionUpdater
 
             if (args.Variables == null)
             {
-                throw new BuildException("Variables dictionary is null.");
+                throw new NullReferenceException("Variables dictionary is null.");
             }
 
             var projectFilePath = args.GetVariable<string>("ProjectFileName", null);
             projectFilePath = projectFilePath != null ? projectFilePath.ReplaceVariableStrings(args.Variables) : null;
             if (string.IsNullOrWhiteSpace(projectFilePath))
             {
-                throw new BuildException($"Command: {nameof(VersionUpdaterCommand)} value: ProjectFileName  - Value not found");
+                throw new MissingVariableException($"Command: {nameof(VersionUpdaterCommand)} value: ProjectFileName  - Value not found");
             }
 
             var updateFile = args.GetParameter("file", true);
