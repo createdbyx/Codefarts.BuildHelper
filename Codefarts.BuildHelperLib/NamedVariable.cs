@@ -1,4 +1,4 @@
-﻿// <copyright file="NamedParameter.cs" company="Codefarts">
+﻿// <copyright file="NamedVariable.cs" company="Codefarts">
 // Copyright (c) Codefarts
 // contact@codefarts.com
 // http://www.codefarts.com
@@ -9,9 +9,9 @@ namespace Codefarts.BuildHelper
     using System;
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-    public class NamedParameter : Attribute
+    public class NamedVariable : Attribute
     {
-        public NamedParameter(string name, Type type, bool required, string description)
+        public NamedVariable(string name, Type type, bool required, string description)
         {
             this.Name = name;
             this.Type = type;

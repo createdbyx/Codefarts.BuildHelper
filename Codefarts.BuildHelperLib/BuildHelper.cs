@@ -36,11 +36,11 @@ namespace Codefarts.BuildHelper
         }
 
         public void Run(
-            IEnumerable<CommandData> buildFileCommands,
+            IEnumerable<CommandData> commands,
             IDictionary<string, string> variables,
             IEnumerable<IBuildCommand> commandPlugins)
         {
-            buildFileCommands = buildFileCommands ?? Enumerable.Empty<CommandData>();
+            commands = commands ?? Enumerable.Empty<CommandData>();
 
             variables = variables ?? new Dictionary<string, string>();
 
@@ -52,10 +52,10 @@ namespace Codefarts.BuildHelper
             this.OutputHeader($"START {buildEventValue} BUILD");
 
             // process file elements
-            foreach (var buildFileCommand in buildFileCommands)
+            foreach (var command in commands)
             {
                 // find the first plugin with the matching name
-                var plugin = commandPlugins.FirstOrDefault(c => c.Name.Equals(buildFileCommand.Name, StringComparison.OrdinalIgnoreCase));
+                var plugin = commandPlugins.FirstOrDefault(c => c.Name.Equals(command.Name, StringComparison.OrdinalIgnoreCase));
                 if (plugin == null)
                 {
                     continue;
@@ -65,12 +65,12 @@ namespace Codefarts.BuildHelper
                 var executeCommandArgs = new ExecuteCommandArgs(
                     msg => this.Output(msg),
                     variables,
-                    buildFileCommand,
+                    command,
                     this);
                 try
                 {
                     // check if the command has an attached message and if so output the message before executing
-                    var message = buildFileCommand.GetParameter("message", string.Empty);
+                    var message = command.GetParameter("message", string.Empty);
                     if (!string.IsNullOrWhiteSpace(message))
                     {
                         message = message.ReplaceVariableStrings(variables);
@@ -78,11 +78,11 @@ namespace Codefarts.BuildHelper
                     }
 
                     // check to ignore conditions
-                    var ignoreConditions = buildFileCommand.GetParameter("ignoreconditions", true);
+                    var ignoreConditions = command.GetParameter("ignoreconditions", true);
                     if (!ignoreConditions)
                     {
                         // check type of conditions
-                        var allConditions = buildFileCommand.GetParameter("allconditions", true);
+                        var allConditions = command.GetParameter("allconditions", true);
                         // var allConditions = true;
                         //if (conditionsValue != null && !bool.TryParse(conditionsValue, out allConditions))
                         //{
@@ -90,15 +90,15 @@ namespace Codefarts.BuildHelper
                         //}
 
                         // check conditions
-                        if (!buildFileCommand.SatifiesConditions(variables, allConditions))
+                        if (!command.SatifiesConditions(variables, allConditions))
                         {
-                            this.Output($"Conditions not satisfied for command '{buildFileCommand.Name}'.");
+                            this.Output($"Conditions not satisfied for command '{command.Name}'.");
                             return;
                         }
                     }
 
                     // execute the command plugin
-                    plugin.Execute(executeCommandArgs);
+                    plugin.Run(executeCommandArgs);
                 }
                 catch (Exception ex)
                 {
