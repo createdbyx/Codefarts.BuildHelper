@@ -53,7 +53,7 @@ namespace BuildHelperTests
             var args = new ExecuteCommandArgs(null, vars, cmdNode, null);
 
             // run
-            command.Execute(args);
+            command.Run(args);
 
             // validate data
             var fileData = File.ReadAllText(this.sampleProjectPath);
@@ -77,7 +77,7 @@ namespace BuildHelperTests
             var args = new ExecuteCommandArgs(null, vars, cmdNode, null);
 
             // run
-            command.Execute(args);
+            command.Run(args);
 
             // validate data
             var fileData = File.ReadAllText(this.sampleProjectPath);
@@ -101,7 +101,7 @@ namespace BuildHelperTests
             var args = new ExecuteCommandArgs(null, vars, cmdNode, null);
 
             // run
-            command.Execute(args);
+            command.Run(args);
 
             // validate data
             var fileData = File.ReadAllText(this.sampleProjectPath);
@@ -125,7 +125,7 @@ namespace BuildHelperTests
             var args = new ExecuteCommandArgs(null, vars, cmdNode, null);
 
             // run
-            command.Execute(args);
+            command.Run(args);
 
             // validate data
             var fileData = File.ReadAllText(this.sampleProjectPath);
@@ -149,7 +149,7 @@ namespace BuildHelperTests
             var args = new ExecuteCommandArgs(null, vars, cmdNode, null);
 
             // run
-            command.Execute(args);
+            command.Run(args);
 
             // validate data
             var fileData = File.ReadAllText(this.sampleProjectPath);

@@ -24,7 +24,7 @@ namespace BuildHelperTests
             vars["OutDir"] = "bin";
 
             string text = null;
-            text = text.ReplaceBuildVariableStrings(vars);
+            text = text.ReplaceVariableStrings(vars);
 
             Assert.IsNull(text);
         }
@@ -38,7 +38,7 @@ namespace BuildHelperTests
             vars["OutDir"] = "bin";
 
             var text = string.Empty;
-            text = text.ReplaceBuildVariableStrings(vars);
+            text = text.ReplaceVariableStrings(vars);
 
             Assert.AreEqual(string.Empty, text);
         }
@@ -52,7 +52,7 @@ namespace BuildHelperTests
             vars["OutDir"] = "bin";
 
             var text = "   ";
-            text = text.ReplaceBuildVariableStrings(vars);
+            text = text.ReplaceVariableStrings(vars);
 
             Assert.AreEqual("   ", text);
         }
@@ -67,7 +67,7 @@ namespace BuildHelperTests
             vars["OutDir"] = "bin";
 
             var text = @"$(ProjectDir)DeployPath_$(ConfigurationName)";
-            text = text.ReplaceBuildVariableStrings(vars);
+            text = text.ReplaceVariableStrings(vars);
 
             var expected = Path.Combine(tempPath, "DeployPath_DEBUG");
             Assert.AreEqual(expected, text);
@@ -83,7 +83,7 @@ namespace BuildHelperTests
             //  vars["OutDir"] = "bin";
 
             var text = "$(ProjectDir)";
-            text = text.ReplaceBuildVariableStrings(vars);
+            text = text.ReplaceVariableStrings(vars);
 
             var expected = "$(ProjectDir)";
             Assert.AreEqual(expected, text);

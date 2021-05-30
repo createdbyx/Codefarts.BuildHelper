@@ -51,7 +51,7 @@ namespace BuildHelperTests
             var cmdNode = new CommandData("deploy", parameters);
             var args = new ExecuteCommandArgs(null, vars, cmdNode,null);
 
-            Assert.ThrowsException<BuildException>(() => deploy.Execute(args));
+            Assert.ThrowsException<MissingVariableException>(() => deploy.Run(args));
         }
 
         [TestMethod]
@@ -71,7 +71,7 @@ namespace BuildHelperTests
             var cmdNode = new CommandData("deploy", parameters);
             var args = new ExecuteCommandArgs(null, vars, cmdNode,null);
 
-            Assert.ThrowsException<BuildException>(() => deploy.Execute(args));
+            Assert.ThrowsException<MissingVariableException>(() => deploy.Run(args));
         }
 
         [TestMethod]
@@ -88,7 +88,7 @@ namespace BuildHelperTests
             var cmdNode = new CommandData("deploy", parameters);
             var args = new ExecuteCommandArgs(null, vars, cmdNode,null);
 
-            Assert.ThrowsException<BuildException>(() => deploy.Execute(args));
+            Assert.ThrowsException<MissingVariableException>(() => deploy.Run(args));
         }
 
         [TestMethod]
@@ -104,14 +104,14 @@ namespace BuildHelperTests
             var cmdNode = new CommandData("deploy", parameters);
             var args = new ExecuteCommandArgs(null, null, cmdNode,null);
 
-            Assert.ThrowsException<BuildException>(() => deploy.Execute(args));
+            Assert.ThrowsException<BuildException>(() => deploy.Run(args));
         }
 
         [TestMethod]
         public void NullArguments()
         {
             var deploy = new DeployCommand();
-            Assert.ThrowsException<ArgumentNullException>(() => deploy.Execute(null));
+            Assert.ThrowsException<ArgumentNullException>(() => deploy.Run(null));
         }
 
         [TestMethod]
@@ -132,7 +132,7 @@ namespace BuildHelperTests
             var cmdNode = new CommandData("deploy", parameters);
 
             var args = new ExecuteCommandArgs(null, vars, cmdNode,null);
-            deploy.Execute(args);
+            deploy.Run(args);
 
             Assert.IsFalse(File.Exists(Path.Combine(this.tempFolder, "bin", "DEBUG", "file1.txt")));
         }
@@ -157,10 +157,10 @@ namespace BuildHelperTests
 
             var args = new ExecuteCommandArgs(null, vars, cmdNode,null);
 
-            var srcPath = parameters["path"].ToString().ReplaceBuildVariableStrings(vars);
+            var srcPath = parameters["path"].ToString().ReplaceVariableStrings(vars);
             Assert.IsFalse(Directory.Exists(srcPath));
 
-            deploy.Execute(args);
+            deploy.Run(args);
 
             var deployPath = srcPath;
             Assert.IsTrue(File.Exists(Path.Combine(deployPath, "File1.txt")));
