@@ -23,9 +23,9 @@ namespace Codefarts.BuildHelper
                 }
             };
 
-            this.Variables = variables;
-            this.Command = command;
-            this.BuildHelper = buildHelper;
+            this.Variables = variables ?? new Dictionary<string, string>();
+            this.Command = command ?? throw new ArgumentNullException(nameof(command));
+            this.BuildHelper = buildHelper ?? throw new ArgumentNullException(nameof(buildHelper));
         }
 
         //public ExecuteCommandArgs(Action<string> output, IDictionary<string, string> variables, IDictionary<string, object> parameters)
