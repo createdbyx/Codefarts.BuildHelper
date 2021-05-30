@@ -58,6 +58,11 @@ namespace Codefarts.BuildHelperConsoleApp
                 node.Parameters[attribute.Name.LocalName] = attribute.Value;
             }
 
+            if (!string.IsNullOrWhiteSpace(xElement.Value) && !node.Parameters.ContainsKey("value"))
+            {
+                node.Parameters["value"] = xElement.Value;
+            }
+
             node.Parent = parent;
             foreach (var childItem in xElement.Elements())
             {
