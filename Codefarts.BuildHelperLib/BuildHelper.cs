@@ -62,7 +62,7 @@ namespace Codefarts.BuildHelper
                 }
 
                 // setup executing args
-                var executeCommandArgs = new ExecuteCommandArgs(
+                var executeCommandArgs = new RunCommandArgs(
                     msg => this.Output(msg),
                     variables,
                     command,

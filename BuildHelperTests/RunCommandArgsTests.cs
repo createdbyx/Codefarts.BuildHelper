@@ -30,7 +30,7 @@ namespace BuildHelperTests
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
-                var args = new ExecuteCommandArgs(null, null, null, null);
+                var args = new RunCommandArgs(null, null, null, null);
             });
         }
 
@@ -39,7 +39,7 @@ namespace BuildHelperTests
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
-                var args = new ExecuteCommandArgs(x => { }, new Dictionary<string, string>(), null, new BuildHelper());
+                var args = new RunCommandArgs(x => { }, new Dictionary<string, string>(), null, new BuildHelper());
             });
         }
 
@@ -48,7 +48,7 @@ namespace BuildHelperTests
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
-                var args = new ExecuteCommandArgs(x => { }, new Dictionary<string, string>(), new CommandData(), null);
+                var args = new RunCommandArgs(x => { }, new Dictionary<string, string>(), new CommandData(), null);
             });
         }
 
@@ -58,7 +58,7 @@ namespace BuildHelperTests
             var variables = new Dictionary<string, string>();
             var data = new CommandData();
             var helper = new BuildHelper();
-            var args = new ExecuteCommandArgs(null, variables, data, helper);
+            var args = new RunCommandArgs(null, variables, data, helper);
             Assert.IsNotNull(args.Output);
             Assert.AreSame(variables, args.Variables);
             Assert.AreSame(data, args.Command);
@@ -73,7 +73,7 @@ namespace BuildHelperTests
             var variables = new Dictionary<string, string>();
             var data = new CommandData();
             var helper = new BuildHelper();
-            var args = new ExecuteCommandArgs(output, variables, data, helper);
+            var args = new RunCommandArgs(output, variables, data, helper);
             Assert.IsNotNull(args.Output);
             Assert.AreNotSame(output, args.Output);
             Assert.AreSame(variables, args.Variables);

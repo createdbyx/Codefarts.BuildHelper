@@ -1,4 +1,4 @@
-﻿// <copyright file="ExecuteCommandArgs.cs" company="Codefarts">
+﻿// <copyright file="RunCommandArgs.cs" company="Codefarts">
 // Copyright (c) Codefarts
 // contact@codefarts.com
 // http://www.codefarts.com
@@ -8,11 +8,10 @@ namespace Codefarts.BuildHelper
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
 
-    public class ExecuteCommandArgs
+    public class RunCommandArgs
     {
-        public ExecuteCommandArgs(Action<string> output, IDictionary<string, string> variables, CommandData command, BuildHelper buildHelper)
+        public RunCommandArgs(Action<string> output, IDictionary<string, string> variables, CommandData command, BuildHelper buildHelper)
         {
             // we wrap output callback here to ensure any call to it does not throw null reference exceptions
             this.Output = msg =>

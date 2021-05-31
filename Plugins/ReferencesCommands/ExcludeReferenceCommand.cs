@@ -16,7 +16,7 @@ namespace Codefarts.BuildHelper
     {
         public string Name => "excludereference";
 
-        public void Run(ExecuteCommandArgs args)
+        public void Run(RunCommandArgs args)
         {
             var path = args.GetParameter<string>("path");
             var destPath = path != null ? path.ReplaceVariableStrings(args.Variables) : null;

@@ -20,7 +20,7 @@ namespace Codefarts.BuildHelper
     {
         public string Name => "purge";
 
-        public void Run(ExecuteCommandArgs args)
+        public void Run(RunCommandArgs args)
         {
             var srcPath = args.GetParameter<string>("path");
             if (srcPath == null)

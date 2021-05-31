@@ -14,7 +14,7 @@ namespace Codefarts.BuildHelper
     {
         public string Name => "variable";
 
-        public void Run(ExecuteCommandArgs args)
+        public void Run(RunCommandArgs args)
         {
             // get the variable name parameter
             var nameValue = args.GetParameter<string>("name");

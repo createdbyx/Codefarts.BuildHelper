@@ -28,7 +28,7 @@ namespace AutoVersionUpdater
             }
         }
 
-        public void Run(ExecuteCommandArgs args)
+        public void Run(RunCommandArgs args)
         {
             if (args == null)
             {

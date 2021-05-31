@@ -16,7 +16,7 @@ namespace Codefarts.BuildHelper
     {
         public string Name => "copydir";
 
-        public void Run(ExecuteCommandArgs args)
+        public void Run(RunCommandArgs args)
         {
             var srcPath = args.GetParameter<string>("source");
             var destPath = args.GetParameter<string>("destination");

@@ -13,7 +13,7 @@ namespace Codefarts.BuildHelper
     {
         public string Name => "removevariable";
 
-        public void Run(ExecuteCommandArgs args)
+        public void Run(RunCommandArgs args)
         {
             // get variable name
             var nameValue = args.GetParameter<string>("name");

@@ -64,12 +64,12 @@ namespace Codefarts.BuildHelper
             return defaultValue;
         }
 
-        public static T GetParameter<T>(this ExecuteCommandArgs args, string name)
+        public static T GetParameter<T>(this RunCommandArgs args, string name)
         {
             return args.Parameters.GetParameter<T>(name, default);
         }
 
-        public static T GetParameter<T>(this ExecuteCommandArgs args, string name, T defaultValue)
+        public static T GetParameter<T>(this RunCommandArgs args, string name, T defaultValue)
         {
             if (args == null)
             {
@@ -79,12 +79,12 @@ namespace Codefarts.BuildHelper
             return args.Parameters.GetParameter(name, defaultValue);
         }
 
-        public static T GetVariable<T>(this ExecuteCommandArgs args, string name)
+        public static T GetVariable<T>(this RunCommandArgs args, string name)
         {
             return args.GetVariable<T>(name, default);
         }
 
-        public static T GetVariable<T>(this ExecuteCommandArgs args, string name, T defaultValue)
+        public static T GetVariable<T>(this RunCommandArgs args, string name, T defaultValue)
         {
             if (args == null)
             {
