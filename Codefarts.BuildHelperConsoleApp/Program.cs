@@ -4,14 +4,12 @@
 // http://www.codefarts.com
 // </copyright>
 
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Xml.Linq;
-
 namespace Codefarts.BuildHelperConsoleApp
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Xml.Linq;
     using Codefarts.BuildHelper;
 
     class Program
