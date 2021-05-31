@@ -33,7 +33,7 @@ namespace Codefarts.BuildHelperConsoleApp
             var commands = PluginLoader.LoadCommandPlugins(build).ToArray();
 
             // read build file
-            IDictionary<string, string> variables;
+            IDictionary<string, object> variables;
             XElement root;
             var buildFileReader = new BuildFileReader(build);
             if (!buildFileReader.TryReadBuildFile(buildFile, out variables, out root))

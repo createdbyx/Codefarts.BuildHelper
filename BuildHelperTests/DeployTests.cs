@@ -38,7 +38,7 @@ namespace BuildHelperTests
         public void MissingProjectDirVariable()
         {
             var deploy = new DeployCommand();
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             // vars["ProjectDir"] = this.tempFolder;  <-- $(ProjectDir) is required
             vars["ConfigurationName"] = "DEBUG";
             vars["OutDir"] = "bin";
@@ -58,7 +58,7 @@ namespace BuildHelperTests
         public void MissingOutputDirVariable()
         {
             var deploy = new DeployCommand();
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             vars["ProjectDir"] = this.tempFolder;
             vars["ConfigurationName"] = "DEBUG";
             // vars["OutDir"] = "bin";   <-- $(OutDir) is required
@@ -78,7 +78,7 @@ namespace BuildHelperTests
         public void MissingAllVariable()
         {
             var deploy = new DeployCommand();
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
 
             var parameters = new Dictionary<string, object>();
             parameters["path"] = @"$(ProjectDir)\bin\$(ConfigurationName)\";
@@ -118,7 +118,7 @@ namespace BuildHelperTests
         public void NoFiles()
         {
             var deploy = new DeployCommand();
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             vars["ProjectDir"] = this.tempFolder;
             vars["ConfigurationName"] = "DEBUG";
             vars["OutDir"] = "Source";
@@ -143,7 +143,7 @@ namespace BuildHelperTests
             TestHelpers.BuildFoldersAndFiles(this.tempFolder);
 
             var deploy = new DeployCommand();
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             vars["ProjectDir"] = this.tempFolder;
             vars["ConfigurationName"] = "DEBUG";
             vars["OutDir"] = string.Empty;

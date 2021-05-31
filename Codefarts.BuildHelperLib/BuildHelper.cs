@@ -37,17 +37,16 @@ namespace Codefarts.BuildHelper
 
         public void Run(
             IEnumerable<CommandData> commands,
-            IDictionary<string, string> variables,
+            IDictionary<string, object> variables,
             IEnumerable<IBuildCommand> commandPlugins)
         {
             commands = commands ?? Enumerable.Empty<CommandData>();
 
-            variables = variables ?? new Dictionary<string, string>();
+            variables = variables ?? new Dictionary<string, object>();
 
             commandPlugins = commandPlugins ?? Enumerable.Empty<IBuildCommand>();
 
-            string buildEventValue;
-            variables.TryGetValue("BuildEvent", out buildEventValue);
+            var buildEventValue = variables.GetValue<string>("BuildEvent", null);
 
             this.OutputHeader($"START {buildEventValue} BUILD");
 

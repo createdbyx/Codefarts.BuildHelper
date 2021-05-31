@@ -53,7 +53,7 @@ namespace Codefarts.BuildHelper
                     //}
 
                     // open project file
-                    var projectFile = args.Variables["ProjectPath"];
+                    var projectFile = args.GetVariable<string>("ProjectPath");
                     var proj = XDocument.Load(projectFile);
 
                     // search for project reference with matching name

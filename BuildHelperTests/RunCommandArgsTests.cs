@@ -39,7 +39,7 @@ namespace BuildHelperTests
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
-                var args = new RunCommandArgs(x => { }, new Dictionary<string, string>(), null, new BuildHelper());
+                var args = new RunCommandArgs(x => { }, new Dictionary<string, object>(), null, new BuildHelper());
             });
         }
 
@@ -48,14 +48,14 @@ namespace BuildHelperTests
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
-                var args = new RunCommandArgs(x => { }, new Dictionary<string, string>(), new CommandData(), null);
+                var args = new RunCommandArgs(x => { }, new Dictionary<string, object>(), new CommandData(), null);
             });
         }
 
         [TestMethod]
         public void NullOutputArg()
         {
-            var variables = new Dictionary<string, string>();
+            var variables = new Dictionary<string, object>();
             var data = new CommandData();
             var helper = new BuildHelper();
             var args = new RunCommandArgs(null, variables, data, helper);
@@ -69,7 +69,7 @@ namespace BuildHelperTests
         public void ValidArgs()
         {
             Action<string> output = x => { };
-            var variables = new Dictionary<string, string>();
+            var variables = new Dictionary<string, object>();
             var data = new CommandData();
             var helper = new BuildHelper();
             var args = new RunCommandArgs(output, variables, data, helper);

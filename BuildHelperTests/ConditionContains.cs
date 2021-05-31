@@ -19,7 +19,7 @@ namespace BuildHelperTests
         private XElement goodConditionEquality;
         private XElement goodConditionEqualityWithTrueIgnore;
         private XElement goodConditionEqualityWithFalseIgnore;
-        private IDictionary<string, string> varibles;
+        private IDictionary<string, object> varibles;
 
         [TestInitialize]
         public void InitTest()
@@ -27,7 +27,7 @@ namespace BuildHelperTests
             this.goodConditionEquality = new XElement("condition", new XAttribute("value1", "Test"), new XAttribute("operator", "="), new XAttribute("value2", "Test"));
             this.goodConditionEqualityWithTrueIgnore = new XElement("condition", new XAttribute("value1", "Test"), new XAttribute("operator", "="), new XAttribute("value2", "Test"), new XAttribute("ignorecase", true));
             this.goodConditionEqualityWithFalseIgnore = new XElement("condition", new XAttribute("value1", "Test"), new XAttribute("operator", "="), new XAttribute("value2", "Test"), new XAttribute("ignorecase", false));
-            this.varibles = new Dictionary<string, string>();
+            this.varibles = new Dictionary<string, object>();
         }
 
         [TestCleanup]

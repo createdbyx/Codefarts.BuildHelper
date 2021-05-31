@@ -44,7 +44,7 @@ namespace BuildHelperTests
         {
             var date = DateTime.Now;
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             vars["ProjectFileName"] = this.sampleProjectPath;
 
             var parameters = new Dictionary<string, object>();
@@ -67,7 +67,7 @@ namespace BuildHelperTests
         {
             var date = DateTime.Now;
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             vars["ProjectFileName"] = this.sampleProjectPath;
 
             var parameters = new Dictionary<string, object>();
@@ -91,7 +91,7 @@ namespace BuildHelperTests
         {
             var date = DateTime.Now;
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             vars["ProjectFileName"] = this.sampleProjectPath;
 
             var parameters = new Dictionary<string, object>();
@@ -115,7 +115,7 @@ namespace BuildHelperTests
         {
             var date = DateTime.Now;
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             vars["ProjectFileName"] = this.sampleProjectPath;
 
             var parameters = new Dictionary<string, object>();
@@ -139,7 +139,7 @@ namespace BuildHelperTests
         {
             var date = DateTime.Now;
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             vars["ProjectFileName"] = this.sampleProjectPath;
 
             var parameters = new Dictionary<string, object>();

@@ -114,7 +114,7 @@ namespace Codefarts.BuildHelper
 
             // TODO: need option to specify weather or not $(PurgeFile) is just the filename or full path
             var allEntries = getEntries(srcPath);
-            var modifiedVars = new Dictionary<string, string>(args.Variables);
+            var modifiedVars = new Dictionary<string, object>(args.Variables);
             foreach (var file in allEntries)
             {
                 var src = fullPaths ? file : Path.GetFileName(file);

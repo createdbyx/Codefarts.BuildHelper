@@ -16,7 +16,7 @@ namespace BuildHelperTests
     [TestClass, TestCategory("Build Commands")]
     public class PurgeFiles
     {
-        private IDictionary<string, string> varibles;
+        private IDictionary<string, object> varibles;
         private string tempDir;
 
         [TestInitialize]
@@ -31,7 +31,7 @@ namespace BuildHelperTests
             Directory.CreateDirectory(Path.Combine(this.tempDir, "SubFolder", "Sub2"));
             File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "Microsoft.File4.db"), "File4Data");
             File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "Sub2", "Taxi.File5.pdb"), "File5Data");
-            this.varibles = new Dictionary<string, string>();
+            this.varibles = new Dictionary<string, object>();
             this.varibles["TempPath"] = this.tempDir;
         }
 

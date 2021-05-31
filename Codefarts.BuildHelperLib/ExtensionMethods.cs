@@ -38,17 +38,17 @@ namespace Codefarts.BuildHelper
             return ele != null ? ele.Value : null;
         }
 
-        public static T GetParameter<T>(this IDictionary<string, object> parameters, string name)
+        public static T GetValue<T>(this IDictionary<string, object> parameters, string name)
         {
-            return GetParameter<T>(parameters, name, default);
+            return GetValue<T>(parameters, name, default);
         }
 
-        public static T GetParameter<T>(this CommandData commandData, string name)
+        public static T GetValue<T>(this CommandData commandData, string name)
         {
-            return commandData.Parameters.GetParameter<T>(name, default);
+            return GetValue<T>(commandData.Parameters, name, default);
         }
 
-        public static T GetParameter<T>(this IDictionary<string, object> parameters, string name, T defaultValue)
+        public static T GetValue<T>(this IDictionary<string, object> parameters, string name, T defaultValue)
         {
             if (parameters == null)
             {
@@ -58,7 +58,7 @@ namespace Codefarts.BuildHelper
             object value;
             if (parameters.TryGetValue(name, out value))
             {
-                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.CurrentCulture);
+                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
             }
 
             return defaultValue;
@@ -66,7 +66,7 @@ namespace Codefarts.BuildHelper
 
         public static T GetParameter<T>(this RunCommandArgs args, string name)
         {
-            return args.Command.GetParameter<T>(name, default);
+            return args.Command.Parameters.GetValue<T>(name, default);
         }
 
         public static T GetParameter<T>(this RunCommandArgs args, string name, T defaultValue)
@@ -76,7 +76,7 @@ namespace Codefarts.BuildHelper
                 throw new ArgumentNullException(nameof(args));
             }
 
-            return args.Command.GetParameter<T>(name, defaultValue);
+            return args.Command.Parameters.GetValue<T>(name, defaultValue);
         }
 
         public static T GetVariable<T>(this RunCommandArgs args, string name)
@@ -91,10 +91,10 @@ namespace Codefarts.BuildHelper
                 throw new ArgumentNullException(nameof(args));
             }
 
-            string value;
+            object value;
             if (args.Variables.TryGetValue(name, out value))
             {
-                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.CurrentCulture);
+                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
             }
 
             return defaultValue;
@@ -107,10 +107,15 @@ namespace Codefarts.BuildHelper
                 throw new ArgumentNullException(nameof(commandData));
             }
 
-            return commandData.Parameters.GetParameter(name, defaultValue);
+            return commandData.Parameters.GetValue(name, defaultValue);
         }
 
-        public static string ReplaceVariableStrings(this string text, IDictionary<string, string> variables)
+        public static T GetParameter<T>(this CommandData commandData, string name)
+        {
+            return commandData.Parameters.GetValue<T>(name, default);
+        }
+
+        public static string ReplaceVariableStrings(this string text, IDictionary<string, object> variables)
         {
             if (string.IsNullOrWhiteSpace(text))
             {
@@ -119,18 +124,21 @@ namespace Codefarts.BuildHelper
 
             foreach (var item in variables)
             {
-                text = text.Replace($"$({item.Key})", item.Value);
+                if (item.Value != null)
+                {
+                    text = text.Replace($"$({item.Key})", item.Value.ToString());
+                }
             }
 
             return text;
         }
 
-        public static bool SatifiesConditions(this CommandData element, IDictionary<string, string> variables)
+        public static bool SatifiesConditions(this CommandData element, IDictionary<string, object> variables)
         {
             return element.SatifiesConditions(variables, true);
         }
 
-        public static bool SatifiesConditions(this CommandData element, IDictionary<string, string> variables, bool allConditions)
+        public static bool SatifiesConditions(this CommandData element, IDictionary<string, object> variables, bool allConditions)
         {
             if (allConditions)
             {
@@ -142,7 +150,7 @@ namespace Codefarts.BuildHelper
                 .Any(condition => condition.SatifiesCondition(variables));
         }
 
-        public static bool SatifiesCondition(this CommandData condition, IDictionary<string, string> variables)
+        public static bool SatifiesCondition(this CommandData condition, IDictionary<string, object> variables)
         {
             if (condition == null)
             {
@@ -236,7 +244,7 @@ namespace Codefarts.BuildHelper
             //return true;
         }
 
-        public static bool SatifiesCondition(this IDictionary<string, string> variables, string value1, string value2, string operatorValue,
+        public static bool SatifiesCondition(this IDictionary<string, object> variables, string value1, string value2, string operatorValue,
             bool ignoreCase)
         {
             //var value1 = condition.GetParameter<string>("value1").ReplaceBuildVariableStrings(variables);

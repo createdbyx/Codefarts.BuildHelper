@@ -18,7 +18,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void Null()
         {
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             vars["ProjectDir"] = Path.GetTempPath();
             vars["ConfigurationName"] = "DEBUG";
             vars["OutDir"] = "bin";
@@ -32,7 +32,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void Empty()
         {
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             vars["ProjectDir"] = Path.GetTempPath();
             vars["ConfigurationName"] = "DEBUG";
             vars["OutDir"] = "bin";
@@ -46,7 +46,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void Whitespace()
         {
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             vars["ProjectDir"] = Path.GetTempPath();
             vars["ConfigurationName"] = "DEBUG";
             vars["OutDir"] = "bin";
@@ -60,7 +60,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void VarCustomVar()
         {
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             var tempPath = Path.GetTempPath();
             vars["ProjectDir"] = tempPath;
             vars["ConfigurationName"] = "DEBUG";
@@ -76,7 +76,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void KeepUnsetVaribles()
         {
-            var vars = new Dictionary<string, string>();
+            var vars = new Dictionary<string, object>();
             var tempPath = Path.GetTempPath();
             //vars["ProjectDir"] = tempPath;
             //vars["ConfigurationName"] = "DEBUG";

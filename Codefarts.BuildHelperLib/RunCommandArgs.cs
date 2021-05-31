@@ -11,7 +11,7 @@ namespace Codefarts.BuildHelper
 
     public class RunCommandArgs
     {
-        public RunCommandArgs(Action<string> output, IDictionary<string, string> variables, CommandData command, BuildHelper buildHelper)
+        public RunCommandArgs(Action<string> output, IDictionary<string, object> variables, CommandData command, BuildHelper buildHelper)
         {
             // we wrap output callback here to ensure any call to it does not throw null reference exceptions
             this.Output = msg =>
@@ -22,7 +22,7 @@ namespace Codefarts.BuildHelper
                 }
             };
 
-            this.Variables = variables ?? new Dictionary<string, string>();
+            this.Variables = variables ?? new Dictionary<string, object>();
             this.Command = command ?? throw new ArgumentNullException(nameof(command));
             this.BuildHelper = buildHelper ?? throw new ArgumentNullException(nameof(buildHelper));
         }
@@ -33,6 +33,6 @@ namespace Codefarts.BuildHelper
 
         public Action<string> Output { get; }
 
-        public IDictionary<string, string> Variables { get; }
+        public IDictionary<string, object> Variables { get; }
     }
 }

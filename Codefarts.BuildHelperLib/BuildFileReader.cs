@@ -21,7 +21,7 @@ namespace Codefarts.BuildHelper
             this.buildHelper = buildHelper ?? throw new ArgumentNullException(nameof(buildHelper));
         }
 
-        public bool TryReadBuildFile(string buildFile, out IDictionary<string, string> variables, out XElement root)
+        public bool TryReadBuildFile(string buildFile, out IDictionary<string, object> variables, out XElement root)
         {
             // var args = Environment.GetCommandLineArgs();
             // var buildFile = args.FirstOrDefault(x => x.StartsWith("-bf:"));
@@ -74,7 +74,7 @@ namespace Codefarts.BuildHelper
             var varNode = varNodes.SelectMany(r => r.Elements());
 
             // parse data from file
-            variables = varNode.ToDictionary(k => k.Name.LocalName, v => v.Value);
+            variables = varNode.ToDictionary(k => k.Name.LocalName, v => v.Value as object);
 
             foreach (var node in varNodes)
             {
