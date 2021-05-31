@@ -10,6 +10,6 @@ namespace Codefarts.BuildHelper
     {
         string Name { get; }
 
-        void Run(ExecuteCommandArgs args);
+        void Run(RunCommandArgs args);
     }
 }
