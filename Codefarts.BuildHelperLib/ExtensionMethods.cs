@@ -66,7 +66,7 @@ namespace Codefarts.BuildHelper
 
         public static T GetParameter<T>(this RunCommandArgs args, string name)
         {
-            return args.Parameters.GetParameter<T>(name, default);
+            return args.Command.GetParameter<T>(name, default);
         }
 
         public static T GetParameter<T>(this RunCommandArgs args, string name, T defaultValue)
@@ -76,7 +76,7 @@ namespace Codefarts.BuildHelper
                 throw new ArgumentNullException(nameof(args));
             }
 
-            return args.Parameters.GetParameter(name, defaultValue);
+            return args.Command.GetParameter<T>(name, defaultValue);
         }
 
         public static T GetVariable<T>(this RunCommandArgs args, string name)

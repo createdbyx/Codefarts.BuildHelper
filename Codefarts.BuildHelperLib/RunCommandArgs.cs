@@ -33,14 +33,6 @@ namespace Codefarts.BuildHelper
 
         public Action<string> Output { get; }
 
-        public IDictionary<string, object> Parameters
-        {
-            get
-            {
-                return this.Command.Parameters;
-            }
-        }
-
         public IDictionary<string, string> Variables { get; }
     }
 }

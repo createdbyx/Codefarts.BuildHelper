@@ -63,7 +63,6 @@ namespace BuildHelperTests
             Assert.AreSame(variables, args.Variables);
             Assert.AreSame(data, args.Command);
             Assert.AreSame(helper, args.BuildHelper);
-            Assert.IsNotNull(args.Parameters);
         }
 
         [TestMethod]
@@ -79,7 +78,6 @@ namespace BuildHelperTests
             Assert.AreSame(variables, args.Variables);
             Assert.AreSame(data, args.Command);
             Assert.AreSame(helper, args.BuildHelper);
-            Assert.IsNotNull(args.Parameters);
         }
     }
 }
