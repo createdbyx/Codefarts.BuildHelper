@@ -12,7 +12,7 @@ namespace Codefarts.BuildHelper
     [NamedParameter("source", typeof(string), true, "The source folder that will be copied.")]
     [NamedParameter("destination", typeof(string), true, "The destination folder where files and folder will be copied to.")]
     [NamedParameter("clean", typeof(bool), false, "If true will delete contents from the destination before copying. Default is false.")]
-    public class CopyDirCommand : IBuildCommand
+    public class CopyDirCommand : ICommandPlugin
     {
         public string Name => "copydir";
 

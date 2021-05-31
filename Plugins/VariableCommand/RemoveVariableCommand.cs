@@ -9,7 +9,7 @@ namespace Codefarts.BuildHelper
     using System.Xml;
 
     [NamedParameter("name", typeof(string), true, "The name of the variable.")]
-    public class RemoveVariableCommand : IBuildCommand
+    public class RemoveVariableCommand : ICommandPlugin
     {
         public string Name => "removevariable";
 

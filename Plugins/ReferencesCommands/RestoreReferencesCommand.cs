@@ -10,7 +10,7 @@ namespace Codefarts.BuildHelper
     using System.Xml;
     using System.Xml.Linq;
 
-    public class RestoreReferencesCommand : IBuildCommand
+    public class RestoreReferencesCommand : ICommandPlugin
     {
         public string Name => "restorereferences";
 

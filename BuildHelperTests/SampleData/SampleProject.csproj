@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="IBuildCommand.cs" />
+    <None Include="ICommandPlugin.cs" />
   </ItemGroup>
 
   <ItemGroup>

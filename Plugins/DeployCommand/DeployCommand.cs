@@ -13,7 +13,7 @@ namespace Codefarts.BuildHelper
     [NamedParameter("clean", typeof(bool), false, "If true will delete contents from the destination before copying. Default is false.")]
     [NamedVariable("ProjectDir", typeof(string), true, "The full project directory path to be deployed from.")]
     [NamedVariable("OutDir", typeof(string), true, "The full output directory path to be deployed to.")]
-    public class DeployCommand : IBuildCommand
+    public class DeployCommand : ICommandPlugin
     {
         public string Name => "deploy";
 

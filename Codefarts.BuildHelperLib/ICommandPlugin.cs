@@ -1,4 +1,4 @@
-// <copyright file="IBuildCommand.cs" company="Codefarts">
+// <copyright file="ICommandPlugin.cs" company="Codefarts">
 // Copyright (c) Codefarts
 // contact@codefarts.com
 // http://www.codefarts.com
@@ -6,7 +6,7 @@
 
 namespace Codefarts.BuildHelper
 {
-    public interface IBuildCommand
+    public interface ICommandPlugin
     {
         string Name { get; }
 

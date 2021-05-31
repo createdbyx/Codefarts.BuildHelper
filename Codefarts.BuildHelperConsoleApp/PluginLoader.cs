@@ -16,7 +16,7 @@ namespace Codefarts.BuildHelperConsoleApp
 
     internal class PluginLoader
     {
-        public static IEnumerable<IBuildCommand> LoadCommandPlugins(BuildHelper buildHelper)
+        public static IEnumerable<ICommandPlugin> LoadCommandPlugins(BuildHelper buildHelper)
         {
             if (buildHelper == null)
             {
@@ -29,7 +29,7 @@ namespace Codefarts.BuildHelperConsoleApp
 
             if (!Directory.Exists(pluginFolder))
             {
-                return Enumerable.Empty<IBuildCommand>();
+                return Enumerable.Empty<ICommandPlugin>();
             }
 
             var asmFiles = Directory.GetFiles(pluginFolder, "*.dll", SearchOption.AllDirectories);
@@ -38,14 +38,14 @@ namespace Codefarts.BuildHelperConsoleApp
             var pluginTypes = asmFiles.SelectMany(f =>
             {
                 var asm = Assembly.LoadFrom(f);
-                return asm.GetTypes().Where(t => t.IsPublic && t.IsClass && !t.IsSealed && typeof(IBuildCommand).IsAssignableFrom(t));
+                return asm.GetTypes().Where(t => t.IsPublic && t.IsClass && !t.IsSealed && typeof(ICommandPlugin).IsAssignableFrom(t));
             }).ToArray();
 
             var plugins = pluginTypes.Select(t =>
             {
                 try
                 {
-                    return (IBuildCommand)t.Assembly.CreateInstance(t.FullName);
+                    return (ICommandPlugin)t.Assembly.CreateInstance(t.FullName);
                 }
                 catch
                 {

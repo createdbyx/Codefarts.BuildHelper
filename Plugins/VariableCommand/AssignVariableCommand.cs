@@ -10,7 +10,7 @@ namespace Codefarts.BuildHelper
 
     [NamedParameter("name", typeof(string), true, "The name of the variable.")]
     [NamedParameter("value", typeof(string), true, "The value of the variable.")]
-    public class AssignVariableCommand : IBuildCommand
+    public class AssignVariableCommand : ICommandPlugin
     {
         public string Name => "variable";
 

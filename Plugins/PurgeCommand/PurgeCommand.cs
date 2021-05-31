@@ -16,7 +16,7 @@ namespace Codefarts.BuildHelper
     [NamedParameter("allconditions", typeof(bool), false, "Specifies weather or not all conditions must be satisfied. Default is true.")]
     [NamedParameter("fullpaths", typeof(bool), false, "Specifies weather to use fully qualified paths. Default is false.")]
     [NamedParameter("subfolders", typeof(bool), false, "Specifies weather to purge sub folders. Default is true.")]
-    public class PurgeCommand : IBuildCommand
+    public class PurgeCommand : ICommandPlugin
     {
         public string Name => "purge";
 

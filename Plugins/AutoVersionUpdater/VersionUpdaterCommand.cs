@@ -18,7 +18,7 @@ namespace AutoVersionUpdater
     [NamedParameter("file", typeof(bool), false, "If true will increment the file version. Default is true.")]
     [NamedParameter("assembly", typeof(bool), false, "If true will increment the assembly version. Default is true.")]
     [NamedVariable("ProjectFileName", typeof(string), true, "Specifies the full path to the project file.")]
-    public class VersionUpdaterCommand : IBuildCommand
+    public class VersionUpdaterCommand : ICommandPlugin
     {
         public string Name
         {

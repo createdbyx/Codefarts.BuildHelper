@@ -12,7 +12,7 @@ namespace Codefarts.BuildHelper
     using System.Xml;
     using System.Xml.Linq;
 
-    public class ExcludeReferenceCommand : IBuildCommand
+    public class ExcludeReferenceCommand : ICommandPlugin
     {
         public string Name => "excludereference";
 
