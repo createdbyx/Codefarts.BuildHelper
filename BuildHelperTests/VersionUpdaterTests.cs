@@ -50,7 +50,7 @@ namespace BuildHelperTests
             var parameters = new Dictionary<string, object>();
 
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new ExecuteCommandArgs(null, vars, cmdNode, null);
+            var args = new ExecuteCommandArgs(null, vars, cmdNode, new BuildHelper());
 
             // run
             command.Run(args);
@@ -74,7 +74,7 @@ namespace BuildHelperTests
             parameters["file"] = true;
 
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new ExecuteCommandArgs(null, vars, cmdNode, null);
+            var args = new ExecuteCommandArgs(null, vars, cmdNode, new BuildHelper());
 
             // run
             command.Run(args);
@@ -98,7 +98,7 @@ namespace BuildHelperTests
             parameters["assembly"] = true;
 
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new ExecuteCommandArgs(null, vars, cmdNode, null);
+            var args = new ExecuteCommandArgs(null, vars, cmdNode, new BuildHelper());
 
             // run
             command.Run(args);
@@ -122,7 +122,7 @@ namespace BuildHelperTests
             parameters["file"] = false;
 
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new ExecuteCommandArgs(null, vars, cmdNode, null);
+            var args = new ExecuteCommandArgs(null, vars, cmdNode, new BuildHelper());
 
             // run
             command.Run(args);
@@ -146,7 +146,7 @@ namespace BuildHelperTests
             parameters["assembly"] = false;
 
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new ExecuteCommandArgs(null, vars, cmdNode, null);
+            var args = new ExecuteCommandArgs(null, vars, cmdNode, new BuildHelper());
 
             // run
             command.Run(args);
