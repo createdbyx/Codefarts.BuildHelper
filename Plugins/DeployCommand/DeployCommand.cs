@@ -23,12 +23,7 @@ namespace Codefarts.BuildHelper
             {
                 throw new ArgumentNullException(nameof(args));
             }
-
-            if (args.Variables == null)
-            {
-                throw new BuildException("Variables dictionary is null.");
-            }
-
+ 
             var destPath = args.GetParameter<string>("path", null);
             destPath = destPath != null ? destPath.ReplaceVariableStrings(args.Variables) : null;
             if (destPath == null)
