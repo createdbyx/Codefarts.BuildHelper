@@ -11,6 +11,8 @@ namespace Codefarts.BuildHelper
 
     public class MissingParameterException : Exception
     {
+        public string ParameterName { get; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MissingParameterException"/> class.
         /// </summary>
@@ -18,15 +20,25 @@ namespace Codefarts.BuildHelper
         {
         }
 
-        protected MissingParameterException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected MissingParameterException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
 
-        public MissingParameterException(string message) : base(message)
+        public MissingParameterException(string paramName)
+            : base($"Command requires a '{paramName}' parameter to run.")
         {
+            this.ParameterName = paramName;
         }
 
-        public MissingParameterException(string message, Exception innerException) : base(message, innerException)
+        public MissingParameterException(string paramName, string message)
+            : base(message)
+        {
+            this.ParameterName = paramName;
+        }
+
+        public MissingParameterException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
     }

@@ -11,6 +11,8 @@ namespace Codefarts.BuildHelper
 
     public class MissingVariableException : Exception
     {
+        public string VariableName { get; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MissingVariableException"/> class.
         /// </summary>
@@ -18,15 +20,25 @@ namespace Codefarts.BuildHelper
         {
         }
 
-        protected MissingVariableException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected MissingVariableException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
 
-        public MissingVariableException(string message) : base(message)
+        public MissingVariableException(string variableName)
+            : base($"Command requires a '{variableName}' variable to run.")
         {
+            this.VariableName = variableName;
         }
 
-        public MissingVariableException(string message, Exception innerException) : base(message, innerException)
+        public MissingVariableException(string variableName, string message)
+            : base(message)
+        {
+            this.VariableName = variableName;
+        }
+
+        public MissingVariableException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
     }
