@@ -39,17 +39,20 @@ namespace ConditionCommand
             // perform validation
             if (value1 == null)
             {
-                throw new MissingParameterException(nameof(value1));
+                args.Result = RunResult.Errored(new MissingParameterException(nameof(value1)));
+                return;
             }
 
             if (value2 == null)
             {
-                throw new MissingParameterException(nameof(value2));
+                args.Result = RunResult.Errored(new MissingParameterException(nameof(value2)));
+                return;
             }
 
             if (string.IsNullOrWhiteSpace(operatorValue))
             {
-                throw new MissingParameterException("operator");
+                args.Result = RunResult.Errored(new MissingParameterException("operator"));
+                return;
             }
 
             // get types
@@ -59,82 +62,53 @@ namespace ConditionCommand
             // compare value types
             if ((value1Type.IsValueType | value1Type == typeof(string)) && (value2Type.IsValueType | value2Type == typeof(string)))
             {
-                var string1 = value1.ToString();
-                var string2 = value2.ToString();
-                var result = this.CompareStrings(string1, string2, operatorValue, ignoreCase);
+                var string1 = value1.ToString().ReplaceVariableStrings(args.Variables);
+                var string2 = value2.ToString().ReplaceVariableStrings(args.Variables);
+                try
+                {
+                    var result = this.CompareStrings(string1, string2, operatorValue, ignoreCase);
+                    args.Result = RunResult.Sucessful(result);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    args.Result = RunResult.Errored(ex);
+                    return;
+                }
             }
 
-            // compare dissimilar object types
-
-            // ... determine what to do here
-            
+            // currently only support value type comparisons
+            args.Result = RunResult.Errored(new NotSupportedException("Only value type comparisons are supported."));
         }
 
         private bool CompareStrings(string value1, string value2, string operatorValue, bool ignoreCase)
         {
-            if (value1 == null)
-            {
-                throw new ArgumentOutOfRangeException("'value1' is missing.", nameof(value1));
-            }
-
-            if (value2 == null)
-            {
-                throw new ArgumentOutOfRangeException("'value2' is missing.", nameof(value2));
-            }
-
-            operatorValue = operatorValue == null ? operatorValue : operatorValue.ToLowerInvariant().Trim();
+            operatorValue = operatorValue.ToLowerInvariant().Trim();
+            var comparisonType = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
             switch (operatorValue)
             {
                 case "=":
                 case "equals":
                 case "equalto":
-                    if (ignoreCase ? string.Equals(value1, value2, StringComparison.OrdinalIgnoreCase) : string.Equals(value1, value2))
-                    {
-                        return true;
-                    }
-
-                    return false;
+                    return string.Equals(value1, value2, comparisonType);
 
                 case "!=":
                 case "notequal":
                 case "notequalto":
-                    if (ignoreCase ? !string.Equals(value1, value2, StringComparison.OrdinalIgnoreCase) : !string.Equals(value1, value2))
-                    {
-                        return true;
-                    }
-
-                    return false;
+                    return !string.Equals(value1, value2, comparisonType);
 
                 case "startswith":
                 case "beginswith":
-                    if (ignoreCase ? value1.StartsWith(value2, StringComparison.OrdinalIgnoreCase) : value1.StartsWith(value2))
-                    {
-                        return true;
-                    }
-
-                    return false;
+                    return value1.StartsWith(value2, comparisonType);
 
                 case "endswith":
-                    if (ignoreCase ? value1.EndsWith(value2, StringComparison.OrdinalIgnoreCase) : value1.EndsWith(value2))
-                    {
-                        return true;
-                    }
-
-                    return false;
+                    return value1.EndsWith(value2, comparisonType);
 
                 case "contains":
-                    if (ignoreCase ? value1.IndexOf(value2, StringComparison.OrdinalIgnoreCase) >= 0 : value1.Contains(value2))
-                    {
-                        return true;
-                    }
-
-                    return false;
-
-                case null:
-                    throw new ArgumentNullException("Condition is missing 'operator' value.");
+                    return value1.Contains(value2, comparisonType);
 
                 default:
-                    throw new ArgumentOutOfRangeException("'operator' attribute exists but it's meaning could not determined.");
+                    throw new NotSupportedException($"'operator' value not supported. Value was '{operatorValue}'.");
             }
         }
     }
