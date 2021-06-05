@@ -4,6 +4,8 @@
 // http://www.codefarts.com
 // </copyright>
 
+using System;
+
 namespace Codefarts.BuildHelper
 {
     using System.IO;
@@ -24,12 +26,13 @@ namespace Codefarts.BuildHelper
 
             if (destPath == null)
             {
-                throw new MissingParameterException($"Command: {nameof(CopyDirCommand)} value: destination  - Value not found");
+                args.Result = RunResult.Errored(
+                    new MissingParameterException($"Command: {nameof(CopyDirCommand)} value: destination  - Value not found"));
             }
 
             if (srcPath == null)
             {
-                throw new MissingParameterException($"Command: {nameof(CopyDirCommand)} value: source  - Value not found");
+                args.Result = RunResult.Errored(new MissingParameterException($"Command: {nameof(CopyDirCommand)} value: source  - Value not found"));
             }
 
             srcPath = srcPath.ReplaceVariableStrings(args.Variables);
@@ -45,30 +48,40 @@ namespace Codefarts.BuildHelper
             var doClear = args.GetParameter("clean", false);
             // var doClear = string.IsNullOrWhiteSpace(value) ? false : value.Trim().ToLowerInvariant() == "true";
             args.Output($"Clearing before copy ({doClear}): {destPath}");
-            var di = new DirectoryInfo(destPath);
-            if (doClear && di.Exists)
+            try
             {
-                foreach (var file in di.EnumerateFiles())
+                var di = new DirectoryInfo(destPath);
+                if (doClear && di.Exists)
                 {
-                    file.Delete();
+                    foreach (var file in di.EnumerateFiles())
+                    {
+                        file.Delete();
+                    }
+
+                    foreach (var dir in di.GetDirectories())
+                    {
+                        dir.Delete(true);
+                    }
                 }
 
-                foreach (var dir in di.GetDirectories())
+                var allFiles = Directory.GetFiles(srcPath, "*.*", SearchOption.AllDirectories).Select(d => d.Remove(0, srcPath.Length));
+                foreach (var file in allFiles)
                 {
-                    dir.Delete(true);
+                    var src = Path.Combine(srcPath, file);
+                    var dest = Path.Combine(destPath, file);
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(dest));
+                    args.Output("Copying: " + src + " ==> " + dest);
+                    File.Copy(src, dest, true);
                 }
             }
-
-            var allFiles = Directory.GetFiles(srcPath, "*.*", SearchOption.AllDirectories).Select(d => d.Remove(0, srcPath.Length));
-            foreach (var file in allFiles)
+            catch (Exception ex)
             {
-                var src = Path.Combine(srcPath, file);
-                var dest = Path.Combine(destPath, file);
-
-                Directory.CreateDirectory(Path.GetDirectoryName(dest));
-                args.Output("Copying: " + src + " ==> " + dest);
-                File.Copy(src, dest, true);
+                args.Result = RunResult.Errored(ex);
+                return;
             }
+
+            args.Result = RunResult.Sucessful();
         }
     }
 }
