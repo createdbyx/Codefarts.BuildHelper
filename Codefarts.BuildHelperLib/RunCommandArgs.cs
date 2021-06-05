@@ -34,5 +34,7 @@ namespace Codefarts.BuildHelper
         public Action<string> Output { get; }
 
         public IDictionary<string, object> Variables { get; }
+
+        public RunResult Result { get; set; }
     }
 }
