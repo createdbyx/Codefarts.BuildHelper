@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
 
@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Plugins\AutoVersionUpdater\AutoVersionUpdater.csproj" />
+    <ProjectReference Include="..\Plugins\ConditionCommand\ConditionCommand.csproj" />
     <ProjectReference Include="..\Plugins\CopyDirCommand\CopyDirCommand.csproj" />
     <ProjectReference Include="..\Plugins\DeployCommand\DeployCommand.csproj" />
     <ProjectReference Include="..\Plugins\PurgeCommand\PurgeCommand.csproj" />

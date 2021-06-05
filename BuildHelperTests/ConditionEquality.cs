@@ -4,10 +4,9 @@
 // http://www.codefarts.com
 // </copyright>
 
-using System;
-
 namespace BuildHelperTests
 {
+    using System;
     using System.Collections.Generic;
     using System.Xml.Linq;
     using Codefarts.BuildHelper;

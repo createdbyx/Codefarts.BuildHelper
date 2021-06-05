@@ -19,7 +19,7 @@ namespace BuildHelperTests
         private XElement goodConditionEquality;
         private XElement goodConditionEqualityWithTrueIgnore;
         private XElement goodConditionEqualityWithFalseIgnore;
-        private IDictionary<string, object> varibles;
+        private IDictionary<string, object> variables;
 
         [TestInitialize]
         public void InitTest()
@@ -27,14 +27,14 @@ namespace BuildHelperTests
             this.goodConditionEquality = new XElement("condition", new XAttribute("value1", "Test"), new XAttribute("operator", "="), new XAttribute("value2", "Test"));
             this.goodConditionEqualityWithTrueIgnore = new XElement("condition", new XAttribute("value1", "Test"), new XAttribute("operator", "="), new XAttribute("value2", "Test"), new XAttribute("ignorecase", true));
             this.goodConditionEqualityWithFalseIgnore = new XElement("condition", new XAttribute("value1", "Test"), new XAttribute("operator", "="), new XAttribute("value2", "Test"), new XAttribute("ignorecase", false));
-            this.varibles = new Dictionary<string, object>();
+            this.variables = new Dictionary<string, object>();
         }
 
         [TestCleanup]
         public void TestCleanup()
         {
             this.goodConditionEquality = null;
-            this.varibles = null;
+            this.variables = null;
         }
 
         [TestMethod]
@@ -42,7 +42,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"Test\" operator=\"contains\" value2=\"\" />");
             var node = TestHelpers.BuildCommandNode(item, null);
-            Assert.IsTrue(node.SatifiesCondition(this.varibles));
+            Assert.IsTrue(node.SatifiesCondition(this.variables));
         }
 
         [TestMethod]
@@ -50,7 +50,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"\" operator=\"contains\" value2=\"Test\" />");
             var node = TestHelpers.BuildCommandNode(item, null);
-            Assert.IsFalse(node.SatifiesCondition(this.varibles));
+            Assert.IsFalse(node.SatifiesCondition(this.variables));
         }
 
         [TestMethod]
@@ -58,7 +58,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"Zest\" operator=\"contains\" value2=\"Test\" />");
             var node = TestHelpers.BuildCommandNode(item, null);
-            Assert.IsFalse(node.SatifiesCondition(this.varibles));
+            Assert.IsFalse(node.SatifiesCondition(this.variables));
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"Test\" operator=\"contains\" value2=\"Test\" />");
             var node = TestHelpers.BuildCommandNode(item, null);
-            Assert.IsTrue(node.SatifiesCondition(this.varibles));
+            Assert.IsTrue(node.SatifiesCondition(this.variables));
         }
 
         [TestMethod]
@@ -74,7 +74,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"test\" operator=\"contains\" value2=\"Test\" />");
             var node = TestHelpers.BuildCommandNode(item, null);
-            Assert.IsTrue(node.SatifiesCondition(this.varibles));
+            Assert.IsTrue(node.SatifiesCondition(this.variables));
         }
 
         [TestMethod]
@@ -82,7 +82,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"test\" operator=\"contains\" value2=\"Test\" ignorecase=\"false\" />");
             var node = TestHelpers.BuildCommandNode(item, null);
-            Assert.IsFalse(node.SatifiesCondition(this.varibles));
+            Assert.IsFalse(node.SatifiesCondition(this.variables));
         }
 
         [TestMethod]
@@ -90,7 +90,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"test\" operator=\"contains\" value2=\"Test\" ignorecase=\"true\" />");
             var node = TestHelpers.BuildCommandNode(item, null);
-            Assert.IsTrue(node.SatifiesCondition(this.varibles));
+            Assert.IsTrue(node.SatifiesCondition(this.variables));
         }
 
         [TestMethod]
@@ -98,7 +98,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"test\" operator=\"contains\" value2=\"Test\" ignorecase=\"TRUE\" />");
             var node = TestHelpers.BuildCommandNode(item, null);
-            Assert.IsTrue(node.SatifiesCondition(this.varibles));
+            Assert.IsTrue(node.SatifiesCondition(this.variables));
         }
 
         [TestMethod]
@@ -106,7 +106,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"\" operator=\"contains\" value2=\"\" />");
             var node = TestHelpers.BuildCommandNode(item, null);
-            Assert.IsTrue(node.SatifiesCondition(this.varibles));
+            Assert.IsTrue(node.SatifiesCondition(this.variables));
         }
 
         [TestMethod]
@@ -114,7 +114,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"\" operator=\"contains\" value2=\"\" ignorecase=\"\" />");
             var node = TestHelpers.BuildCommandNode(item, null);
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => node.SatifiesCondition(this.varibles));
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => node.SatifiesCondition(this.variables));
         }
 
         [TestMethod]
@@ -122,7 +122,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"\" operator=\"contains\" value2=\"\" />");
             var node = TestHelpers.BuildCommandNode(item, null);
-            Assert.IsTrue(node.SatifiesCondition(this.varibles));
+            Assert.IsTrue(node.SatifiesCondition(this.variables));
         }
     }
 }
