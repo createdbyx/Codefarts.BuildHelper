@@ -10,15 +10,20 @@ namespace Codefarts.BuildHelper
 
     public class RunResult
     {
-        public Exception Error { get; }
+        public Exception Error { get; private set; }
 
-        public RunStatus Status { get; }
+        public RunStatus Status { get; private set; }
 
         public object ReturnValue { get; }
 
+        public RunResult()
+        {
+            this.Status = RunStatus.Running;
+        }
+
         public RunResult(Exception error)
         {
-            this.Error = error;
+            this.Error = error ?? throw new ArgumentNullException(nameof(error));
             this.Status = RunStatus.Errored;
         }
 
@@ -26,6 +31,13 @@ namespace Codefarts.BuildHelper
         {
             this.ReturnValue = returnValue;
             this.Status = RunStatus.Sucessful;
+        }
+
+        public static RunResult Sucessful()
+        {
+            var value = new RunResult();
+            value.Status = RunStatus.Sucessful;
+            return value;
         }
 
         public static RunResult Sucessful(object returnValue)
@@ -36,6 +48,17 @@ namespace Codefarts.BuildHelper
         public static RunResult Errored(Exception error)
         {
             return new RunResult(error);
+        }
+
+        public void Done()
+        {
+            this.Status = RunStatus.Sucessful;
+        }
+
+        public void Done(Exception error)
+        {
+            this.Error = error ?? throw new ArgumentNullException(nameof(error));
+            this.Status = RunStatus.Errored;
         }
     }
 }
