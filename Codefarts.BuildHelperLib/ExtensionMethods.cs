@@ -48,6 +48,23 @@ namespace Codefarts.BuildHelper
             return GetValue<T>(commandData.Parameters, name, default);
         }
 
+        public static T GetReturnValue<T>(this RunResult result)
+        {
+            return (T)result.ReturnValue;
+        }
+
+        public static T GetReturnValue<T>(this RunResult result, T defaultValue)
+        {
+            try
+            {
+                return (T)result.ReturnValue;
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
         public static T GetValue<T>(this IDictionary<string, object> parameters, string name, T defaultValue)
         {
             if (parameters == null)
@@ -58,7 +75,14 @@ namespace Codefarts.BuildHelper
             object value;
             if (parameters.TryGetValue(name, out value))
             {
-                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+                try
+                {
+                    return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+                }
+                catch
+                {
+                    return defaultValue;
+                }
             }
 
             return defaultValue;
@@ -164,15 +188,15 @@ namespace Codefarts.BuildHelper
 
             var value1 = condition.GetParameter<string>("value1").ReplaceVariableStrings(variables);
             var value2 = condition.GetParameter<string>("value2").ReplaceVariableStrings(variables);
-            var operatorValue = condition.GetParameter<string>("operator");
-            var ignoreCaseValue = condition.GetParameter<string>("ignorecase");
+            var operatorValue = condition.GetParameter<string>("operator").ReplaceVariableStrings(variables);
+            var ignoreCaseValue = condition.GetParameter<string>("ignorecase").ReplaceVariableStrings(variables);
             var ignoreCase = true;
             if (ignoreCaseValue != null && !bool.TryParse(ignoreCaseValue, out ignoreCase))
             {
                 throw new ArgumentOutOfRangeException("'ignorecase' attribute exists but it's value could not be parsed as a bool value.");
             }
 
-            return SatifiesCondition(variables, value1, value2, operatorValue, ignoreCase);
+            return SatifiesCondition(value1, value2, operatorValue, ignoreCase);
 
             //if (value1 == null)
             //{
@@ -244,8 +268,7 @@ namespace Codefarts.BuildHelper
             //return true;
         }
 
-        public static bool SatifiesCondition(this IDictionary<string, object> variables, string value1, string value2, string operatorValue,
-            bool ignoreCase)
+        public static bool SatifiesCondition(string value1, string value2, string operatorValue, bool ignoreCase)
         {
             //var value1 = condition.GetParameter<string>("value1").ReplaceBuildVariableStrings(variables);
             //var value2 = condition.GetParameter<string>("value2").ReplaceBuildVariableStrings(variables);
