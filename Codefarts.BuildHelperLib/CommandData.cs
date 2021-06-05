@@ -11,9 +11,9 @@ namespace Codefarts.BuildHelper
 
     public class CommandData : INotifyPropertyChanged
     {
+        private readonly CommandDataCollection children;
+        private readonly IDictionary<string, object> parameters;
         private string name;
-        private CommandDataCollection children;
-        private IDictionary<string, object> parameters;
         private CommandData parent;
 
         /// <summary>
@@ -46,16 +46,16 @@ namespace Codefarts.BuildHelper
             {
                 return this.parameters;
             }
-
-            internal set
-            {
-                var currentValue = this.parameters;
-                if (currentValue != value)
-                {
-                    this.parameters = value;
-                    this.OnPropertyChanged(nameof(this.Parameters));
-                }
-            }
+            //
+            // internal set
+            // {
+            //     var currentValue = this.parameters;
+            //     if (currentValue != value)
+            //     {
+            //         this.parameters = value;
+            //         this.OnPropertyChanged(nameof(this.Parameters));
+            //     }
+            // }
         }
 
         public CommandData Parent
@@ -67,26 +67,19 @@ namespace Codefarts.BuildHelper
 
             set
             {
-                if (this.parent != value)
+                if (this.parent == value)
                 {
-                    if (value != null && value.Children != null)
-                    {
-                        value.Children.Add(this);
-                        return;
-                    }
-
-                    if (this.parent.Children != null)
-                    {
-                        this.parent.Children.Remove(this);
-                    }
+                    return;
                 }
 
-                var currentValue = this.parent;
-                if (currentValue != value)
+                if (value != null)
                 {
-                    this.parent = value;
-                    this.OnPropertyChanged(nameof(this.Parent));
+                    value.Children.Add(this);
+                    return;
                 }
+
+                // value is null so we are removing the parent
+                this.parent.Children.Remove(this);
             }
         }
 
@@ -97,15 +90,15 @@ namespace Codefarts.BuildHelper
                 return this.children;
             }
 
-            internal set
-            {
-                var currentValue = this.children;
-                if (currentValue != value)
-                {
-                    this.children = value;
-                    this.OnPropertyChanged(nameof(this.Children));
-                }
-            }
+            // internal set
+            // {
+            //     var currentValue = this.children;
+            //     if (currentValue != value)
+            //     {
+            //         this.children = value;
+            //         this.OnPropertyChanged(nameof(this.Children));
+            //     }
+            // }
         }
 
         public string Name
