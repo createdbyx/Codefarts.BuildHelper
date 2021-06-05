@@ -197,89 +197,10 @@ namespace Codefarts.BuildHelper
             }
 
             return SatifiesCondition(value1, value2, operatorValue, ignoreCase);
-
-            //if (value1 == null)
-            //{
-            //    throw new ArgumentOutOfRangeException("'value1' is missing.", nameof(value1));
-            //}
-
-            //if (value2 == null)
-            //{
-            //    throw new ArgumentOutOfRangeException("'value2' is missing.", nameof(value2));
-            //}
-
-
-            //operatorValue = operatorValue == null ? operatorValue : operatorValue.ToLowerInvariant().Trim();
-            //switch (operatorValue)
-            //{
-            //    case "=":
-            //    case "equals":
-            //    case "equalto":
-            //        if (ignoreCase ? string.Equals(value1, value2, StringComparison.OrdinalIgnoreCase) : string.Equals(value1, value2))
-            //        {
-            //            return true;
-            //        }
-
-            //        return false;
-
-            //    case "!=":
-            //    case "notequal":
-            //    case "notequalto":
-            //        if (ignoreCase ? !string.Equals(value1, value2, StringComparison.OrdinalIgnoreCase) : !string.Equals(value1, value2))
-            //        {
-            //            return true;
-            //        }
-
-            //        return false;
-
-            //    case "startswith":
-            //    case "beginswith":
-            //        if (ignoreCase ? value1.StartsWith(value2, StringComparison.OrdinalIgnoreCase) : value1.StartsWith(value2))
-            //        {
-            //            return true;
-            //        }
-
-            //        return false;
-
-            //    case "endswith":
-            //        if (ignoreCase ? value1.EndsWith(value2, StringComparison.OrdinalIgnoreCase) : value1.EndsWith(value2))
-            //        {
-            //            return true;
-            //        }
-
-            //        return false;
-
-            //    case "contains":       //this.IndexOf(value, comparisonType) >= 0
-            //        //if (ignoreCase ? !value1.Contains(value2, StringComparison.OrdinalIgnoreCase) >= 0 : !value1.Contains(value2))
-            //        if (ignoreCase ? value1.IndexOf(value2, StringComparison.OrdinalIgnoreCase) >= 0 : value1.Contains(value2))
-            //        {
-            //            return true;
-            //        }
-
-            //        return false;
-
-            //    case null:
-            //        throw new ArgumentNullException("Condition is missing 'operator' attribute.");
-
-            //    default:
-            //        throw new ArgumentOutOfRangeException("'operator' attribute exists but it's meaning could not determined.");
-            //}
-
-            //return true;
         }
 
         public static bool SatifiesCondition(string value1, string value2, string operatorValue, bool ignoreCase)
         {
-            //var value1 = condition.GetParameter<string>("value1").ReplaceBuildVariableStrings(variables);
-            //var value2 = condition.GetParameter<string>("value2").ReplaceBuildVariableStrings(variables);
-            //var operatorValue = condition.GetParameter<string>("operator");
-            //var ignoreCaseValue = condition.GetParameter<string>("ignorecase");
-            //var ignoreCase = true;
-            //if (ignoreCaseValue != null && !bool.TryParse(ignoreCaseValue, out ignoreCase))
-            //{
-            //    throw new ArgumentOutOfRangeException("'ignorecase' attribute exists but it's value could not be parsed as a bool value.");
-            //}
-
             if (value1 == null)
             {
                 throw new ArgumentOutOfRangeException("'value1' is missing.", nameof(value1));
@@ -330,8 +251,7 @@ namespace Codefarts.BuildHelper
 
                     return false;
 
-                case "contains": //this.IndexOf(value, comparisonType) >= 0
-                    //if (ignoreCase ? !value1.Contains(value2, StringComparison.OrdinalIgnoreCase) >= 0 : !value1.Contains(value2))
+                case "contains":
                     if (ignoreCase ? value1.IndexOf(value2, StringComparison.OrdinalIgnoreCase) >= 0 : value1.Contains(value2))
                     {
                         return true;
