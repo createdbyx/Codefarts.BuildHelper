@@ -98,10 +98,20 @@ namespace Codefarts.BuildHelper
 
                     // execute the command plugin
                     plugin.Run(executeCommandArgs);
+                    var result = executeCommandArgs.Result;
+
+                    if (result != null)
+                    {
+                        this.Output($"'{command.Name}' completed with status '{result.Status}'.");
+                        if (result.Status == RunStatus.Errored)
+                        {
+                            this.Output(result.Error.ToString());
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
-                    this.Output($"Command {plugin.Name} threw an exception.");
+                    this.Output($"Command {plugin.Name} threw an unexpected exception.");
                     this.Output(ex.ToString());
                 }
             }
