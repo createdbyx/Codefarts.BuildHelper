@@ -14,55 +14,20 @@ namespace Codefarts.BuildHelper
 
     public static class ExtensionMethods
     {
-        /// <summary>
-        /// Gets the value of a <see cref="XElement"/>.
-        /// </summary>
-        /// <param name="element">The element to get the value from.</param>
-        /// <param name="name">The name of the attribute.</param>
-        /// <returns>Value of the <see cref="XElement"/>, otherwise null.</returns>
-        /// <remarks>Will return null if no value found.</remarks>
-        public static string GetAttributeValue(this XElement element, string name)
-        {
-            if (element == null)
-            {
-                throw new ArgumentNullException(nameof(element));
-            }
-
-            var attr = element.Attribute(name);
-            if (attr != null)
-            {
-                return attr.Value;
-            }
-
-            var ele = element.Element(name);
-            return ele != null ? ele.Value : null;
-        }
-
         public static T GetValue<T>(this IDictionary<string, object> parameters, string name)
         {
-            return GetValue<T>(parameters, name, default);
-        }
-
-        public static T GetValue<T>(this CommandData commandData, string name)
-        {
-            return GetValue<T>(commandData.Parameters, name, default);
-        }
-
-        public static T GetReturnValue<T>(this RunResult result)
-        {
-            return (T)result.ReturnValue;
-        }
-
-        public static T GetReturnValue<T>(this RunResult result, T defaultValue)
-        {
-            try
+            if (parameters == null)
             {
-                return (T)result.ReturnValue;
+                throw new ArgumentNullException(nameof(parameters));
             }
-            catch
+
+            object value;
+            if (!parameters.TryGetValue(name, out value))
             {
-                return defaultValue;
+                throw new KeyNotFoundException(name);
             }
+
+            return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
         }
 
         public static T GetValue<T>(this IDictionary<string, object> parameters, string name, T defaultValue)
@@ -88,9 +53,37 @@ namespace Codefarts.BuildHelper
             return defaultValue;
         }
 
+        public static T GetReturnValue<T>(this RunResult result)
+        {
+            return (T)result.ReturnValue;
+        }
+
+        public static T GetReturnValue<T>(this RunResult result, T defaultValue)
+        {
+            try
+            {
+                return (T)result.ReturnValue;
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
         public static T GetParameter<T>(this RunCommandArgs args, string name)
         {
-            return args.Command.Parameters.GetValue<T>(name, default);
+            if (args == null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
+            object value;
+            if (!args.Command.Parameters.TryGetValue(name, out value))
+            {
+                throw new MissingParameterException(name);
+            }
+
+            return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
         }
 
         public static T GetParameter<T>(this RunCommandArgs args, string name, T defaultValue)
@@ -105,7 +98,18 @@ namespace Codefarts.BuildHelper
 
         public static T GetVariable<T>(this RunCommandArgs args, string name)
         {
-            return args.GetVariable<T>(name, default);
+            if (args == null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
+            object value;
+            if (!args.Variables.TryGetValue(name, out value))
+            {
+                throw new MissingVariableException(name);
+            }
+
+            return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
         }
 
         public static T GetVariable<T>(this RunCommandArgs args, string name, T defaultValue)
@@ -186,10 +190,16 @@ namespace Codefarts.BuildHelper
                 throw new ArgumentException("Condition element name is not 'condition'.", nameof(condition));
             }
 
-            var value1 = condition.GetParameter<string>("value1").ReplaceVariableStrings(variables);
-            var value2 = condition.GetParameter<string>("value2").ReplaceVariableStrings(variables);
-            var operatorValue = condition.GetParameter<string>("operator").ReplaceVariableStrings(variables);
-            var ignoreCaseValue = condition.GetParameter<string>("ignorecase").ReplaceVariableStrings(variables);
+            var value1 = condition.GetParameter<string>("value1");
+            var value2 = condition.GetParameter<string>("value2");
+            var operatorValue = condition.GetParameter<string>("operator");
+            var ignoreCaseValue = condition.GetParameter<string>("ignorecase");
+
+            value1 = variables != null ? value1.ReplaceVariableStrings(variables) : value1;
+            value2 = variables != null ? value2.ReplaceVariableStrings(variables) : value2;
+            operatorValue = variables != null ? operatorValue.ReplaceVariableStrings(variables) : operatorValue;
+            ignoreCaseValue = variables != null ? ignoreCaseValue.ReplaceVariableStrings(variables) : ignoreCaseValue;
+
             var ignoreCase = true;
             if (ignoreCaseValue != null && !bool.TryParse(ignoreCaseValue, out ignoreCase))
             {
