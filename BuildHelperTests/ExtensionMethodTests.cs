@@ -17,7 +17,7 @@ namespace BuildHelperTests
     public class ExtensionMethodTests
     {
         [TestMethod]
-        public void Null()
+        public void ReplaceVariableStringsNull()
         {
             var vars = new Dictionary<string, object>();
             vars["ProjectDir"] = Path.GetTempPath();
@@ -25,13 +25,13 @@ namespace BuildHelperTests
             vars["OutDir"] = "bin";
 
             string text = null;
-            text = text.ReplaceVariableStrings(vars);
+            text = ExtensionMethods.ReplaceVariableStrings(text, vars);
 
             Assert.IsNull(text);
         }
 
         [TestMethod]
-        public void Empty()
+        public void ReplaceVariableStringsEmpty()
         {
             var vars = new Dictionary<string, object>();
             vars["ProjectDir"] = Path.GetTempPath();
@@ -39,13 +39,13 @@ namespace BuildHelperTests
             vars["OutDir"] = "bin";
 
             var text = string.Empty;
-            text = text.ReplaceVariableStrings(vars);
+            text = ExtensionMethods.ReplaceVariableStrings(text, vars);
 
             Assert.AreEqual(string.Empty, text);
         }
 
         [TestMethod]
-        public void Whitespace()
+        public void ReplaceVariableStringsWhitespace()
         {
             var vars = new Dictionary<string, object>();
             vars["ProjectDir"] = Path.GetTempPath();
@@ -53,13 +53,13 @@ namespace BuildHelperTests
             vars["OutDir"] = "bin";
 
             var text = "   ";
-            text = text.ReplaceVariableStrings(vars);
+            text = ExtensionMethods.ReplaceVariableStrings(text, vars);
 
             Assert.AreEqual("   ", text);
         }
 
         [TestMethod]
-        public void VarCustomVar()
+        public void ReplaceVariableStringsVarCustomVar()
         {
             var vars = new Dictionary<string, object>();
             var tempPath = Path.GetTempPath();
@@ -68,14 +68,14 @@ namespace BuildHelperTests
             vars["OutDir"] = "bin";
 
             var text = @"$(ProjectDir)DeployPath_$(ConfigurationName)";
-            text = text.ReplaceVariableStrings(vars);
+            text = ExtensionMethods.ReplaceVariableStrings(text, vars);
 
             var expected = Path.Combine(tempPath, "DeployPath_DEBUG");
             Assert.AreEqual(expected, text);
         }
 
         [TestMethod]
-        public void KeepUnsetVaribles()
+        public void ReplaceVariableStringsKeepUnsetVaribles()
         {
             var vars = new Dictionary<string, object>();
             var tempPath = Path.GetTempPath();
@@ -84,7 +84,7 @@ namespace BuildHelperTests
             //  vars["OutDir"] = "bin";
 
             var text = "$(ProjectDir)";
-            text = text.ReplaceVariableStrings(vars);
+            text = ExtensionMethods.ReplaceVariableStrings(text, vars);
 
             var expected = "$(ProjectDir)";
             Assert.AreEqual(expected, text);
@@ -232,6 +232,41 @@ namespace BuildHelperTests
             var dic = new Dictionary<string, object>();
             dic["test"] = "value";
             Assert.ThrowsException<FormatException>(() => { ExtensionMethods.GetValue<bool>(dic, "test"); });
+        }
+
+        [TestMethod]
+        public void GetReturnValueWithNullArgsNoDefaultValue()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+            {
+                RunResult result = null;
+                ExtensionMethods.GetReturnValue<bool>(result);
+            });
+        }
+
+        [TestMethod]
+        public void GetReturnValueWithNullArgsWithDefaultValue()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+            {
+                RunResult result = null;
+                ExtensionMethods.GetReturnValue<string>(result, "default");
+            });
+        }
+
+        [TestMethod]
+        public void GetReturnValueWithValidArgsBadCastingNoDefaultValue()
+        {
+            var result = RunResult.Sucessful("test");
+            Assert.ThrowsException<InvalidCastException>(() => { ExtensionMethods.GetReturnValue<bool>(result); });
+        }
+
+        [TestMethod]
+        public void GetReturnValueWithValidArgsBadCastingWithDefaultValue()
+        {
+            var result = RunResult.Sucessful(true);
+            var value = ExtensionMethods.GetReturnValue<string>(result, "default");
+            Assert.AreEqual("default", value);
         }
 
         [TestMethod]

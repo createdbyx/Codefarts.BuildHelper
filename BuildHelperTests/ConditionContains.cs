@@ -4,36 +4,28 @@
 // http://www.codefarts.com
 // </copyright>
 
-using Codefarts.BuildHelper;
-
 namespace BuildHelperTests
 {
     using System;
     using System.Collections.Generic;
     using System.Xml.Linq;
+    using Codefarts.BuildHelper;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass, TestCategory("Extension Methods")]
     public class ConditionContains
     {
-        private XElement goodConditionEquality;
-        private XElement goodConditionEqualityWithTrueIgnore;
-        private XElement goodConditionEqualityWithFalseIgnore;
         private IDictionary<string, object> variables;
 
         [TestInitialize]
         public void InitTest()
         {
-            this.goodConditionEquality = new XElement("condition", new XAttribute("value1", "Test"), new XAttribute("operator", "="), new XAttribute("value2", "Test"));
-            this.goodConditionEqualityWithTrueIgnore = new XElement("condition", new XAttribute("value1", "Test"), new XAttribute("operator", "="), new XAttribute("value2", "Test"), new XAttribute("ignorecase", true));
-            this.goodConditionEqualityWithFalseIgnore = new XElement("condition", new XAttribute("value1", "Test"), new XAttribute("operator", "="), new XAttribute("value2", "Test"), new XAttribute("ignorecase", false));
             this.variables = new Dictionary<string, object>();
         }
 
         [TestCleanup]
         public void TestCleanup()
         {
-            this.goodConditionEquality = null;
             this.variables = null;
         }
 
