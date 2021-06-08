@@ -36,6 +36,7 @@
     <ProjectReference Include="..\Plugins\DeployCommand\DeployCommand.csproj" />
     <ProjectReference Include="..\Plugins\PurgeCommand\PurgeCommand.csproj" />
     <ProjectReference Include="..\Plugins\ReferencesCommands\ReferencesCommands.csproj" />
+    <ProjectReference Include="..\Plugins\VariableCommand\VariableCommand.csproj" />
   </ItemGroup>
 
   <ItemGroup>

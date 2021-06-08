@@ -18,7 +18,7 @@ namespace BuildHelperTests
         public void Ctor()
         {
             var ex = new BuildException();
-            Assert.IsTrue(string.IsNullOrWhiteSpace(ex.Message));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(ex.Message));
         }
 
         [TestMethod]
