@@ -28,7 +28,7 @@ namespace Codefarts.BuildHelper
             destPath = destPath != null ? destPath.ReplaceVariableStrings(args.Variables) : null;
             if (destPath == null)
             {
-                args.Result = RunResult.Errored(new BuildException($"Command: {nameof(DeployCommand)} value: path  - Value not found"));
+                args.Result = RunResult.Errored(new MissingParameterException("path"));
                 return;
             }
 
@@ -61,13 +61,13 @@ namespace Codefarts.BuildHelper
             // ensure there is a ProjectDir and OutDir variables
             if (!args.Variables.ContainsKey("ProjectDir"))
             {
-                args.Result = RunResult.Errored(new MissingVariableException("Deploy command requires a 'ProjectDir' variable to run."));
+                args.Result = RunResult.Errored(new MissingVariableException("ProjectDir"));
                 return;
             }
 
             if (!args.Variables.ContainsKey("OutDir"))
             {
-                args.Result = RunResult.Errored(new MissingVariableException("Deploy command requires a 'OutDir' variable to run."));
+                args.Result = RunResult.Errored(new MissingVariableException("OutDir"));
                 return;
             }
 
