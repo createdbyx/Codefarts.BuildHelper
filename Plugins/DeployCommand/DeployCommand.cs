@@ -23,61 +23,83 @@ namespace Codefarts.BuildHelper
             {
                 throw new ArgumentNullException(nameof(args));
             }
- 
+
             var destPath = args.GetParameter<string>("path", null);
             destPath = destPath != null ? destPath.ReplaceVariableStrings(args.Variables) : null;
             if (destPath == null)
             {
-                throw new BuildException($"Command: {nameof(DeployCommand)} value: path  - Value not found");
+                args.Result = RunResult.Errored(new BuildException($"Command: {nameof(DeployCommand)} value: path  - Value not found"));
+                return;
             }
 
             // check if we should clear the folder first
             var doClean = args.GetParameter("clean", false);
 
             args.Output($"Clearing before deploy ({doClean}): {destPath}");
-            var di = new DirectoryInfo(destPath);
-            if (doClean && di.Exists)
+            try
             {
-                foreach (var dir in di.GetDirectories())
+                var di = new DirectoryInfo(destPath);
+                if (doClean && di.Exists)
                 {
-                    dir.Delete(true);
-                }
+                    foreach (var dir in di.GetDirectories())
+                    {
+                        dir.Delete(true);
+                    }
 
-                foreach (var file in di.EnumerateFiles())
-                {
-                    file.Delete();
+                    foreach (var file in di.EnumerateFiles())
+                    {
+                        file.Delete();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                args.Result = RunResult.Errored(ex);
+                return;
             }
 
             // ensure there is a ProjectDir and OutDir variables
             if (!args.Variables.ContainsKey("ProjectDir"))
             {
-                throw new MissingVariableException("Deploy command requires a 'ProjectDir' variable to run.");
+                args.Result = RunResult.Errored(new MissingVariableException("Deploy command requires a 'ProjectDir' variable to run."));
+                return;
             }
 
             if (!args.Variables.ContainsKey("OutDir"))
             {
-                throw new MissingVariableException("Deploy command requires a 'OutDir' variable to run.");
+                args.Result = RunResult.Errored(new MissingVariableException("Deploy command requires a 'OutDir' variable to run."));
+                return;
             }
 
-            var srcPath = Path.Combine("$(ProjectDir)".ReplaceVariableStrings(args.Variables),
-                "$(OutDir)".ReplaceVariableStrings(args.Variables));
-            if (Directory.Exists(srcPath))
+            var projectDir = "$(ProjectDir)".ReplaceVariableStrings(args.Variables);
+            var outDir = "$(OutDir)".ReplaceVariableStrings(args.Variables);
+            var srcPath = Path.Combine(projectDir, outDir);
+            try
             {
-                var allFiles = Directory.GetFiles(srcPath, "*.*", SearchOption.AllDirectories);
-                foreach (var file in allFiles)
+                if (Directory.Exists(srcPath))
                 {
-                    var filePath = file.Substring(srcPath.Length).Trim();
-                    filePath = filePath.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                    var allFiles = Directory.GetFiles(srcPath, "*.*", SearchOption.AllDirectories);
+                    foreach (var file in allFiles)
+                    {
+                        var filePath = file.Substring(srcPath.Length).Trim();
+                        filePath = filePath.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
-                    var src = Path.Combine(srcPath, filePath);
-                    var dest = Path.Combine(destPath, filePath);
+                        var src = Path.Combine(srcPath, filePath);
+                        var dest = Path.Combine(destPath, filePath);
 
-                    Directory.CreateDirectory(Path.GetDirectoryName(dest));
-                    args.Output("Deploying: " + src + " ==> " + dest);
-                    File.Copy(src, dest, true);
+                        Directory.CreateDirectory(Path.GetDirectoryName(dest));
+                        args.Output("Deploying: " + src + " ==> " + dest);
+                        File.Copy(src, dest, true);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                args.Result = RunResult.Errored(ex);
+                return;
+            }
+
+            args.Result = RunResult.Sucessful();
         }
     }
 }
