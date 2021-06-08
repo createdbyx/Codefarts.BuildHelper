@@ -6,7 +6,7 @@
 
 namespace Codefarts.BuildHelper
 {
-    using System.Xml;
+    using System;
 
     [NamedParameter("name", typeof(string), true, "The name of the variable.")]
     [NamedParameter("value", typeof(string), true, "The value of the variable.")]
@@ -16,18 +16,25 @@ namespace Codefarts.BuildHelper
 
         public void Run(RunCommandArgs args)
         {
+            if (args == null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
             // get the variable name parameter
-            var nameValue = args.GetParameter<string>("name");
+            var nameValue = args.GetParameter<string>("name", null);
             if (nameValue == null)
             {
-                throw new XmlException($"Command: {nameof(AssignVariableCommand)} value: name - Value not found");
+                args.Result = RunResult.Errored(new MissingParameterException("name"));
+                return;
             }
 
             // get the variable value parameter
-            var valueValue = args.GetParameter<string>("value");
+            var valueValue = args.GetParameter<string>("value", null);
             if (valueValue == null)
             {
-                throw new XmlException($"Command: {nameof(AssignVariableCommand)} value: value - Value not found");
+                args.Result = RunResult.Errored(new MissingParameterException("value"));
+                return;
             }
 
             // replace variable strings
@@ -48,6 +55,8 @@ namespace Codefarts.BuildHelper
             }
 
             args.Output($"Name: {nameValue} Value: {valueValue}");
+
+            args.Result = RunResult.Sucessful();
         }
     }
 }
