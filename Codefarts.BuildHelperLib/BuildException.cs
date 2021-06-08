@@ -4,11 +4,10 @@
 // http://www.codefarts.com
 // </copyright>
 
-using System.Runtime.Serialization;
-
 namespace Codefarts.BuildHelper
 {
     using System;
+    using System.Runtime.Serialization;
 
     public class BuildException : Exception
     {
