@@ -35,6 +35,13 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
+        public void MissingArgs()
+        {
+            var deploy = new DeployCommand();
+            Assert.ThrowsException<ArgumentNullException>(() => deploy.Run(null));
+        }
+
+        [TestMethod]
         public void MissingProjectDirVariable()
         {
             var deploy = new DeployCommand();
@@ -51,7 +58,10 @@ namespace BuildHelperTests
             var cmdNode = new CommandData("deploy", parameters);
             var args = new RunCommandArgs(null, vars, cmdNode, new BuildHelper());
 
-            Assert.ThrowsException<MissingVariableException>(() => deploy.Run(args));
+            deploy.Run(args);
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Errored, args.Result.Status);
+            Assert.AreSame(typeof(MissingVariableException), args.Result.Error.GetType());
         }
 
         [TestMethod]
@@ -71,7 +81,10 @@ namespace BuildHelperTests
             var cmdNode = new CommandData("deploy", parameters);
             var args = new RunCommandArgs(null, vars, cmdNode, new BuildHelper());
 
-            Assert.ThrowsException<MissingVariableException>(() => deploy.Run(args));
+            deploy.Run(args);
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Errored, args.Result.Status);
+            Assert.AreSame(typeof(MissingVariableException), args.Result.Error.GetType());
         }
 
         [TestMethod]
@@ -88,7 +101,10 @@ namespace BuildHelperTests
             var cmdNode = new CommandData("deploy", parameters);
             var args = new RunCommandArgs(null, vars, cmdNode, new BuildHelper());
 
-            Assert.ThrowsException<MissingVariableException>(() => deploy.Run(args));
+            deploy.Run(args);
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Errored, args.Result.Status);
+            Assert.AreSame(typeof(MissingVariableException), args.Result.Error.GetType());
         }
 
         [TestMethod]
@@ -104,7 +120,10 @@ namespace BuildHelperTests
             var cmdNode = new CommandData("deploy", parameters);
             var args = new RunCommandArgs(null, null, cmdNode, new BuildHelper());
 
-            Assert.ThrowsException<MissingVariableException>(() => deploy.Run(args));
+            deploy.Run(args);
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Errored, args.Result.Status);
+            Assert.AreSame(typeof(MissingVariableException), args.Result.Error.GetType());
         }
 
         [TestMethod]
