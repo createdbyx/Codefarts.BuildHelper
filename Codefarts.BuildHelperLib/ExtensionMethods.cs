@@ -55,11 +55,21 @@ namespace Codefarts.BuildHelper
 
         public static T GetReturnValue<T>(this RunResult result)
         {
+            if (result == null)
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
+
             return (T)result.ReturnValue;
         }
 
         public static T GetReturnValue<T>(this RunResult result, T defaultValue)
         {
+            if (result == null)
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
+
             try
             {
                 return (T)result.ReturnValue;
