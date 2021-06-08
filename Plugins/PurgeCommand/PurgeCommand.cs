@@ -15,6 +15,7 @@ namespace Codefarts.BuildHelper
     [NamedParameter("allconditions", typeof(bool), false, "Specifies weather or not all conditions must be satisfied. Default is true.")]
     [NamedParameter("fullpaths", typeof(bool), false, "Specifies weather to use fully qualified paths. Default is false.")]
     [NamedParameter("subfolders", typeof(bool), false, "Specifies weather to purge sub folders. Default is true.")]
+    [NamedParameter("ignoreconditions", typeof(bool), false, "Specifies weather to ignore conditions. Default is false.")]
     public class PurgeCommand : ICommandPlugin
     {
         public string Name => "purge";
@@ -76,6 +77,9 @@ namespace Codefarts.BuildHelper
                 allEntries = Directory.GetDirectories(srcPath, "*.*", searchOption);
             }
 
+            // check to ignore conditions
+            var ignoreConditions = args.GetParameter("ignoreconditions", false);
+
             // TODO: need option to specify weather or not $(PurgeFile) is just the filename or full path
             // var allEntries = getEntries(srcPath);
             var modifiedVars = new Dictionary<string, object>(args.Variables);
@@ -84,20 +88,32 @@ namespace Codefarts.BuildHelper
                 var src = fullPaths ? file : Path.GetFileName(file);
                 modifiedVars["PurgeEntry"] = src;
 
-                if (args.Command.SatifiesConditions(modifiedVars, allConditions))
+                if (!ignoreConditions)
                 {
-                    // TODO: need ability to purge folder as well
-                    args.Output("Purging: " + file);
-
-                    if (typeValue == "files")
+                    if (args.Command.SatifiesConditions(modifiedVars, allConditions))
                     {
-                        File.Delete(file);
-                    }
-                    else
-                    {
-                        Directory.Delete(file, true);
+                        DeleteItem(args, file, typeValue);
                     }
                 }
+                else
+                {
+                    DeleteItem(args, file, typeValue);
+                }
+            }
+        }
+
+        private static void DeleteItem(RunCommandArgs args, string file, string typeValue)
+        {
+            // TODO: need ability to purge folder as well
+            args.Output("Purging: " + file);
+
+            if (typeValue == "files")
+            {
+                File.Delete(file);
+            }
+            else
+            {
+                Directory.Delete(file, true);
             }
         }
     }
