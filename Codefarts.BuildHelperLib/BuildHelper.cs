@@ -76,26 +76,6 @@ namespace Codefarts.BuildHelper
                         this.Output($"Message: {message}");
                     }
 
-                    // check to ignore conditions
-                    var ignoreConditions = command.GetParameter("ignoreconditions", true);
-                    if (!ignoreConditions)
-                    {
-                        // check type of conditions
-                        var allConditions = command.GetParameter("allconditions", true);
-                        // var allConditions = true;
-                        //if (conditionsValue != null && !bool.TryParse(conditionsValue, out allConditions))
-                        //{
-                        //    throw new ArgumentOutOfRangeException($"'{allConditions}' attribute exists but it's value could not be parsed as a bool value.");
-                        //}
-
-                        // check conditions
-                        if (!command.SatifiesConditions(variables, allConditions))
-                        {
-                            this.Output($"Conditions not satisfied for command '{command.Name}'.");
-                            return;
-                        }
-                    }
-
                     // execute the command plugin
                     plugin.Run(executeCommandArgs);
                     var result = executeCommandArgs.Result;
