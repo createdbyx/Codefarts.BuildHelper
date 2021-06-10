@@ -17,14 +17,13 @@ namespace AutoVersionUpdater
     [NamedParameter("ProjectFileName", typeof(string), true, "The file path to the project file.")]
     [NamedParameter("file", typeof(bool), false, "If true will increment the file version. Default is true.")]
     [NamedParameter("assembly", typeof(bool), false, "If true will increment the assembly version. Default is true.")]
-    [NamedVariable("ProjectFileName", typeof(string), true, "Specifies the full path to the project file.")]
     public class VersionUpdaterCommand : ICommandPlugin
     {
         public string Name
         {
             get
             {
-                return "UpdateVersion";
+                return "updateversion";
             }
         }
 
@@ -35,23 +34,28 @@ namespace AutoVersionUpdater
                 throw new ArgumentNullException(nameof(args));
             }
 
-            if (args.Variables == null)
-            {
-                throw new NullReferenceException("Variables dictionary is null.");
-            }
-
-            var projectFilePath = args.GetVariable<string>("ProjectFileName", null);
+            var projectFilePath = args.GetParameter<string>("ProjectFileName", null);
             projectFilePath = projectFilePath != null ? projectFilePath.ReplaceVariableStrings(args.Variables) : null;
             if (string.IsNullOrWhiteSpace(projectFilePath))
             {
-                throw new MissingVariableException($"Command: {nameof(VersionUpdaterCommand)} value: ProjectFileName  - Value not found");
+                args.Result = RunResult.Errored(new MissingParameterException("ProjectFileName"));
+                return;
             }
 
             var updateFile = args.GetParameter("file", true);
             var updateAssembly = args.GetParameter("assembly", true);
 
             // read project file
-            var doc = XDocument.Load(projectFilePath);
+            XDocument doc;
+            try
+            {
+                doc = XDocument.Load(projectFilePath);
+            }
+            catch (Exception ex)
+            {
+                args.Result = RunResult.Errored(ex);
+                return;
+            }
 
             // find version info
             var propGroups = Enumerable.Where(doc.Root.Elements(), x => x.Name == "PropertyGroup").ToArray();
@@ -61,27 +65,66 @@ namespace AutoVersionUpdater
             // change version info
             if (updateFile && fileVersion != null)
             {
-                fileVersion.Value = this.UpdateVersion(fileVersion.Value);
+                string result;
+                if (!this.UpdateVersion(fileVersion.Value, out result))
+                {
+                    args.Result = RunResult.Errored(new BuildException("FileVersion could not be understood."));
+                    return;
+                }
+
+                fileVersion.Value = result;
             }
 
             if (updateAssembly && assemblyVersion != null)
             {
-                assemblyVersion.Value = this.UpdateVersion(assemblyVersion.Value);
+                string result;
+                if (!this.UpdateVersion(assemblyVersion.Value, out result))
+                {
+                    args.Result = RunResult.Errored(new BuildException("AssemblyVersion could not be understood."));
+                    return;
+                }
+
+                assemblyVersion.Value = result;
             }
 
             // save project file
-            doc.Save(projectFilePath);
+            try
+            {
+                doc.Save(projectFilePath);
+            }
+            catch (Exception ex)
+            {
+                args.Result = RunResult.Errored(ex);
+                return;
+            }
+
+            args.Result = RunResult.Sucessful();
         }
 
-        private string UpdateVersion(string value)
+        private bool UpdateVersion(string value, out string result)
         {
             var parts = value.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 4)
+            {
+                result = value;
+                return false;
+            }
+
+            int part3Value;
+            if (!int.TryParse(parts[3], out part3Value))
+            {
+                result = value;
+                return false;
+            }
+
             var date = DateTime.Now;
             parts[0] = date.Year.ToString();
             parts[1] = date.Month.ToString();
             parts[2] = date.Day.ToString();
-            parts[3] = (int.Parse(parts[3]) + 1).ToString();
-            return string.Join(".", parts);
+            parts[3] = (part3Value + 1).ToString();
+
+            result = string.Join(".", parts);
+            return true;
         }
     }
 }
