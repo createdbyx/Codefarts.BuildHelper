@@ -22,15 +22,19 @@ namespace Codefarts.BuildHelper
 
         public void Run(RunCommandArgs args)
         {
-            var srcPath = args.GetParameter<string>("path", null);
-            if (srcPath == null)
+            if (args == null)
             {
-                throw new MissingParameterException("path");
+                throw new ArgumentNullException(nameof(args));
+            }
+
+            var srcPath = args.GetParameter<string>("path", null);
+            if (string.IsNullOrWhiteSpace(srcPath))
+            {
+                args.Result = RunResult.Errored(new MissingParameterException("path"));
+                return;
             }
 
             srcPath = srcPath.ReplaceVariableStrings(args.Variables);
-
-            // var message = args.Element.GetAttributeValue("message");
 
             // check type of purge
             var typeValue = args.GetParameter<string>("type", null);
@@ -38,14 +42,16 @@ namespace Codefarts.BuildHelper
             switch (typeValue)
             {
                 case null:
-                    throw new MissingParameterException("type");
+                    args.Result = RunResult.Errored(new MissingParameterException("type"));
+                    return;
 
                 case "files":
                 case "folders":
                     break;
 
                 default:
-                    throw new BuildException("'type' parameter exists but it value could not be understood.");
+                    args.Result = RunResult.Errored(new BuildException("'type' parameter exists but it value could not be understood."));
+                    return;
             }
 
             // check type of conditions
@@ -57,10 +63,15 @@ namespace Codefarts.BuildHelper
             // check if we should clear subfolders as well
             var subfolders = args.GetParameter("subfolders", true);
 
+            // check to ignore conditions
+            var ignoreConditions = args.GetParameter("ignoreconditions", false);
+
             var di = new DirectoryInfo(srcPath);
             if (!di.Exists)
             {
-                args.Output($"Purging folder failed! (Reason: Does not exist!): {srcPath}");
+                var message = $"Purging folder failed! (Reason: Does not exist!): {srcPath}";
+                args.Output(message);
+                args.Result = RunResult.Errored(new DirectoryNotFoundException(message));
                 return;
             }
 
@@ -68,38 +79,44 @@ namespace Codefarts.BuildHelper
 
             string[] allEntries;
             var searchOption = subfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-            if (typeValue == "files")
+            try
             {
-                allEntries = Directory.GetFiles(srcPath, "*.*", searchOption);
-            }
-            else
-            {
-                allEntries = Directory.GetDirectories(srcPath, "*.*", searchOption);
-            }
-
-            // check to ignore conditions
-            var ignoreConditions = args.GetParameter("ignoreconditions", false);
-
-            // TODO: need option to specify weather or not $(PurgeFile) is just the filename or full path
-            // var allEntries = getEntries(srcPath);
-            var modifiedVars = new Dictionary<string, object>(args.Variables);
-            foreach (var file in allEntries)
-            {
-                var src = fullPaths ? file : Path.GetFileName(file);
-                modifiedVars["PurgeEntry"] = src;
-
-                if (!ignoreConditions)
+                if (typeValue == "files")
                 {
-                    if (args.Command.SatifiesConditions(modifiedVars, allConditions))
+                    allEntries = Directory.GetFiles(srcPath, "*.*", searchOption);
+                }
+                else
+                {
+                    allEntries = Directory.GetDirectories(srcPath, "*.*", searchOption);
+                }
+
+                // TODO: need option to specify weather or not $(PurgeFile) is just the filename or full path
+                var modifiedVars = new Dictionary<string, object>(args.Variables);
+                foreach (var file in allEntries)
+                {
+                    var src = fullPaths ? file : Path.GetFileName(file);
+                    modifiedVars["PurgeEntry"] = src;
+
+                    if (!ignoreConditions)
+                    {
+                        if (args.Command.SatifiesConditions(modifiedVars, allConditions))
+                        {
+                            DeleteItem(args, file, typeValue);
+                        }
+                    }
+                    else
                     {
                         DeleteItem(args, file, typeValue);
                     }
                 }
-                else
-                {
-                    DeleteItem(args, file, typeValue);
-                }
             }
+            catch (Exception ex)
+            {
+                args.Result = RunResult.Errored(ex);
+                return;
+            }
+
+            args.Result = RunResult.Sucessful();
         }
 
         private static void DeleteItem(RunCommandArgs args, string file, string typeValue)
