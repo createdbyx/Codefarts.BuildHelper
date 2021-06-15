@@ -4,12 +4,11 @@
 // http://www.codefarts.com
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using Codefarts.BuildHelper;
-
 namespace BuildHelperTests
 {
+    using System;
+    using System.Collections.Generic;
+    using Codefarts.BuildHelper;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass, TestCategory("RunCommandArgs")]
@@ -30,7 +29,7 @@ namespace BuildHelperTests
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
-                var args = new RunCommandArgs(null, null, null, null);
+                var args = new RunCommandArgs(null, null);
             });
         }
 
@@ -39,45 +38,19 @@ namespace BuildHelperTests
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
-                var args = new RunCommandArgs(x => { }, new Dictionary<string, object>(), null, new BuildHelper());
+                var args = new RunCommandArgs(new VariablesDictionary(), null);
             });
         }
-
-        [TestMethod]
-        public void NullBuildHelper()
-        {
-            Assert.ThrowsException<ArgumentNullException>(() =>
-            {
-                var args = new RunCommandArgs(x => { }, new Dictionary<string, object>(), new CommandData(), null);
-            });
-        }
-
-        [TestMethod]
-        public void NullOutputArg()
-        {
-            var variables = new Dictionary<string, object>();
-            var data = new CommandData();
-            var helper = new BuildHelper();
-            var args = new RunCommandArgs(null, variables, data, helper);
-            Assert.IsNotNull(args.Output);
-            Assert.AreSame(variables, args.Variables);
-            Assert.AreSame(data, args.Command);
-            Assert.AreSame(helper, args.BuildHelper);
-        }
+  
 
         [TestMethod]
         public void ValidArgs()
         {
-            Action<string> output = x => { };
-            var variables = new Dictionary<string, object>();
+            var variables = new VariablesDictionary();
             var data = new CommandData();
-            var helper = new BuildHelper();
-            var args = new RunCommandArgs(output, variables, data, helper);
-            Assert.IsNotNull(args.Output);
-            Assert.AreNotSame(output, args.Output);
+            var args = new RunCommandArgs( variables, data);
             Assert.AreSame(variables, args.Variables);
             Assert.AreSame(data, args.Command);
-            Assert.AreSame(helper, args.BuildHelper);
         }
     }
 }

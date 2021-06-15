@@ -6,7 +6,6 @@
 
 namespace BuildHelperTests
 {
-    using System.Collections.Generic;
     using System.Xml.Linq;
     using Codefarts.BuildHelper;
     using ConditionCommand;
@@ -15,14 +14,14 @@ namespace BuildHelperTests
     [TestClass, TestCategory("ConditionalPlugin")]
     public class ConditionCommandTests
     {
-        private IDictionary<string, object> variables;
+        private VariablesDictionary variables;
         private ICommandPlugin plugin;
 
         [TestInitialize]
         public void InitTest()
         {
             this.plugin = new ConditionCommand();
-            this.variables = new Dictionary<string, object>();
+            this.variables = new VariablesDictionary();
         }
 
         [TestCleanup]
@@ -37,9 +36,8 @@ namespace BuildHelperTests
         public void GoodButMissingValue2_MissingIgnore()
         {
             var item = XElement.Parse("<condition value1=\"Test\" operator=\"contains\" value2=\"\" />");
-            var helper = new BuildHelper();
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, data, helper);
+            var args = new RunCommandArgs( this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -53,9 +51,8 @@ namespace BuildHelperTests
         public void GoodButMissingValue1_MissingIgnore()
         {
             var item = XElement.Parse("<condition value1=\"\" operator=\"contains\" value2=\"Test\" />");
-            var helper = new BuildHelper();
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, data, helper);
+            var args = new RunCommandArgs(this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -69,9 +66,8 @@ namespace BuildHelperTests
         public void GoodButValuesDiffer_MissingIgnore()
         {
             var item = XElement.Parse("<condition value1=\"Zest\" operator=\"contains\" value2=\"Test\" />");
-            var helper = new BuildHelper();
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, data, helper);
+            var args = new RunCommandArgs( this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -85,9 +81,8 @@ namespace BuildHelperTests
         public void SameValuesSameCasing_MissingIgnore()
         {
             var item = XElement.Parse("<condition value1=\"Test\" operator=\"contains\" value2=\"Test\" />");
-            var helper = new BuildHelper();
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, data, helper);
+            var args = new RunCommandArgs( this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -101,9 +96,8 @@ namespace BuildHelperTests
         public void SameValuesDiffernentCasing_MissingIgnore()
         {
             var item = XElement.Parse("<condition value1=\"test\" operator=\"contains\" value2=\"Test\" />");
-            var helper = new BuildHelper();
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, data, helper);
+            var args = new RunCommandArgs( this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -117,9 +111,8 @@ namespace BuildHelperTests
         public void SameValuesDiffernentCasing_IgnoreSetToFalse()
         {
             var item = XElement.Parse("<condition value1=\"test\" operator=\"contains\" value2=\"Test\" ignorecase=\"false\" />");
-            var helper = new BuildHelper();
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, data, helper);
+            var args = new RunCommandArgs( this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -133,9 +126,8 @@ namespace BuildHelperTests
         public void SameValuesDiffernentCasing_IgnoreSetToTrue()
         {
             var item = XElement.Parse("<condition value1=\"test\" operator=\"contains\" value2=\"Test\" ignorecase=\"true\" />");
-            var helper = new BuildHelper();
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, data, helper);
+            var args = new RunCommandArgs( this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -149,9 +141,8 @@ namespace BuildHelperTests
         public void SameValuesDiffernentCasing_IgnoreSetToTRUE()
         {
             var item = XElement.Parse("<condition value1=\"test\" operator=\"contains\" value2=\"Test\" ignorecase=\"TRUE\" />");
-            var helper = new BuildHelper();
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, data, helper);
+            var args = new RunCommandArgs( this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -165,9 +156,8 @@ namespace BuildHelperTests
         public void GoodButMissingValues_MissingIgnore()
         {
             var item = XElement.Parse("<condition value1=\"\" operator=\"contains\" value2=\"\" />");
-            var helper = new BuildHelper();
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, data, helper);
+            var args = new RunCommandArgs( this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -181,9 +171,8 @@ namespace BuildHelperTests
         public void GoodButMissingValues_IgnoreNotSpecified()
         {
             var item = XElement.Parse("<condition value1=\"\" operator=\"contains\" value2=\"\" ignorecase=\"\" />");
-            var helper = new BuildHelper();
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, data, helper);
+            var args = new RunCommandArgs( this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;

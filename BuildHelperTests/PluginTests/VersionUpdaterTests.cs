@@ -73,10 +73,10 @@ namespace BuildHelperTests
         public void DefaultNoParameters()
         {
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, object>();
+            var vars = new VariablesDictionary();
             var parameters = new Dictionary<string, object>();
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new RunCommandArgs(null, vars, cmdNode, new BuildHelper());
+            var args = new RunCommandArgs( vars, cmdNode);
 
             // run
             command.Run(args);
@@ -93,11 +93,11 @@ namespace BuildHelperTests
         public void ProjectFileLockedNoSharing()
         {
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, object>();
+            var vars = new VariablesDictionary();
             var parameters = new Dictionary<string, object>();
             parameters["ProjectFileName"] = this.sampleProjectPath;
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new RunCommandArgs(null, vars, cmdNode, new BuildHelper());
+            var args = new RunCommandArgs( vars, cmdNode);
 
             // lock file
             using (var fs = new FileStream(this.sampleProjectPath, FileMode.Open, FileAccess.Read, FileShare.None))
@@ -116,11 +116,11 @@ namespace BuildHelperTests
         public void ProjectFileLockedReadOnlySharing()
         {
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, object>();
+            var vars = new VariablesDictionary();
             var parameters = new Dictionary<string, object>();
             parameters["ProjectFileName"] = this.sampleProjectPath;
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new RunCommandArgs(null, vars, cmdNode, new BuildHelper());
+            var args = new RunCommandArgs(vars, cmdNode);
 
             // lock file
             using (var fs = new FileStream(this.sampleProjectPath, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -139,11 +139,11 @@ namespace BuildHelperTests
         public void ProjectFileVersionBadFileLength()
         {
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, object>();
+            var vars = new VariablesDictionary();
             var parameters = new Dictionary<string, object>();
             parameters["ProjectFileName"] = this.sampleProjectPathFileBadLengths;
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new RunCommandArgs(null, vars, cmdNode, new BuildHelper());
+            var args = new RunCommandArgs(vars, cmdNode);
 
             // run
             command.Run(args);
@@ -158,11 +158,11 @@ namespace BuildHelperTests
         public void ProjectFileVersionBadAssemblyLength()
         {
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, object>();
+            var vars = new VariablesDictionary();
             var parameters = new Dictionary<string, object>();
             parameters["ProjectFileName"] = this.sampleProjectPathAssemblyBadLengths;
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new RunCommandArgs(null, vars, cmdNode, new BuildHelper());
+            var args = new RunCommandArgs(vars, cmdNode);
 
             // run
             command.Run(args);
@@ -177,11 +177,11 @@ namespace BuildHelperTests
         public void ProjectFileNonIntegerFileRevision()
         {
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, object>();
+            var vars = new VariablesDictionary();
             var parameters = new Dictionary<string, object>();
             parameters["ProjectFileName"] = this.sampleProjectPathNonIntegerFileVersionRevision;
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new RunCommandArgs(null, vars, cmdNode, new BuildHelper());
+            var args = new RunCommandArgs(vars, cmdNode);
 
             // run
             command.Run(args);
@@ -197,14 +197,14 @@ namespace BuildHelperTests
         {
             var date = DateTime.Now;
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, object>();
+            var vars = new VariablesDictionary();
             var parameters = new Dictionary<string, object>();
             parameters["file"] = true;
             parameters["ProjectFileName"] = this.sampleProjectPath;
 
 
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new RunCommandArgs(null, vars, cmdNode, new BuildHelper());
+            var args = new RunCommandArgs(vars, cmdNode);
 
             // run
             command.Run(args);
@@ -221,13 +221,13 @@ namespace BuildHelperTests
         {
             var date = DateTime.Now;
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, object>();
+            var vars = new VariablesDictionary();
             var parameters = new Dictionary<string, object>();
             parameters["assembly"] = true;
             parameters["ProjectFileName"] = this.sampleProjectPath;
 
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new RunCommandArgs(null, vars, cmdNode, new BuildHelper());
+            var args = new RunCommandArgs( vars, cmdNode);
 
             // run
             command.Run(args);
@@ -244,13 +244,13 @@ namespace BuildHelperTests
         {
             var date = DateTime.Now;
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, object>();
+            var vars = new VariablesDictionary();
             var parameters = new Dictionary<string, object>();
             parameters["file"] = false;
             parameters["ProjectFileName"] = this.sampleProjectPath;
 
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new RunCommandArgs(null, vars, cmdNode, new BuildHelper());
+            var args = new RunCommandArgs(vars, cmdNode);
 
             // run
             command.Run(args);
@@ -267,13 +267,13 @@ namespace BuildHelperTests
         {
             var date = DateTime.Now;
             var command = new VersionUpdaterCommand();
-            var vars = new Dictionary<string, object>();
+            var vars = new VariablesDictionary();
             var parameters = new Dictionary<string, object>();
             parameters["assembly"] = false;
             parameters["ProjectFileName"] = this.sampleProjectPath;
 
             var cmdNode = new CommandData(CommandName, parameters);
-            var args = new RunCommandArgs(null, vars, cmdNode, new BuildHelper());
+            var args = new RunCommandArgs(vars, cmdNode);
 
             // run
             command.Run(args);

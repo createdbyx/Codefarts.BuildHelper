@@ -4,9 +4,6 @@
 // http://www.codefarts.com
 // </copyright>
 
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
-
 namespace BuildHelperTests
 {
     using Codefarts.BuildHelper;
@@ -42,6 +39,26 @@ namespace BuildHelperTests
             Assert.IsNotNull(child.Parent);
             Assert.AreSame(parentA, child.Parent);
             Assert.AreNotSame(parentB, child.Parent);
+        }
+
+        [TestMethod]
+        public void AddChildTwiceToCollection()
+        {
+            var parentA = new CommandData();
+            var child = new CommandData();
+
+            var count = 0;
+            parentA.Children.CollectionChanged += (s, e) => { count++; };
+
+            Assert.IsNull(child.Parent);
+            parentA.Children.Add(child);
+            Assert.IsNotNull(child.Parent);
+
+            // add again
+            parentA.Children.Add(child);
+
+            // check count
+            Assert.AreEqual(1, parentA.Children.Count);
         }
 
         [TestMethod]

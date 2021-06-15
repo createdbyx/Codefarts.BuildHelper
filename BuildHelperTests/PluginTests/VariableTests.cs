@@ -32,6 +32,18 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
+        public void AssignVariableNullStatusThrowsException()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() => new AssignVariableCommand(null));
+        }
+
+        [TestMethod]
+        public void RemoveVariableNullStatusThrowsException()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() => new RemoveVariableCommand(null));
+        }
+
+        [TestMethod]
         public void RemoveVariableNullArgs()
         {
             var command = new RemoveVariableCommand();
@@ -59,7 +71,7 @@ namespace BuildHelperTests
             var command = new RemoveVariableCommand();
             var data = new CommandData(command.Name);
             data.Parameters["name"] = "name";
-            var args = new RunCommandArgs(null, variables, data, new BuildHelper());
+            var args = new RunCommandArgs(variables, data);
 
             command.Run(args);
             Assert.IsNotNull(args.Result);
@@ -74,7 +86,7 @@ namespace BuildHelperTests
             var variables = this.SetVariable();
             var command = new RemoveVariableCommand();
             var data = new CommandData(command.Name);
-            var args = new RunCommandArgs(null, variables, data, new BuildHelper());
+            var args = new RunCommandArgs(variables, data);
 
             command.Run(args);
             Assert.IsNotNull(args.Result);
@@ -92,7 +104,7 @@ namespace BuildHelperTests
             var command = new RemoveVariableCommand();
             var data = new CommandData(command.Name);
             data.Parameters["name"] = "notExisting";
-            var args = new RunCommandArgs(null, variables, data, new BuildHelper());
+            var args = new RunCommandArgs(variables, data);
 
             command.Run(args);
             Assert.IsNotNull(args.Result);
@@ -103,14 +115,14 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
-        public IDictionary<string, object> SetVariable()
+        public VariablesDictionary SetVariable()
         {
             var command = new AssignVariableCommand();
             var data = new CommandData();
             data.Parameters["name"] = "name";
             data.Parameters["value"] = "value";
-            var variables = new Dictionary<string, object>();
-            var args = new RunCommandArgs(null, variables, data, new BuildHelper());
+            var variables = new VariablesDictionary();
+            var args = new RunCommandArgs(variables, data);
             command.Run(args);
 
             Assert.IsNotNull(args.Result);
@@ -127,8 +139,8 @@ namespace BuildHelperTests
             var command = new AssignVariableCommand();
             var data = new CommandData();
             data.Parameters["value"] = "value";
-            var variables = new Dictionary<string, object>();
-            var args = new RunCommandArgs(null, variables, data, new BuildHelper());
+            var variables = new VariablesDictionary();
+            var args = new RunCommandArgs(variables, data);
             command.Run(args);
 
             Assert.IsNotNull(args.Result);
@@ -146,8 +158,8 @@ namespace BuildHelperTests
             var command = new AssignVariableCommand();
             var data = new CommandData();
             data.Parameters["name"] = "name";
-            var variables = new Dictionary<string, object>();
-            var args = new RunCommandArgs(null, variables, data, new BuildHelper());
+            var variables = new VariablesDictionary();
+            var args = new RunCommandArgs(variables, data);
             command.Run(args);
 
             Assert.IsNotNull(args.Result);
@@ -166,9 +178,9 @@ namespace BuildHelperTests
             var data = new CommandData();
             data.Parameters["name"] = "name";
             data.Parameters["value"] = "newValue";
-            var variables = new Dictionary<string, object>();
+            var variables = new VariablesDictionary();
             variables["name"] = "oldValue";
-            var args = new RunCommandArgs(null, variables, data, new BuildHelper());
+            var args = new RunCommandArgs(variables, data);
             command.Run(args);
 
             Assert.IsNotNull(args.Result);

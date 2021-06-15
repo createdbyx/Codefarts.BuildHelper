@@ -93,7 +93,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void GetValueWithNullParameters()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => { ExtensionMethods.GetValue<string>(null, "test", string.Empty); });
+            Assert.ThrowsException<ArgumentNullException>(() => { ExtensionMethods.GetValue(null, "test", string.Empty); });
         }
 
         [TestMethod]
@@ -102,7 +102,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 RunCommandArgs args = null;
-                ExtensionMethods.GetParameter<string>(args, "test", string.Empty);
+                ExtensionMethods.GetParameter(args, "test", string.Empty);
             });
         }
 
@@ -110,8 +110,8 @@ namespace BuildHelperTests
         public void RunCommandArgsGetParameterWithMissingParameterAndDefaultValue()
         {
             var data = new CommandData();
-            var args = new RunCommandArgs(null, new Dictionary<string, object>(), data, new BuildHelper());
-            var value = ExtensionMethods.GetParameter<string>(args, "test", "default");
+            var args = new RunCommandArgs(new VariablesDictionary(), data);
+            var value = ExtensionMethods.GetParameter(args, "test", "default");
             Assert.AreEqual("default", value);
         }
 
@@ -120,7 +120,7 @@ namespace BuildHelperTests
         {
             var data = new CommandData();
             data.Parameters["test"] = "value";
-            var args = new RunCommandArgs(null, new Dictionary<string, object>(), data, new BuildHelper());
+            var args = new RunCommandArgs(new VariablesDictionary(), data);
             var value = ExtensionMethods.GetParameter<string>(args, "test");
             Assert.AreEqual("value", value);
         }
@@ -130,7 +130,7 @@ namespace BuildHelperTests
         {
             var data = new CommandData();
             data.Parameters["test"] = "value";
-            var args = new RunCommandArgs(null, new Dictionary<string, object>(), data, new BuildHelper());
+            var args = new RunCommandArgs(new VariablesDictionary(), data);
             Assert.ThrowsException<FormatException>(() => { ExtensionMethods.GetParameter<bool>(args, "test"); });
         }
 
@@ -138,7 +138,7 @@ namespace BuildHelperTests
         public void RunCommandArgsGetParameterWithMissingParameterAndNoDefaultValue()
         {
             var data = new CommandData();
-            var args = new RunCommandArgs(null, new Dictionary<string, object>(), data, new BuildHelper());
+            var args = new RunCommandArgs(new VariablesDictionary(), data);
             Assert.ThrowsException<MissingParameterException>(() => { ExtensionMethods.GetParameter<string>(args, "test"); });
         }
 
@@ -158,7 +158,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 CommandData args = null;
-                ExtensionMethods.GetParameter<string>(args, "test", string.Empty);
+                ExtensionMethods.GetParameter(args, "test", string.Empty);
             });
         }
 
@@ -175,7 +175,7 @@ namespace BuildHelperTests
         public void CommandDataGetParameterWithValidArgsAndDefaultValue()
         {
             var args = new CommandData();
-            var value = ExtensionMethods.GetParameter<string>(args, "test", "default");
+            var value = ExtensionMethods.GetParameter(args, "test", "default");
             Assert.AreEqual("default", value);
         }
 
@@ -185,7 +185,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 IDictionary<string, object> dic = null;
-                ExtensionMethods.GetValue<string>(dic, "test", string.Empty);
+                ExtensionMethods.GetValue(dic, "test", string.Empty);
             });
         }
 
@@ -213,7 +213,7 @@ namespace BuildHelperTests
         public void GetValueWithValidArgsAndDefaultValue()
         {
             var dic = new Dictionary<string, object>();
-            var value = ExtensionMethods.GetValue<string>(dic, "test", "default");
+            var value = ExtensionMethods.GetValue(dic, "test", "default");
             Assert.AreEqual("default", value);
         }
 
@@ -250,7 +250,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 RunResult result = null;
-                ExtensionMethods.GetReturnValue<string>(result, "default");
+                ExtensionMethods.GetReturnValue(result, "default");
             });
         }
 
@@ -265,7 +265,7 @@ namespace BuildHelperTests
         public void GetReturnValueWithValidArgsBadCastingWithDefaultValue()
         {
             var result = RunResult.Sucessful(true);
-            var value = ExtensionMethods.GetReturnValue<string>(result, "default");
+            var value = ExtensionMethods.GetReturnValue(result, "default");
             Assert.AreEqual("default", value);
         }
 
@@ -275,7 +275,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 RunCommandArgs args = null;
-                ExtensionMethods.GetVariable<string>(args, "test", string.Empty);
+                ExtensionMethods.GetVariable(args, "test", string.Empty);
             });
         }
 
@@ -292,15 +292,15 @@ namespace BuildHelperTests
         [TestMethod]
         public void GetVariableThatReturnsDefaultValue()
         {
-            var args = new RunCommandArgs(null, new Dictionary<string, object>(), new CommandData(), new BuildHelper());
-            var value = ExtensionMethods.GetVariable<string>(args, "test", "defaultValue");
+            var args = new RunCommandArgs(new VariablesDictionary(), new CommandData());
+            var value = ExtensionMethods.GetVariable(args, "test", "defaultValue");
             Assert.AreEqual("defaultValue", value);
         }
 
         [TestMethod]
         public void GetMissingVariableWithoutDefaultValue()
         {
-            var args = new RunCommandArgs(null, new Dictionary<string, object>(), new CommandData(), new BuildHelper());
+            var args = new RunCommandArgs(new VariablesDictionary(), new CommandData());
             Assert.ThrowsException<MissingVariableException>(() =>
             {
                 var value = ExtensionMethods.GetVariable<string>(args, "test");
@@ -310,9 +310,9 @@ namespace BuildHelperTests
         [TestMethod]
         public void GetValidVariableWithoutDefaultValue()
         {
-            var variables = new Dictionary<string, object>();
+            var variables = new VariablesDictionary();
             variables["test"] = "someValue";
-            var args = new RunCommandArgs(null, variables, new CommandData(), new BuildHelper());
+            var args = new RunCommandArgs(variables, new CommandData());
 
             var value = ExtensionMethods.GetVariable<string>(args, "test");
             Assert.AreEqual("someValue", value);
@@ -321,9 +321,9 @@ namespace BuildHelperTests
         [TestMethod]
         public void GetValidVariableWithBadCastingType()
         {
-            var variables = new Dictionary<string, object>();
+            var variables = new VariablesDictionary();
             variables["test"] = "value";
-            var args = new RunCommandArgs(null, variables, new CommandData(), new BuildHelper());
+            var args = new RunCommandArgs(variables, new CommandData());
             Assert.ThrowsException<FormatException>(() =>
             {
                 var value = ExtensionMethods.GetVariable<int>(args, "test");

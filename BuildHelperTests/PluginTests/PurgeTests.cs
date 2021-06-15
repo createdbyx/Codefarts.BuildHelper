@@ -1,4 +1,4 @@
-// <copyright file="PurgeFiles.cs" company="Codefarts">
+// <copyright file="PurgeTests.cs" company="Codefarts">
 // Copyright (c) Codefarts
 // contact@codefarts.com
 // http://www.codefarts.com
@@ -7,7 +7,6 @@
 namespace BuildHelperTests
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Xml.Linq;
     using Codefarts.BuildHelper;
@@ -16,7 +15,7 @@ namespace BuildHelperTests
     [TestClass, TestCategory("Purge Command")]
     public class PurgeFiles
     {
-        private IDictionary<string, object> variables;
+        private VariablesDictionary variables;
         private string tempDir;
 
         [TestInitialize]
@@ -31,7 +30,7 @@ namespace BuildHelperTests
             Directory.CreateDirectory(Path.Combine(this.tempDir, "SubFolder", "Sub2")); // \SubFolder\Sub2\
             File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "Microsoft.File4.db"), "File4Data"); // \SubFolder\Microsoft.File4.db
             File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "Sub2", "Taxi.File5.pdb"), "File5Data"); // \SubFolder\Sub2\Taxi.File5.pdb
-            this.variables = new Dictionary<string, object>();
+            this.variables = new VariablesDictionary();
             this.variables["TempPath"] = this.tempDir;
         }
 
@@ -47,6 +46,12 @@ namespace BuildHelperTests
         {
             var purge = new PurgeCommand();
             Assert.AreEqual("purge", purge.Name);
+        }
+
+        [TestMethod]
+        public void NullStatusThrowsException()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() => new PurgeCommand(null));
         }
 
         [TestMethod]
@@ -69,7 +74,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(msg => { }, this.variables, buildFileCommand, new BuildHelper());
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
 
             // make first file readonly
             var firstFile = new FileInfo(Path.Combine(this.tempDir, "File1.txt"));
@@ -101,7 +106,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            purge.Run(new RunCommandArgs(msg => { }, this.variables, buildFileCommand, new BuildHelper()));
+            purge.Run(new RunCommandArgs(this.variables, buildFileCommand));
 
             var files = Directory.GetFiles(this.tempDir, "*.*", SearchOption.AllDirectories);
             var folders = Directory.GetDirectories(this.tempDir, "*.*", SearchOption.AllDirectories);
@@ -122,7 +127,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, buildFileCommand, new BuildHelper());
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
             purge.Run(args);
 
             Assert.IsNotNull(args.Result);
@@ -146,7 +151,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, buildFileCommand, new BuildHelper());
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
             purge.Run(args);
 
             Assert.IsNotNull(args.Result);
@@ -170,7 +175,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, buildFileCommand, new BuildHelper());
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
             purge.Run(args);
 
             Assert.IsNotNull(args.Result);
@@ -194,7 +199,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, buildFileCommand, new BuildHelper());
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
             purge.Run(args);
 
             Assert.IsNotNull(args.Result);
@@ -218,7 +223,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, buildFileCommand, new BuildHelper());
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
             purge.Run(args);
 
             Assert.IsNotNull(args.Result);
@@ -242,7 +247,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs(null, this.variables, buildFileCommand, new BuildHelper());
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
             purge.Run(args);
 
             Assert.IsNotNull(args.Result);
@@ -265,7 +270,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            purge.Run(new RunCommandArgs(msg => { }, this.variables, buildFileCommand, new BuildHelper()));
+            purge.Run(new RunCommandArgs(this.variables, buildFileCommand));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File1.txt")));
             Assert.IsFalse(File.Exists(Path.Combine(this.tempDir, "File2.xml")));
             Assert.IsFalse(File.Exists(Path.Combine(this.tempDir, "System.File3.dat")));
@@ -285,7 +290,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            purge.Run(new RunCommandArgs(msg => { }, this.variables, buildFileCommand, new BuildHelper()));
+            purge.Run(new RunCommandArgs(this.variables, buildFileCommand));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File1.txt")));
             Assert.IsFalse(File.Exists(Path.Combine(this.tempDir, "File2.xml")));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "System.File3.dat")));
@@ -303,7 +308,7 @@ namespace BuildHelperTests
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
-            purge.Run(new RunCommandArgs(msg => { }, this.variables, buildFileCommand, new BuildHelper()));
+            purge.Run(new RunCommandArgs(this.variables, buildFileCommand));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File1.txt")));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File2.xml")));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "System.File3.dat")));
