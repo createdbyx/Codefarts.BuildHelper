@@ -30,7 +30,7 @@ namespace Codefarts.BuildHelper
             }
 
             // open project file
-            var projectFile = args.GetVariable<string>("ProjectPath");
+            var projectFile = args.GetVariable<string>("ProjectPath",null);
 
             var proj = XDocument.Load(projectFile);
 

@@ -53,12 +53,12 @@ namespace Codefarts.BuildHelper
                     //}
 
                     // open project file
-                    var projectFile = args.GetVariable<string>("ProjectPath");
+                    var projectFile = args.GetVariable<string>("ProjectPath", null);
                     var proj = XDocument.Load(projectFile);
 
                     // search for project reference with matching name
                     var projRefs = proj.Root.Elements()
-                            .Where(r => r.Name.LocalName == "ItemGroup").SelectMany(r => r.Elements().Where(x => x.Name.LocalName == "ProjectReference"));
+                        .Where(r => r.Name.LocalName == "ItemGroup").SelectMany(r => r.Elements().Where(x => x.Name.LocalName == "ProjectReference"));
                     var changed = false;
                     foreach (var projReference in projRefs)
                     {

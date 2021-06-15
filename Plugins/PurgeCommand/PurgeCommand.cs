@@ -18,6 +18,23 @@ namespace Codefarts.BuildHelper
     [NamedParameter("ignoreconditions", typeof(bool), false, "Specifies weather to ignore conditions. Default is false.")]
     public class PurgeCommand : ICommandPlugin
     {
+        private IStatusReporter status;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PurgeCommand"/> class.
+        /// </summary>
+        public PurgeCommand(IStatusReporter status)
+        {
+            this.status = status ?? throw new ArgumentNullException(nameof(status));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PurgeCommand"/> class.
+        /// </summary>
+        public PurgeCommand()
+        {
+        }
+
         public string Name => "purge";
 
         public void Run(RunCommandArgs args)
@@ -70,12 +87,12 @@ namespace Codefarts.BuildHelper
             if (!di.Exists)
             {
                 var message = $"Purging folder failed! (Reason: Does not exist!): {srcPath}";
-                args.Output(message);
+                this.status?.Report(message);
                 args.Result = RunResult.Errored(new DirectoryNotFoundException(message));
                 return;
             }
 
-            args.Output($"(Sub Folders->{subfolders}): {srcPath}");
+            this.status?.Report($"(Sub Folders->{subfolders}): {srcPath}");
 
             string[] allEntries;
             var searchOption = subfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
@@ -92,8 +109,9 @@ namespace Codefarts.BuildHelper
 
                 // TODO: need option to specify weather or not $(PurgeFile) is just the filename or full path
                 var modifiedVars = new Dictionary<string, object>(args.Variables);
-                foreach (var file in allEntries)
+                for (var index = 0; index < allEntries.Length; index++)
                 {
+                    var file = allEntries[index];
                     var src = fullPaths ? file : Path.GetFileName(file);
                     modifiedVars["PurgeEntry"] = src;
 
@@ -101,13 +119,15 @@ namespace Codefarts.BuildHelper
                     {
                         if (args.Command.SatifiesConditions(modifiedVars, allConditions))
                         {
-                            DeleteItem(args, file, typeValue);
+                            this.DeleteItem(args, file, typeValue);
                         }
                     }
                     else
                     {
-                        DeleteItem(args, file, typeValue);
+                        this.DeleteItem(args, file, typeValue);
                     }
+
+                    this.status?.ReportProgress(((float)index / allEntries.Length) * 100);
                 }
             }
             catch (Exception ex)
@@ -119,10 +139,10 @@ namespace Codefarts.BuildHelper
             args.Result = RunResult.Sucessful();
         }
 
-        private static void DeleteItem(RunCommandArgs args, string file, string typeValue)
+        private void DeleteItem(RunCommandArgs args, string file, string typeValue)
         {
             // TODO: need ability to purge folder as well
-            args.Output("Purging: " + file);
+            this.status?.Report("Purging: " + file);
 
             if (typeValue == "files")
             {

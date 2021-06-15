@@ -11,6 +11,23 @@ namespace Codefarts.BuildHelper
     [NamedParameter("name", typeof(string), true, "The name of the variable.")]
     public class RemoveVariableCommand : ICommandPlugin
     {
+        private IStatusReporter status;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoveVariableCommand"/> class.
+        /// </summary>
+        public RemoveVariableCommand(IStatusReporter status)
+        {
+            this.status = status ?? throw new ArgumentNullException(nameof(status));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoveVariableCommand"/> class.
+        /// </summary>
+        public RemoveVariableCommand()
+        {
+        }
+
         public string Name => "removevariable";
 
         public void Run(RunCommandArgs args)
@@ -32,14 +49,15 @@ namespace Codefarts.BuildHelper
             nameValue = nameValue.ReplaceVariableStrings(args.Variables);
 
             // remove the variable and report result
-            var wasRemoved = args.Variables.Remove(nameValue);
+            object value;
+            var wasRemoved = args.Variables.TryRemove(nameValue, out value);
             if (wasRemoved)
             {
-                args.Output($"Variable Removed: {nameValue}");
+                this.status?.Report($"Variable Removed: {nameValue}");
             }
             else
             {
-                args.Output($"Variable NOT Removed: {nameValue}");
+                this.status?.Report($"Variable NOT Removed: {nameValue}");
             }
 
             args.Result = RunResult.Sucessful(wasRemoved);

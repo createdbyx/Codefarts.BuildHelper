@@ -8,56 +8,105 @@ namespace Codefarts.BuildHelperConsoleApp
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.Loader;
     using Codefarts.BuildHelper;
+    using Codefarts.DependencyInjection;
 
     internal class PluginLoader
     {
-        public static IEnumerable<ICommandPlugin> LoadCommandPlugins(BuildHelper buildHelper)
+        private IStatusReporter status;
+        IDependencyInjectionProvider ioc;
+
+        public PluginLoader(IDependencyInjectionProvider ioc)
         {
-            if (buildHelper == null)
+            this.ioc = ioc ?? throw new ArgumentNullException(nameof(ioc));
+            this.status = ioc.Resolve<IStatusReporter>();
+        }
+
+        public string PluginFolder { get; set; }
+
+        public PluginCollection Load()
+        {
+            if (status == null)
             {
-                throw new ArgumentNullException(nameof(buildHelper));
+                throw new ArgumentNullException(nameof(status));
             }
 
-            var appPath = Process.GetCurrentProcess().MainModule.FileName;
-            var appDir = Path.GetDirectoryName(appPath);
-            var pluginFolder = Path.Combine(appDir, "Plugins");
-
-            if (!Directory.Exists(pluginFolder))
+            if (ioc == null)
             {
-                return Enumerable.Empty<ICommandPlugin>();
+                throw new ArgumentNullException(nameof(ioc));
             }
 
-            var asmFiles = Directory.GetFiles(pluginFolder, "*.dll", SearchOption.AllDirectories);
+            if (!Directory.Exists(this.PluginFolder))
+            {
+                return new PluginCollection();
+            }
 
-            // load them
+            var asmFiles = Directory.GetFiles(this.PluginFolder, "*.dll", SearchOption.AllDirectories);
+
+            AssemblyLoadContext.Default.Resolving += this.ResolveAssemblies;
+
+            // find types
             var pluginTypes = asmFiles.SelectMany(f =>
             {
-                var asm = Assembly.LoadFrom(f);
+                var asm = AssemblyLoadContext.Default.LoadFromAssemblyPath(f);
                 return asm.GetTypes().Where(t => t.IsPublic && t.IsClass && !t.IsSealed && typeof(ICommandPlugin).IsAssignableFrom(t));
             }).ToArray();
 
+            // create them
             var plugins = pluginTypes.Select(t =>
             {
                 try
                 {
-                    return (ICommandPlugin)t.Assembly.CreateInstance(t.FullName);
+                    return ioc.Resolve(t) as ICommandPlugin;
                 }
                 catch
                 {
-                    buildHelper.Output($"Failed to instantiate {t.FullName} from assembly '{t.Assembly.Location}'.");
+                    status.Report($"Failed to instantiate {t.FullName} from assembly '{t.Assembly.Location}'.");
+                    AssemblyLoadContext.Default.Resolving -= this.ResolveAssemblies;
                     return null;
                 }
             }).Where(x => x != null);
 
-            buildHelper.Output($"{plugins.Count()} plugins loaded.");
-            buildHelper.Output(string.Join("\r\n", plugins.Select(x => x.Name)));
+            status.Report($"{plugins.Count()} plugins loaded.");
+            status.Report(string.Join("\r\n", plugins.Select(x => x.Name)));
 
-            return plugins;
+            AssemblyLoadContext.Default.Resolving -= this.ResolveAssemblies;
+            return new PluginCollection(plugins);
+        }
+
+        private Assembly? ResolveAssemblies(AssemblyLoadContext arg1, AssemblyName arg2)
+        {
+            var folderPaths = new List<string>();
+            folderPaths.Add(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            folderPaths.Add(this.PluginFolder);
+            var filter = arg2;
+
+            switch (Path.GetExtension(filter.Name.ToLowerInvariant()))
+            {
+                case ".resources":
+                    return null;
+            }
+
+            foreach (var folderPath in folderPaths)
+            {
+                if (!Directory.Exists(folderPath))
+                {
+                    continue;
+                }
+
+                var fileMatches = Directory.GetFiles(folderPath, filter.Name + ".dll", SearchOption.AllDirectories);
+                var assemblyPath = fileMatches.FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(assemblyPath) && File.Exists(assemblyPath))
+                {
+                    return arg1.LoadFromAssemblyPath(assemblyPath);
+                }
+            }
+
+            return null;
         }
     }
 }

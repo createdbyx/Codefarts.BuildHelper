@@ -7,45 +7,64 @@
 namespace Codefarts.BuildHelperConsoleApp
 {
     using System;
-    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Xml.Linq;
     using Codefarts.BuildHelper;
+    using Codefarts.DependencyInjection;
+    using Codefarts.IoC;
+    using Codefats.BuildHelper.ConsoleReporter;
 
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
-            // Debugger.Launch();
-            var build = new BuildHelper();
-            build.OutputMessage += (s, e) =>
-            {
-                var categoryText = string.IsNullOrWhiteSpace(e.Category) ? string.Empty : $"(Category: {e.Category}) ";
-                var typeText = string.IsNullOrWhiteSpace(e.Type) ? string.Empty : $"(Type: {e.Type}) ";
-                Console.WriteLine($"{categoryText}{typeText}{e.Message}");
-            };
+            var ioc = new DependencyInjectorShim(new Container());
+            ioc.Register<IStatusReporter, ConsoleStatusReporter>();
+
+            var status = ioc.Resolve<IStatusReporter>();
 
             var buildFile = args.FirstOrDefault(x => x.StartsWith("-b:"));
-
             buildFile = string.IsNullOrWhiteSpace(buildFile) ? null : buildFile.Substring(3);
 
             // load command plugins
-            var commands = PluginLoader.LoadCommandPlugins(build).ToArray();
+            var pluginLoader = ioc.Resolve<PluginLoader>();
+            var appPath = Process.GetCurrentProcess().MainModule.FileName;
+            var appDir = Path.GetDirectoryName(appPath);
+            var pluginFolder = Path.Combine(appDir, "Plugins");
+
+            pluginLoader.PluginFolder = pluginFolder;
+            var commandPlugins = pluginLoader.Load();
 
             // read build file
-            IDictionary<string, object> variables;
+            var variables = new VariablesDictionary();
+            variables["Application"] = Path.GetFileName(appPath);
+
             XElement root;
-            var buildFileReader = new BuildFileReader(build);
-            if (!buildFileReader.TryReadBuildFile(buildFile, out variables, out root))
+            var buildFileReader = ioc.Resolve<BuildFileReader>();
+            if (!buildFileReader.TryReadBuildFile(buildFile, out root))
             {
-                build.Output($"ERROR: Reading Build File. {buildFile}");
+                status.Report($"ERROR: Reading Build File. {buildFile}");
                 Environment.ExitCode = 1;
                 return;
             }
 
             var buildFileCommands = root.Elements().Select(x => BuildCommandNode(x, null));
 
-            build.Run(buildFileCommands, variables, commands);
+            var buildEventValue = variables.GetValue<string>("BuildEvent", null);
+            status.ReportHeader($"START {buildEventValue} BUILD"); 
+            buildFileCommands.Run(variables, commandPlugins, status);
+            status.ReportHeader($"END {buildEventValue} BUILD");
+        }
+
+        public static void ReportHeader(this IStatusReporter status, string message, params object[] args)
+        {
+            var formattedString = string.Format(message, args);
+            var maxLen = Math.Max(formattedString.Length + 10, 100);
+            var headPartLen = (maxLen - (formattedString.Length + 2)) / 2;
+            var headerChars = new string('#', headPartLen);
+            status.Report(string.Format($"{headerChars} {message} {headerChars}", args));
         }
 
         private static CommandData BuildCommandNode(XElement xElement, CommandData parent)

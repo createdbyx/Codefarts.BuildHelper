@@ -4,10 +4,9 @@
 // http://www.codefarts.com
 // </copyright>
 
-using System;
-
 namespace Codefarts.BuildHelper
 {
+    using System;
     using System.IO;
     using System.Linq;
 
@@ -16,12 +15,29 @@ namespace Codefarts.BuildHelper
     [NamedParameter("clean", typeof(bool), false, "If true will delete contents from the destination before copying. Default is false.")]
     public class CopyDirCommand : ICommandPlugin
     {
+        private IStatusReporter status;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CopyDirCommand"/> class.
+        /// </summary>
+        public CopyDirCommand(IStatusReporter status)
+        {
+            this.status = status ?? throw new ArgumentNullException(nameof(status));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CopyDirCommand"/> class.
+        /// </summary>
+        public CopyDirCommand()
+        {
+        }
+
         public string Name => "copydir";
 
         public void Run(RunCommandArgs args)
         {
-            var srcPath = args.GetParameter<string>("source");
-            var destPath = args.GetParameter<string>("destination");
+            var srcPath = args.GetParameter<string>("source", null);
+            var destPath = args.GetParameter<string>("destination", null);
             //var message = args.Element.GetAttributeValue("message");
 
             if (destPath == null)
@@ -47,7 +63,7 @@ namespace Codefarts.BuildHelper
             // check if we should clear the folder first
             var doClear = args.GetParameter("clean", false);
             // var doClear = string.IsNullOrWhiteSpace(value) ? false : value.Trim().ToLowerInvariant() == "true";
-            args.Output($"Clearing before copy ({doClear}): {destPath}");
+            this.status?.Report($"Clearing before copy ({doClear}): {destPath}");
             try
             {
                 var di = new DirectoryInfo(destPath);
@@ -64,14 +80,16 @@ namespace Codefarts.BuildHelper
                     }
                 }
 
-                var allFiles = Directory.GetFiles(srcPath, "*.*", SearchOption.AllDirectories).Select(d => d.Remove(0, srcPath.Length));
-                foreach (var file in allFiles)
+                var allFiles = Directory.GetFiles(srcPath, "*.*", SearchOption.AllDirectories).Select(d => d.Remove(0, srcPath.Length)).ToArray();
+                for (var index = 0; index < allFiles.Length; index++)
                 {
+                    var file = allFiles[index];
                     var src = Path.Combine(srcPath, file);
                     var dest = Path.Combine(destPath, file);
 
                     Directory.CreateDirectory(Path.GetDirectoryName(dest));
-                    args.Output("Copying: " + src + " ==> " + dest);
+                    var progress = ((float)index / allFiles.Length) * 100;
+                    this.status?.ReportProgress("Copying: " + src + " ==> " + dest, progress);
                     File.Copy(src, dest, true);
                 }
             }

@@ -24,7 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Codefarts.DependenceyInjection\Codefarts.DependenceyInjectionNET5\Codefarts.DependenceyInjectionNET5.csproj" />
+    <ProjectReference Include="..\..\Codefarts.IoC\Codefarts.IoCNET5\Codefarts.IoCNET5.csproj" />
     <ProjectReference Include="..\Codefarts.BuildHelperLib\Codefarts.BuildHelperLib.csproj" />
+    <ProjectReference Include="..\Codefats.BuildHelper.ConsoleReporter\Codefats.BuildHelper.ConsoleReporter.csproj" />
   </ItemGroup>
 
 </Project>

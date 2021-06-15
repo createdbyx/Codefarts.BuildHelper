@@ -12,6 +12,23 @@ namespace Codefarts.BuildHelper
     [NamedParameter("value", typeof(string), true, "The value of the variable.")]
     public class AssignVariableCommand : ICommandPlugin
     {
+        private IStatusReporter status;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssignVariableCommand"/> class.
+        /// </summary>
+        public AssignVariableCommand(IStatusReporter status)
+        {
+            this.status = status ?? throw new ArgumentNullException(nameof(status));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssignVariableCommand"/> class.
+        /// </summary>
+        public AssignVariableCommand()
+        {
+        }
+
         public string Name => "variable";
 
         public void Run(RunCommandArgs args)
@@ -48,13 +65,15 @@ namespace Codefarts.BuildHelper
 
             // report value assignment info
             var msgPart = existing ? "existing " : string.Empty;
-            args.Output($"Assigned value to {msgPart}variable.");
+            this.status?.Report($"Assigned value to {msgPart}variable.");
             if (existing)
             {
-                args.Output($"Name: {nameValue} Old Value: {oldValue}");
+                this.status?.Report($"Name: {nameValue} Old Value: {oldValue}");
             }
-
-            args.Output($"Name: {nameValue} Value: {valueValue}");
+            else
+            {
+                this.status?.Report($"Name: {nameValue} Value: {valueValue}");
+            }
 
             args.Result = RunResult.Sucessful();
         }
