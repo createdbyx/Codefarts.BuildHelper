@@ -11,29 +11,21 @@ namespace Codefarts.BuildHelper
 
     public class RunCommandArgs
     {
-        public RunCommandArgs(Action<string> output, IDictionary<string, object> variables, CommandData command, BuildHelper buildHelper)
+        public RunCommandArgs(VariablesDictionary variables, CommandData command)
         {
             // we wrap output callback here to ensure any call to it does not throw null reference exceptions
-            this.Output = msg =>
-            {
-                if (output != null)
-                {
-                    output(msg);
-                }
-            };
-
-            this.Variables = variables ?? new Dictionary<string, object>();
+            this.Variables = variables ?? new VariablesDictionary();
             this.Command = command ?? throw new ArgumentNullException(nameof(command));
-            this.BuildHelper = buildHelper ?? throw new ArgumentNullException(nameof(buildHelper));
         }
 
-        public BuildHelper BuildHelper { get; }
+        public RunCommandArgs(CommandData command)
+            : this(null, command)
+        {
+        }
 
         public CommandData Command { get; }
 
-        public Action<string> Output { get; }
-
-        public IDictionary<string, object> Variables { get; }
+        public VariablesDictionary Variables { get; }
 
         public RunResult Result { get; set; }
     }

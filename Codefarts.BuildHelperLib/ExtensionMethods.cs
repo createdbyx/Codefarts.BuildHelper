@@ -10,7 +10,6 @@ namespace Codefarts.BuildHelper
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Xml.Linq;
 
     public static class ExtensionMethods
     {
@@ -181,11 +180,11 @@ namespace Codefarts.BuildHelper
             if (allConditions)
             {
                 return element.Children.Where(condition => condition.Name == "condition")
-                    .All(condition => condition.SatifiesCondition(variables));
+                              .All(condition => condition.SatifiesCondition(variables));
             }
 
             return element.Children.Where(condition => condition.Name == "condition")
-                .Any(condition => condition.SatifiesCondition(variables));
+                          .Any(condition => condition.SatifiesCondition(variables));
         }
 
         public static bool SatifiesCondition(this CommandData condition, IDictionary<string, object> variables)
@@ -284,6 +283,116 @@ namespace Codefarts.BuildHelper
 
                 default:
                     throw new ArgumentOutOfRangeException("'operator' attribute exists but it's meaning could not determined.");
+            }
+        }
+
+        public static void ReportError(this IStatusReporter status, string message)
+        {
+            status.Report(message, ReportStatusType.Error | ReportStatusType.Message, null, 0);
+        }
+
+        public static void ReportError(this IStatusReporter status, string message, float progress)
+        {
+            status.Report(message, ReportStatusType.Error | ReportStatusType.Progress | ReportStatusType.Message, null, progress);
+        }
+
+        public static void ReportError(this IStatusReporter status, string message, string category, float progress)
+        {
+            status.Report(message, ReportStatusType.Error | ReportStatusType.Progress | ReportStatusType.Message, category, progress);
+        }
+
+
+        public static void ReportProgress(this IStatusReporter status, string message, float progress)
+        {
+            status.Report(message, ReportStatusType.Message | ReportStatusType.Progress, null, progress);
+        }
+
+        public static void ReportProgress(this IStatusReporter status, float progress)
+        {
+            status.Report(null, ReportStatusType.Progress, null, progress);
+        }
+
+        public static void Report(this IStatusReporter status, string message)
+        {
+            status.Report(message, ReportStatusType.Message, null, 0);
+        }
+
+        public static void Report(this IStatusReporter status, string message, string category)
+        {
+            status.Report(message, ReportStatusType.Message, category, 0);
+        }
+
+        public static void Run(this IEnumerable<CommandData> commands,
+                               VariablesDictionary variables,
+                               PluginCollection plugins,
+                               IStatusReporter status)
+        {
+            variables = variables ?? new VariablesDictionary();
+            plugins = plugins ?? new PluginCollection();
+            commands = commands ?? Enumerable.Empty<CommandData>();
+
+            if (plugins.Count == 0)
+            {
+                return;
+            }
+
+            // process file elements
+            foreach (var command in commands)
+            {
+                // find the first plugin with the matching name
+                var plugin = plugins.FirstOrDefault(c => c.Name.Equals(command.Name, StringComparison.OrdinalIgnoreCase));
+                if (plugin == null)
+                {
+                    continue;
+                }
+
+                command.Run(variables, plugin, status);
+            }
+        }
+
+        public static void Run(this CommandData command,
+                               ICommandPlugin plugin,
+                               IStatusReporter status)
+        {
+            Run(command, null, plugin, status);
+        }
+
+        public static void Run(this CommandData command,
+                               VariablesDictionary variables,
+                               ICommandPlugin plugin,
+                               IStatusReporter status)
+        {
+            variables = variables ?? new VariablesDictionary();
+
+            // setup executing args
+            var executeCommandArgs = new RunCommandArgs(variables, command);
+            try
+            {
+                // check if the command has an attached message and if so output the message before executing
+                var message = command.GetParameter("message", string.Empty);
+                if (!string.IsNullOrWhiteSpace(message))
+                {
+                    message = message.ReplaceVariableStrings(variables);
+                    status?.Report($"Message: {message}");
+                }
+
+                // execute the command plugin
+                plugin.Run(executeCommandArgs);
+                var result = executeCommandArgs.Result;
+
+                if (result != null)
+                {
+                    status?.Report($"'{command.Name}' completed with status '{result.Status}'.");
+                    if (result.Status == RunStatus.Errored)
+                    {
+                        status?.Report(result.Error.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                status?.Report($"Command {plugin.Name} threw an unexpected exception.");
+                status?.Report(ex.ToString());
             }
         }
     }
