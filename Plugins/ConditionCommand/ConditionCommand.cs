@@ -11,8 +11,8 @@ namespace ConditionCommand
 
     [NamedParameter("value1", typeof(object), true, "The first value to be compared.")]
     [NamedParameter("value2", typeof(object), true, "THe second value to be compared.")]
-    [NamedVariable("operator", typeof(string), true, "The operator that defines how values will be compared.")]
-    [NamedVariable("ignorecase", typeof(bool), false, "Ignores casing if comparing strings.")]
+    [NamedParameter("operator", typeof(string), true, "The operator that defines how values will be compared.")]
+    [NamedParameter("ignorecase", typeof(bool), false, "Ignores casing if comparing strings.")]
     public class ConditionCommand : ICommandPlugin
     {
         public string Name
@@ -77,8 +77,8 @@ namespace ConditionCommand
                 }
             }
 
-            // currently only support value type comparisons
-            args.Result = RunResult.Errored(new NotSupportedException("Only value type comparisons are supported."));
+            // currently only support value type comparisons including strings
+            args.Result = RunResult.Errored(new NotSupportedException("Only value type comparisons and strings are supported."));
         }
 
         private bool CompareStrings(string value1, string value2, string operatorValue, bool ignoreCase)
