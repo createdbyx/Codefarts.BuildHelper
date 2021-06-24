@@ -307,6 +307,11 @@ namespace Codefarts.BuildHelper
             status.Report(message, ReportStatusType.Message | ReportStatusType.Progress, null, progress);
         }
 
+        public static void ReportProgress(this IStatusReporter status, string message, string category, float progress)
+        {
+            status.Report(message, ReportStatusType.Message | ReportStatusType.Progress, category, progress);
+        }
+
         public static void ReportProgress(this IStatusReporter status, float progress)
         {
             status.Report(null, ReportStatusType.Progress, null, progress);
@@ -362,6 +367,11 @@ namespace Codefarts.BuildHelper
                                ICommandPlugin plugin,
                                IStatusReporter status)
         {
+            if (plugin == null)
+            {
+                throw new ArgumentNullException(nameof(plugin));
+            }
+
             variables = variables ?? new VariablesDictionary();
 
             // setup executing args

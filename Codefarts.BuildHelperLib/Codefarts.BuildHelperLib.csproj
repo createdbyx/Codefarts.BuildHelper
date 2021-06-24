@@ -32,6 +32,8 @@
     <None Include="NotUsed\ObservableDictionary.cs" />
     <Compile Remove="NotUsed\OutputEventArgs.cs" />
     <None Include="NotUsed\OutputEventArgs.cs" />
+    <Compile Remove="NotUsed\BuildHelper.cs" />
+    <None Include="NotUsed\BuildHelper.cs" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
