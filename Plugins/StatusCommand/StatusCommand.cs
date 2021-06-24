@@ -8,10 +8,11 @@ namespace Codefarts.BuildHelper
 {
     using System;
 
-    [NamedParameter("text", typeof(string), false, "The message to be reported.")]
-    [NamedParameter("type", typeof(ReportStatusType), false, "The message type.")]
-    [NamedParameter("category", typeof(string), false, "The message category.")]
-    [NamedParameter("progress", typeof(float), false, "The progress being reported.")]
+    [NamedParameter("text", typeof(string), false, "The message to be reported. Default is null.")]
+    [NamedParameter("type", typeof(ReportStatusType), false, "The message type. Default is message.")]
+    [NamedParameter("category", typeof(string), false, "The message category. Default is null.")]
+    [NamedParameter("progress", typeof(float), false, "The progress being reported. Default is zero.")]
+    [NamedParameter(null, null)]
     public class StatusCommand : ICommandPlugin
     {
         private IStatusReporter status;
@@ -34,7 +35,7 @@ namespace Codefarts.BuildHelper
             }
 
             // get the variable name parameter
-            var messageValue = args.GetParameter<string>("message", null);
+            var messageValue = args.GetParameter<string>("text", null);
             var typeValue = args.GetParameter<ReportStatusType>("type", ReportStatusType.Message);
             var categoryValue = args.GetParameter<string>("category", null);
             var progressValue = args.GetParameter<float>("progress", 0f);
