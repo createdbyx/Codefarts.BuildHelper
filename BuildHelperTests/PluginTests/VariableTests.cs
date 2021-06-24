@@ -9,6 +9,7 @@ namespace BuildHelperTests
     using System;
     using System.Collections.Generic;
     using Codefarts.BuildHelper;
+    using Codefats.BuildHelper.ConsoleReporter;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass, TestCategory("Variable Tests")]
@@ -62,6 +63,20 @@ namespace BuildHelperTests
         {
             var command = new RemoveVariableCommand();
             Assert.AreEqual("removevariable", command.Name);
+        }
+
+        [TestMethod]
+        public void AssignVariableWithValidStatusArg()
+        {
+            var status = new ConsoleStatusReporter();
+            var assignVar = new AssignVariableCommand(status);
+        }
+
+        [TestMethod]
+        public void RemoveVariableWithValidStatusArg()
+        {
+            var status = new ConsoleStatusReporter();
+            var remVar = new RemoveVariableCommand(status);
         }
 
         [TestMethod]

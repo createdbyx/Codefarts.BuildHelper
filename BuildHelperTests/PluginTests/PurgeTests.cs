@@ -10,6 +10,7 @@ namespace BuildHelperTests
     using System.IO;
     using System.Xml.Linq;
     using Codefarts.BuildHelper;
+    using Codefats.BuildHelper.ConsoleReporter;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass, TestCategory("Purge Command")]
@@ -59,6 +60,13 @@ namespace BuildHelperTests
         {
             var purge = new PurgeCommand();
             Assert.ThrowsException<ArgumentNullException>(() => purge.Run(null));
+        }
+
+        [TestMethod]
+        public void WithValidStatusArg()
+        {
+            var status = new ConsoleStatusReporter();
+            var purge = new PurgeCommand(status);
         }
 
         [TestMethod]

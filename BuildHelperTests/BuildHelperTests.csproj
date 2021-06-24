@@ -30,12 +30,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Codefats.BuildHelper.ConsoleReporter\Codefats.BuildHelper.ConsoleReporter.csproj" />
     <ProjectReference Include="..\Plugins\AutoVersionUpdater\AutoVersionUpdater.csproj" />
     <ProjectReference Include="..\Plugins\ConditionCommand\ConditionCommand.csproj" />
     <ProjectReference Include="..\Plugins\CopyDirCommand\CopyDirCommand.csproj" />
     <ProjectReference Include="..\Plugins\DeployCommand\DeployCommand.csproj" />
     <ProjectReference Include="..\Plugins\PurgeCommand\PurgeCommand.csproj" />
     <ProjectReference Include="..\Plugins\ReferencesCommands\ReferencesCommands.csproj" />
+    <ProjectReference Include="..\Plugins\StatusCommand\StatusCommand.csproj" />
     <ProjectReference Include="..\Plugins\VariableCommand\VariableCommand.csproj" />
   </ItemGroup>
 

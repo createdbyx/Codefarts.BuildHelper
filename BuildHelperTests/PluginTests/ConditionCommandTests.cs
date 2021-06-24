@@ -6,6 +6,7 @@
 
 namespace BuildHelperTests
 {
+    using System;
     using System.Xml.Linq;
     using Codefarts.BuildHelper;
     using ConditionCommand;
@@ -32,12 +33,18 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
+        public void RunWithNullArgs()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() => this.plugin.Run(null));
+        }
+
+        [TestMethod]
         [TestCategory("ConditionalPlugin-Contains")]
         public void GoodButMissingValue2_MissingIgnore()
         {
             var item = XElement.Parse("<condition value1=\"Test\" operator=\"contains\" value2=\"\" />");
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs( this.variables, data);
+            var args = new RunCommandArgs(this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -67,7 +74,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"Zest\" operator=\"contains\" value2=\"Test\" />");
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs( this.variables, data);
+            var args = new RunCommandArgs(this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -82,7 +89,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"Test\" operator=\"contains\" value2=\"Test\" />");
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs( this.variables, data);
+            var args = new RunCommandArgs(this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -97,7 +104,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"test\" operator=\"contains\" value2=\"Test\" />");
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs( this.variables, data);
+            var args = new RunCommandArgs(this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -112,7 +119,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"test\" operator=\"contains\" value2=\"Test\" ignorecase=\"false\" />");
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs( this.variables, data);
+            var args = new RunCommandArgs(this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -127,7 +134,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"test\" operator=\"contains\" value2=\"Test\" ignorecase=\"true\" />");
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs( this.variables, data);
+            var args = new RunCommandArgs(this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -142,7 +149,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"test\" operator=\"contains\" value2=\"Test\" ignorecase=\"TRUE\" />");
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs( this.variables, data);
+            var args = new RunCommandArgs(this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -157,7 +164,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"\" operator=\"contains\" value2=\"\" />");
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs( this.variables, data);
+            var args = new RunCommandArgs(this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
@@ -172,7 +179,7 @@ namespace BuildHelperTests
         {
             var item = XElement.Parse("<condition value1=\"\" operator=\"contains\" value2=\"\" ignorecase=\"\" />");
             var data = TestHelpers.BuildCommandNode(item, null);
-            var args = new RunCommandArgs( this.variables, data);
+            var args = new RunCommandArgs(this.variables, data);
 
             this.plugin.Run(args);
             var result = args.Result;
