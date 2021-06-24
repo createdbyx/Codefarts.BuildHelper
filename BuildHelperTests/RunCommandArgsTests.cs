@@ -7,7 +7,6 @@
 namespace BuildHelperTests
 {
     using System;
-    using System.Collections.Generic;
     using Codefarts.BuildHelper;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -41,15 +40,23 @@ namespace BuildHelperTests
                 var args = new RunCommandArgs(new VariablesDictionary(), null);
             });
         }
-  
 
         [TestMethod]
         public void ValidArgs()
         {
             var variables = new VariablesDictionary();
             var data = new CommandData();
-            var args = new RunCommandArgs( variables, data);
+            var args = new RunCommandArgs(variables, data);
             Assert.AreSame(variables, args.Variables);
+            Assert.AreSame(data, args.Command);
+        }
+
+        [TestMethod]
+        public void CommandArgs()
+        {
+            var data = new CommandData("command");
+            var args = new RunCommandArgs(data);
+            Assert.IsNotNull(args.Variables);
             Assert.AreSame(data, args.Command);
         }
     }
