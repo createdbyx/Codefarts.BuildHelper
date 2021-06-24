@@ -11,17 +11,10 @@ namespace Codefarts.BuildHelper
 
     public class MissingParameterException : Exception
     {
-        public string ParameterName { get; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MissingParameterException"/> class.
         /// </summary>
         public MissingParameterException()
-        {
-        }
-
-        protected MissingParameterException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
         {
         }
 
@@ -41,5 +34,12 @@ namespace Codefarts.BuildHelper
             : base(message, innerException)
         {
         }
+
+        protected MissingParameterException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+        public string ParameterName { get; }
     }
 }

@@ -301,7 +301,6 @@ namespace Codefarts.BuildHelper
             status.Report(message, ReportStatusType.Error | ReportStatusType.Progress | ReportStatusType.Message, category, progress);
         }
 
-
         public static void ReportProgress(this IStatusReporter status, string message, float progress)
         {
             status.Report(message, ReportStatusType.Message | ReportStatusType.Progress, null, progress);
@@ -327,10 +326,11 @@ namespace Codefarts.BuildHelper
             status.Report(message, ReportStatusType.Message, category, 0);
         }
 
-        public static void Run(this IEnumerable<CommandData> commands,
-                               VariablesDictionary variables,
-                               PluginCollection plugins,
-                               IStatusReporter status)
+        public static void Run(
+            this IEnumerable<CommandData> commands,
+            VariablesDictionary variables,
+            PluginCollection plugins,
+            IStatusReporter status)
         {
             variables = variables ?? new VariablesDictionary();
             plugins = plugins ?? new PluginCollection();
@@ -355,17 +355,16 @@ namespace Codefarts.BuildHelper
             }
         }
 
-        public static void Run(this CommandData command,
-                               ICommandPlugin plugin,
-                               IStatusReporter status)
+        public static void Run(this CommandData command, ICommandPlugin plugin, IStatusReporter status)
         {
             Run(command, null, plugin, status);
         }
 
-        public static void Run(this CommandData command,
-                               VariablesDictionary variables,
-                               ICommandPlugin plugin,
-                               IStatusReporter status)
+        public static void Run(
+            this CommandData command,
+            VariablesDictionary variables,
+            ICommandPlugin plugin,
+            IStatusReporter status)
         {
             if (plugin == null)
             {

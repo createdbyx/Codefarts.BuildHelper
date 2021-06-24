@@ -18,11 +18,6 @@ namespace Codefarts.BuildHelper
         {
         }
 
-        protected BuildException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
         public BuildException(string message)
             : base(message)
         {
@@ -30,6 +25,11 @@ namespace Codefarts.BuildHelper
 
         public BuildException(string message, Exception innerException)
             : base(message, innerException)
+        {
+        }
+
+        protected BuildException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

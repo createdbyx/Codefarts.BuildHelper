@@ -11,17 +11,10 @@ namespace Codefarts.BuildHelper
 
     public class MissingVariableException : Exception
     {
-        public string VariableName { get; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="MissingVariableException"/> class.
         /// </summary>
         public MissingVariableException()
-        {
-        }
-
-        protected MissingVariableException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
         {
         }
 
@@ -41,5 +34,12 @@ namespace Codefarts.BuildHelper
             : base(message, innerException)
         {
         }
+
+        protected MissingVariableException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+        public string VariableName { get; }
     }
 }

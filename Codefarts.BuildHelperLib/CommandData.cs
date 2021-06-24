@@ -46,16 +46,6 @@ namespace Codefarts.BuildHelper
             {
                 return this.parameters;
             }
-            //
-            // internal set
-            // {
-            //     var currentValue = this.parameters;
-            //     if (currentValue != value)
-            //     {
-            //         this.parameters = value;
-            //         this.OnPropertyChanged(nameof(this.Parameters));
-            //     }
-            // }
         }
 
         public CommandData Parent
@@ -89,16 +79,6 @@ namespace Codefarts.BuildHelper
             {
                 return this.children;
             }
-
-            // internal set
-            // {
-            //     var currentValue = this.children;
-            //     if (currentValue != value)
-            //     {
-            //         this.children = value;
-            //         this.OnPropertyChanged(nameof(this.Children));
-            //     }
-            // }
         }
 
         public string Name
@@ -119,15 +99,6 @@ namespace Codefarts.BuildHelper
             }
         }
 
-        protected virtual void OnPropertyChanged(string propertyName = null)
-        {
-            var handler = this.PropertyChanged;
-            if (handler != null)
-            {
-                handler.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
         /// <summary>
         /// Assigns the parent to the internal <see cref="parent"/> field.
         /// </summary>
@@ -138,6 +109,15 @@ namespace Codefarts.BuildHelper
             {
                 this.parent = owner;
                 this.OnPropertyChanged(nameof(this.Parent));
+            }
+        }
+
+        protected virtual void OnPropertyChanged(string propertyName = null)
+        {
+            var handler = this.PropertyChanged;
+            if (handler != null)
+            {
+                handler.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }
