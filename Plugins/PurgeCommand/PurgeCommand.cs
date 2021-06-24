@@ -55,15 +55,15 @@ namespace Codefarts.BuildHelper
 
             // check type of purge
             var typeValue = args.GetParameter<string>("type", null);
-            typeValue = typeValue == null ? typeValue : typeValue.ToLowerInvariant().Trim();
+            typeValue = typeValue == null ? typeValue : typeValue.ToUpperInvariant().Trim();
             switch (typeValue)
             {
                 case null:
                     args.Result = RunResult.Errored(new MissingParameterException("type"));
                     return;
 
-                case "files":
-                case "folders":
+                case "FILES":
+                case "FOLDERS":
                     break;
 
                 default:
@@ -98,7 +98,7 @@ namespace Codefarts.BuildHelper
             var searchOption = subfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
             try
             {
-                if (typeValue == "files")
+                if (typeValue == "FILES")
                 {
                     allEntries = Directory.GetFiles(srcPath, "*.*", searchOption);
                 }
@@ -119,12 +119,12 @@ namespace Codefarts.BuildHelper
                     {
                         if (args.Command.SatifiesConditions(modifiedVars, allConditions))
                         {
-                            this.DeleteItem(args, file, typeValue);
+                            this.DeleteItem(file, typeValue);
                         }
                     }
                     else
                     {
-                        this.DeleteItem(args, file, typeValue);
+                        this.DeleteItem(file, typeValue);
                     }
 
                     this.status?.ReportProgress(((float)index / allEntries.Length) * 100);
@@ -139,12 +139,12 @@ namespace Codefarts.BuildHelper
             args.Result = RunResult.Sucessful();
         }
 
-        private void DeleteItem(RunCommandArgs args, string file, string typeValue)
+        private void DeleteItem(string file, string typeValue)
         {
             // TODO: need ability to purge folder as well
             this.status?.Report("Purging: " + file);
 
-            if (typeValue == "files")
+            if (typeValue == "FILES")
             {
                 File.Delete(file);
             }
