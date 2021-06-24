@@ -11,10 +11,10 @@ namespace Codefarts.BuildHelper
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
     public class NamedParameter : Attribute
     {
-        public NamedParameter(string name, Type type, bool required, string description)
+        public NamedParameter(string name, Type type, bool required = false, string description = null)
         {
-            this.Name = name;
-            this.Type = type;
+            this.Name = !string.IsNullOrWhiteSpace(name) ? name : throw new ArgumentNullException(nameof(name));
+            this.Type = type ?? throw new ArgumentNullException(nameof(type));
             this.Required = required;
             this.Description = description;
         }
