@@ -26,7 +26,12 @@ namespace Codefarts.BuildHelper
                 throw new KeyNotFoundException(name);
             }
 
-            return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+            if (value is IConvertible)
+            {
+                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+            }
+
+            return (T)value;
         }
 
         public static T GetValue<T>(this IDictionary<string, object> parameters, string name, T defaultValue)
@@ -41,7 +46,12 @@ namespace Codefarts.BuildHelper
             {
                 try
                 {
-                    return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+                    if (value is IConvertible)
+                    {
+                        return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+                    }
+
+                    return (T)value;
                 }
                 catch
                 {
@@ -59,7 +69,13 @@ namespace Codefarts.BuildHelper
                 throw new ArgumentNullException(nameof(result));
             }
 
-            return (T)result.ReturnValue;
+            var value = result.ReturnValue;
+            if (value is IConvertible)
+            {
+                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+            }
+
+            return (T)value;
         }
 
         public static T GetReturnValue<T>(this RunResult result, T defaultValue)
@@ -71,7 +87,13 @@ namespace Codefarts.BuildHelper
 
             try
             {
-                return (T)result.ReturnValue;
+                var value = result.ReturnValue;
+                if (value is IConvertible)
+                {
+                    return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+                }
+
+                return (T)value;
             }
             catch
             {
@@ -92,7 +114,12 @@ namespace Codefarts.BuildHelper
                 throw new MissingParameterException(name);
             }
 
-            return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+            if (value is IConvertible)
+            {
+                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+            }
+
+            return (T)value;
         }
 
         public static T GetParameter<T>(this RunCommandArgs args, string name, T defaultValue)
@@ -118,7 +145,12 @@ namespace Codefarts.BuildHelper
                 throw new MissingVariableException(name);
             }
 
-            return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+            if (value is IConvertible)
+            {
+                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+            }
+
+            return (T)value;
         }
 
         public static T GetVariable<T>(this RunCommandArgs args, string name, T defaultValue)
@@ -131,7 +163,19 @@ namespace Codefarts.BuildHelper
             object value;
             if (args.Variables.TryGetValue(name, out value))
             {
-                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+                try
+                {
+                    if (value is IConvertible)
+                    {
+                        return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+                    }
+
+                    return (T)value;
+                }
+                catch
+                {
+                    return defaultValue;
+                }
             }
 
             return defaultValue;
@@ -175,6 +219,11 @@ namespace Codefarts.BuildHelper
             return element.SatifiesConditions(variables, true);
         }
 
+        public static bool SatifiesConditions(this CommandData element, IDictionary<string, object> variables, string compareValue)
+        {
+            return element.SatifiesConditions(variables, true, compareValue);
+        }
+
         public static bool SatifiesConditions(this CommandData element, IDictionary<string, object> variables, bool allConditions)
         {
             if (allConditions)
@@ -187,7 +236,31 @@ namespace Codefarts.BuildHelper
                           .Any(condition => condition.SatifiesCondition(variables));
         }
 
+        public static bool SatifiesConditions(this CommandData element, IDictionary<string, object> variables, bool allConditions,
+                                              string compareValue)
+        {
+            if (allConditions)
+            {
+                return element.Children.Where(condition => condition.Name == "condition")
+                              .All(condition => condition.SatifiesCondition(variables, compareValue));
+            }
+
+            return element.Children.Where(condition => condition.Name == "condition")
+                          .Any(condition => condition.SatifiesCondition(variables, compareValue));
+        }
+
         public static bool SatifiesCondition(this CommandData condition, IDictionary<string, object> variables)
+        {
+            if (condition == null)
+            {
+                throw new ArgumentNullException(nameof(condition));
+            }
+
+            var value1 = condition.GetParameter<string>("value1");
+            return SatifiesCondition(condition, variables, value1);
+        }
+
+        public static bool SatifiesCondition(this CommandData condition, IDictionary<string, object> variables, string compareValue)
         {
             if (condition == null)
             {
@@ -199,12 +272,12 @@ namespace Codefarts.BuildHelper
                 throw new ArgumentException("Condition element name is not 'condition'.", nameof(condition));
             }
 
-            var value1 = condition.GetParameter<string>("value1");
             var value2 = condition.GetParameter<string>("value2");
+            value2 = value2 ?? condition.GetParameter<string>("value");
             var operatorValue = condition.GetParameter<string>("operator");
             var ignoreCaseValue = condition.GetParameter<string>("ignorecase");
 
-            value1 = variables != null ? value1.ReplaceVariableStrings(variables) : value1;
+            compareValue = variables != null ? compareValue.ReplaceVariableStrings(variables) : compareValue;
             value2 = variables != null ? value2.ReplaceVariableStrings(variables) : value2;
             operatorValue = variables != null ? operatorValue.ReplaceVariableStrings(variables) : operatorValue;
             ignoreCaseValue = variables != null ? ignoreCaseValue.ReplaceVariableStrings(variables) : ignoreCaseValue;
@@ -215,7 +288,7 @@ namespace Codefarts.BuildHelper
                 throw new ArgumentOutOfRangeException("'ignorecase' attribute exists but it's value could not be parsed as a bool value.");
             }
 
-            return SatifiesCondition(value1, value2, operatorValue, ignoreCase);
+            return SatifiesCondition(compareValue, value2, operatorValue, ignoreCase);
         }
 
         public static bool SatifiesCondition(string value1, string value2, string operatorValue, bool ignoreCase)
