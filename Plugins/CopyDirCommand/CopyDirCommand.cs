@@ -14,6 +14,10 @@ namespace Codefarts.BuildHelper
     [NamedParameter("destination", typeof(string), true, "The destination folder where files and folder will be copied to.")]
     [NamedParameter("clean", typeof(bool), false, "If true will delete contents from the destination before copying. Default is false.")]
     [NamedParameter("subfolders", typeof(bool), false, "If true will copy subfolders as well. Default is true.")]
+    [NamedParameter("allconditions", typeof(bool), false, "Specifies weather or not all conditions must be satisfied. Default is false.")]
+    [NamedParameter("ignoreconditions", typeof(bool), false, "Specifies weather to ignore conditions. Default is false.")]
+  //  [NamedParameter("relativepaths", typeof(bool), false,
+  //                  "Specifies weather condition checks will compare against relative paths or full file paths. Default is false.")]
     public class CopyDirCommand : ICommandPlugin
     {
         private IStatusReporter status;
@@ -60,6 +64,24 @@ namespace Codefarts.BuildHelper
             srcPath = srcPath.ReplaceVariableStrings(args.Variables);
             destPath = destPath.ReplaceVariableStrings(args.Variables);
 
+            // validate src and dest paths
+            if (srcPath.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+            {
+                args.Result = RunResult.Errored(
+                    new MissingParameterException("source", "Contains invalid path characters after replacing variables."));
+                return;
+            }
+
+            if (destPath.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+            {
+                args.Result = RunResult.Errored(
+                    new MissingParameterException("destination", "Contains invalid path characters after replacing variables."));
+                return;
+            }
+
+            var allConditions = args.GetParameter("allconditions", false);
+            var ignoreConditions = args.GetParameter("ignoreconditions", false);
+
             // check if we should clear the folder first
             var doClear = args.GetParameter("clean", false);
 
@@ -81,21 +103,40 @@ namespace Codefarts.BuildHelper
                 }
 
                 var copySubFolders = args.GetParameter("subfolders", true);
+                // var relativePaths = args.GetParameter("relativepaths", false);
 
                 var searchOption = copySubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-                var allFiles = Directory.GetFiles(srcPath, "*.*", searchOption).Select(d => d.Remove(0, srcPath.Length + 1)).ToArray();
+                var allFiles = Directory.GetFiles(srcPath, "*.*", searchOption)
+                                        // .Select(d => relativePaths ? d.Remove(0, srcPath.Length + 1) : d)
+                                        .ToArray();
+                var variables = new VariablesDictionary(args.Variables);
                 for (var index = 0; index < allFiles.Length; index++)
                 {
-                    var file = allFiles[index];
-                    var src = Path.Combine(srcPath, file);
-                    var dest = Path.Combine(destPath, file);
+                    var src = allFiles[index];
+                    var dest = Path.Combine(destPath, src.Substring(srcPath.Length + 1));
 
-                    var directoryName = Path.GetDirectoryName(dest);
-                    directoryName = Path.Combine(destPath, directoryName);
-                    Directory.CreateDirectory(directoryName);
+                    var directoryName = Path.GetDirectoryName(dest) ?? dest;
+
+                    // report progress
                     var progress = ((float)index / allFiles.Length) * 100;
-                    this.status?.ReportProgress("Copying: " + src + " ==> " + dest, progress);
-                    File.Copy(src, dest, true);
+                    this.status?.ReportProgress("Copying: " + src + " ==> " + dest, progress); // check conditionals
+
+                    // check to ignore conditions
+                    if (ignoreConditions)
+                    {
+                        // do copy
+                        Directory.CreateDirectory(directoryName);
+                        File.Copy(src, dest, true);
+                        continue;
+                    }
+
+                    // check if conditions are NOT satisfied
+                    if (!args.Command.SatifiesConditions(variables, allConditions, src))
+                    {
+                        // do copy
+                        Directory.CreateDirectory(directoryName);
+                        File.Copy(src, dest, true);
+                    }
                 }
             }
             catch (Exception ex)
