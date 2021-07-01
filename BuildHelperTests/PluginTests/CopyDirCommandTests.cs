@@ -99,6 +99,100 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
+        public void InvalidSourcePathChars()
+        {
+            var invalidPathChars = Path.GetInvalidPathChars();
+            var command = new CopyDirCommand();
+            var data = $"<copydir source=\"$(TempPath){invalidPathChars[0]}\" destination=\"$(DestPath)\" />";
+
+            var item = XElement.Parse(data);
+            var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
+
+            command.Run(args);
+
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Errored, args.Result.Status);
+            Assert.IsNotNull(args.Result.Error);
+
+            var mpe = args.Result.Error as MissingParameterException;
+            Assert.IsNotNull(mpe);
+            Assert.AreEqual("source", mpe.ParameterName);
+        }
+
+        [TestMethod]
+        public void InvalidDestinationPathChars()
+        {
+            var invalidPathChars = Path.GetInvalidPathChars();
+            var command = new CopyDirCommand();
+            var data = $"<copydir source=\"$(TempPath)\" destination=\"$(DestPath){invalidPathChars[0]}\" />";
+
+            var item = XElement.Parse(data);
+            var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
+
+            command.Run(args);
+
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Errored, args.Result.Status);
+            Assert.IsNotNull(args.Result.Error);
+
+            var mpe = args.Result.Error as MissingParameterException;
+            Assert.IsNotNull(mpe);
+            Assert.AreEqual("destination", mpe.ParameterName);
+        }
+
+        [TestMethod]
+        public void ConditionsAndNoAdditionalParameters()
+        {
+            var command = new CopyDirCommand();
+            var data = "<copydir source=\"$(TempPath)\" destination=\"$(DestPath)\" >\r\n" +
+                       "    <condition operator=\"contains\" value=\"System.\"    ignorecase=\"true\" />\r\n" +
+                       "    <condition operator=\"contains\" value=\"Microsoft.\" ignorecase=\"true\" />\r\n" +
+                       "    <condition operator=\"endswith\" value=\".xml\"       ignorecase=\"true\" />\r\n" +
+                       "</copydir>";
+
+
+            var item = XElement.Parse(data);
+            var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
+
+            command.Run(args);
+
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Sucessful, args.Result.Status);
+            Assert.IsNull(args.Result.Error);
+
+            var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
+            Assert.AreEqual(2, fileCount);
+        }
+
+        [TestMethod]
+        public void ConditionsAndIgnoreConditionsIsTrue()
+        {
+            var command = new CopyDirCommand();
+            var data = "<copydir source=\"$(TempPath)\" destination=\"$(DestPath)\" ignoreconditions=\"true\" >\r\n" +
+                       "    <condition operator=\"contains\" value=\"System.\"    ignorecase=\"true\" />\r\n" +
+                       "    <condition operator=\"contains\" value=\"Microsoft.\" ignorecase=\"true\" />\r\n" +
+                       "    <condition operator=\"endswith\" value=\".xml\"       ignorecase=\"true\" />\r\n" +
+                       "</copydir>";
+
+
+            var item = XElement.Parse(data);
+            var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
+
+            command.Run(args);
+
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Sucessful, args.Result.Status);
+            Assert.IsNull(args.Result.Error);
+
+            var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
+            Assert.AreEqual(5, fileCount);
+        }
+
+        [TestMethod]
         public void NoConditionsWithCleanParameter()
         {
             var command = new CopyDirCommand();

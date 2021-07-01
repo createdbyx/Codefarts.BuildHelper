@@ -255,18 +255,27 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
-        public void GetReturnValueWithValidArgsBadCastingNoDefaultValue()
+        public void GetNonBooleanReturnValueStringAsBooleanWithNoDefaultValue()
         {
             var result = RunResult.Sucessful("test");
-            Assert.ThrowsException<InvalidCastException>(() => { ExtensionMethods.GetReturnValue<bool>(result); });
+            Assert.ThrowsException<FormatException>(() => { ExtensionMethods.GetReturnValue<bool>(result); });
         }
 
         [TestMethod]
-        public void GetReturnValueWithValidArgsBadCastingWithDefaultValue()
+        public void GetReturnValueWithValidArgsBadCastingNoDefaultValue()
+        {
+            var result = RunResult.Sucessful("true");
+            var value = ExtensionMethods.GetReturnValue<bool>(result);
+            Assert.IsTrue(value);
+        }
+
+        [TestMethod]
+        public void GetReturnValueWithValidArgsCastingWithDefaultValue()
         {
             var result = RunResult.Sucessful(true);
             var value = ExtensionMethods.GetReturnValue(result, "default");
-            Assert.AreEqual("default", value);
+            Assert.AreSame(typeof(string), value.GetType());
+            Assert.AreEqual("True", value);
         }
 
         [TestMethod]

@@ -33,9 +33,104 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
+        public void ValidateCommandName()
+        {
+            Assert.AreEqual("condition", this.plugin.Name);
+        }
+
+        [TestMethod]
         public void RunWithNullArgs()
         {
             Assert.ThrowsException<ArgumentNullException>(() => this.plugin.Run(null));
+        }
+
+        [TestMethod]
+        public void MissingValue2()
+        {
+            var item = XElement.Parse("<condition value1=\"Test\" operator=\"contains\" />");
+            var data = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, data);
+
+            this.plugin.Run(args);
+            var result = args.Result;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(RunStatus.Errored, result.Status);
+            Assert.IsNotNull(result.Error);
+
+            var mpe = result.Error as MissingParameterException;
+            Assert.IsNotNull(mpe);
+            Assert.AreEqual("value2", mpe.ParameterName);
+        }
+
+        [TestMethod]
+        public void MissingValue1()
+        {
+            var item = XElement.Parse("<condition value2=\"Test\" operator=\"contains\" />");
+            var data = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, data);
+
+            this.plugin.Run(args);
+            var result = args.Result;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(RunStatus.Errored, result.Status);
+            Assert.IsNotNull(result.Error);
+
+            var mpe = result.Error as MissingParameterException;
+            Assert.IsNotNull(mpe);
+            Assert.AreEqual("value1", mpe.ParameterName);
+        }
+
+        [TestMethod]
+        public void MissingOperator()
+        {
+            var item = XElement.Parse("<condition value1=\"Test\" value2=\"Test\"   />");
+            var data = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, data);
+
+            this.plugin.Run(args);
+            var result = args.Result;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(RunStatus.Errored, result.Status);
+            Assert.IsNotNull(result.Error);
+
+            var mpe = result.Error as MissingParameterException;
+            Assert.IsNotNull(mpe);
+            Assert.AreEqual("operator", mpe.ParameterName);
+        }
+
+        [TestMethod]
+        public void Value1IsObject()
+        {
+            var item = XElement.Parse("<condition value1=\"Test\" operator=\"invalid\" value2=\"Test\"   />");
+            var data = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, data);
+            args.Command.Parameters["value1"] = new CommandData("TestObj1");
+
+            this.plugin.Run(args);
+            var result = args.Result;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(RunStatus.Errored, result.Status);
+            Assert.IsNotNull(result.Error);
+
+            var nse = result.Error as NotSupportedException;
+            Assert.IsNotNull(nse);
+        }
+
+        [TestMethod]
+        public void InvalidOperator()
+        {
+            var item = XElement.Parse("<condition value1=\"Test\" operator=\"invalid\" value2=\"Test\"   />");
+            var data = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, data);
+
+            this.plugin.Run(args);
+            var result = args.Result;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(RunStatus.Errored, result.Status);
+            Assert.IsNotNull(result.Error);
+
+            var nse = result.Error as NotSupportedException;
+            Assert.IsNotNull(nse);
         }
 
         [TestMethod]
