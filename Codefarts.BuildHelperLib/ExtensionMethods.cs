@@ -214,68 +214,68 @@ namespace Codefarts.BuildHelper
             return text;
         }
 
-        public static bool SatifiesConditions(this CommandData element, IDictionary<string, object> variables)
+        public static bool SatifiesConditions(this CommandData data, IDictionary<string, object> variables)
         {
-            return element.SatifiesConditions(variables, true);
+            return data.SatifiesConditions(variables, true);
         }
 
-        public static bool SatifiesConditions(this CommandData element, IDictionary<string, object> variables, string compareValue)
+        public static bool SatifiesConditions(this CommandData data, IDictionary<string, object> variables, string compareValue)
         {
-            return element.SatifiesConditions(variables, true, compareValue);
+            return data.SatifiesConditions(variables, true, compareValue);
         }
 
-        public static bool SatifiesConditions(this CommandData element, IDictionary<string, object> variables, bool allConditions)
+        public static bool SatifiesConditions(this CommandData data, IDictionary<string, object> variables, bool allConditions)
         {
             if (allConditions)
             {
-                return element.Children.Where(condition => condition.Name == "condition")
+                return data.Children.Where(condition => condition.Name == "condition")
                               .All(condition => condition.SatifiesCondition(variables));
             }
 
-            return element.Children.Where(condition => condition.Name == "condition")
+            return data.Children.Where(condition => condition.Name == "condition")
                           .Any(condition => condition.SatifiesCondition(variables));
         }
 
-        public static bool SatifiesConditions(this CommandData element, IDictionary<string, object> variables, bool allConditions,
+        public static bool SatifiesConditions(this CommandData data, IDictionary<string, object> variables, bool allConditions,
                                               string compareValue)
         {
             if (allConditions)
             {
-                return element.Children.Where(condition => condition.Name == "condition")
+                return data.Children.Where(condition => condition.Name == "condition")
                               .All(condition => condition.SatifiesCondition(variables, compareValue));
             }
 
-            return element.Children.Where(condition => condition.Name == "condition")
+            return data.Children.Where(condition => condition.Name == "condition")
                           .Any(condition => condition.SatifiesCondition(variables, compareValue));
         }
 
-        public static bool SatifiesCondition(this CommandData condition, IDictionary<string, object> variables)
+        public static bool SatifiesCondition(this CommandData data, IDictionary<string, object> variables)
         {
-            if (condition == null)
+            if (data == null)
             {
-                throw new ArgumentNullException(nameof(condition));
+                throw new ArgumentNullException(nameof(data));
             }
 
-            var value1 = condition.GetParameter<string>("value1");
-            return SatifiesCondition(condition, variables, value1);
+            var value1 = data.GetParameter<string>("value1");
+            return SatifiesCondition(data, variables, value1);
         }
 
-        public static bool SatifiesCondition(this CommandData condition, IDictionary<string, object> variables, string compareValue)
+        public static bool SatifiesCondition(this CommandData data, IDictionary<string, object> variables, string compareValue)
         {
-            if (condition == null)
+            if (data == null)
             {
-                throw new ArgumentNullException(nameof(condition));
+                throw new ArgumentNullException(nameof(data));
             }
 
-            if (condition.Name != "condition")
+            if (data.Name != "condition")
             {
-                throw new ArgumentException("Condition element name is not 'condition'.", nameof(condition));
+                throw new ArgumentException("CommandData name is not 'condition'.", nameof(data));
             }
 
-            var value2 = condition.GetParameter<string>("value2");
-            value2 = value2 ?? condition.GetParameter<string>("value");
-            var operatorValue = condition.GetParameter<string>("operator");
-            var ignoreCaseValue = condition.GetParameter<string>("ignorecase");
+            var value2 = data.GetParameter<string>("value2");
+            value2 = value2 ?? data.GetParameter<string>("value");
+            var operatorValue = data.GetParameter<string>("operator");
+            var ignoreCaseValue = data.GetParameter<string>("ignorecase");
 
             compareValue = variables != null ? compareValue.ReplaceVariableStrings(variables) : compareValue;
             value2 = variables != null ? value2.ReplaceVariableStrings(variables) : value2;
@@ -361,41 +361,49 @@ namespace Codefarts.BuildHelper
 
         public static void ReportError(this IStatusReporter status, string message)
         {
+            status = status ?? throw new ArgumentNullException(nameof(status));
             status.Report(message, ReportStatusType.Error | ReportStatusType.Message, null, 0);
         }
 
         public static void ReportError(this IStatusReporter status, string message, float progress)
         {
+            status = status ?? throw new ArgumentNullException(nameof(status));
             status.Report(message, ReportStatusType.Error | ReportStatusType.Progress | ReportStatusType.Message, null, progress);
         }
 
         public static void ReportError(this IStatusReporter status, string message, string category, float progress)
         {
+            status = status ?? throw new ArgumentNullException(nameof(status));
             status.Report(message, ReportStatusType.Error | ReportStatusType.Progress | ReportStatusType.Message, category, progress);
         }
 
         public static void ReportProgress(this IStatusReporter status, string message, float progress)
         {
+            status = status ?? throw new ArgumentNullException(nameof(status));
             status.Report(message, ReportStatusType.Message | ReportStatusType.Progress, null, progress);
         }
 
         public static void ReportProgress(this IStatusReporter status, string message, string category, float progress)
         {
+            status = status ?? throw new ArgumentNullException(nameof(status));
             status.Report(message, ReportStatusType.Message | ReportStatusType.Progress, category, progress);
         }
 
         public static void ReportProgress(this IStatusReporter status, float progress)
         {
+            status = status ?? throw new ArgumentNullException(nameof(status));
             status.Report(null, ReportStatusType.Progress, null, progress);
         }
 
         public static void Report(this IStatusReporter status, string message)
         {
+            status = status ?? throw new ArgumentNullException(nameof(status));
             status.Report(message, ReportStatusType.Message, null, 0);
         }
 
         public static void Report(this IStatusReporter status, string message, string category)
         {
+            status = status ?? throw new ArgumentNullException(nameof(status));
             status.Report(message, ReportStatusType.Message, category, 0);
         }
 
@@ -405,9 +413,19 @@ namespace Codefarts.BuildHelper
             PluginCollection plugins,
             IStatusReporter status)
         {
-            variables = variables ?? new VariablesDictionary();
-            plugins = plugins ?? new PluginCollection();
-            commands = commands ?? Enumerable.Empty<CommandData>();
+            Run(commands, variables, plugins, status, null);
+        }
+
+        public static void Run(
+            this IEnumerable<CommandData> commands,
+            VariablesDictionary variables,
+            PluginCollection plugins,
+            IStatusReporter status,
+            Action<RunCommandArgs> resultCallback)
+        {
+            commands = commands ?? throw new ArgumentNullException(nameof(commands));
+            variables = variables ?? throw new ArgumentNullException(nameof(variables));
+            plugins = plugins ?? throw new ArgumentNullException(nameof(plugins));
 
             if (plugins.Count == 0)
             {
@@ -424,39 +442,37 @@ namespace Codefarts.BuildHelper
                     continue;
                 }
 
-                command.Run(variables, plugin, status);
+                var args = command.Run(variables, plugin, status);
+                resultCallback?.Invoke(args);
             }
         }
 
-        public static void Run(this CommandData command, ICommandPlugin plugin, IStatusReporter status)
+        public static RunCommandArgs Run(this CommandData command, ICommandPlugin plugin, IStatusReporter status)
         {
-            Run(command, null, plugin, status);
+            return Run(command, new VariablesDictionary(), plugin, status);
         }
 
-        public static void Run(
+        public static RunCommandArgs Run(
             this CommandData command,
             VariablesDictionary variables,
             ICommandPlugin plugin,
             IStatusReporter status)
         {
-            if (plugin == null)
-            {
-                throw new ArgumentNullException(nameof(plugin));
-            }
-
-            variables = variables ?? new VariablesDictionary();
+            command = command ?? throw new ArgumentNullException(nameof(command));
+            variables = variables ?? throw new ArgumentNullException(nameof(variables));
+            plugin = plugin ?? throw new ArgumentNullException(nameof(plugin));
 
             // setup executing args
             var executeCommandArgs = new RunCommandArgs(variables, command);
             try
             {
-                // check if the command has an attached message and if so output the message before executing
-                var message = command.GetParameter("message", string.Empty);
-                if (!string.IsNullOrWhiteSpace(message))
-                {
-                    message = message.ReplaceVariableStrings(variables);
-                    status?.Report($"Message: {message}");
-                }
+                // // check if the command has an attached message and if so output the message before executing
+                // var message = command.GetParameter("message", string.Empty);
+                // if (!string.IsNullOrWhiteSpace(message))
+                // {
+                //     message = message.ReplaceVariableStrings(variables);
+                //     status?.Report($"Message: {message}");
+                // }
 
                 // execute the command plugin
                 plugin.Run(executeCommandArgs);
@@ -475,7 +491,10 @@ namespace Codefarts.BuildHelper
             {
                 status?.Report($"Command {plugin.Name} threw an unexpected exception.");
                 status?.Report(ex.ToString());
+                throw ex;
             }
+
+            return executeCommandArgs;
         }
     }
 }
