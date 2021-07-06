@@ -117,6 +117,85 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
+        public void Value2IsObject()
+        {
+            var item = XElement.Parse("<condition value1=\"Test\" operator=\"invalid\" value2=\"Test\"   />");
+            var data = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, data);
+            args.Command.Parameters["value2"] = new CommandData("TestObj1");
+
+            this.plugin.Run(args);
+            var result = args.Result;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(RunStatus.Errored, result.Status);
+            Assert.IsNotNull(result.Error);
+
+            var nse = result.Error as NotSupportedException;
+            Assert.IsNotNull(nse);
+        }
+
+        [TestMethod]
+        public void Value1NotEqualValue2()
+        {
+            var item = XElement.Parse("<condition value1=\"8\" operator=\"notequal\" value2=\"23\"   />");
+            var data = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, data);
+
+            this.plugin.Run(args);
+            var result = args.Result;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(RunStatus.Sucessful, result.Status);
+            Assert.IsNull(result.Error);
+            Assert.IsTrue(args.Result.GetReturnValue<bool>());
+        }
+        
+        [TestMethod]
+        public void Value1StartsWithValue2()
+        {
+            var item = XElement.Parse("<condition value1=\"Test\" operator=\"startswith\" value2=\"Te\"   />");
+            var data = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, data);
+
+            this.plugin.Run(args);
+            var result = args.Result;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(RunStatus.Sucessful, result.Status);
+            Assert.IsNull(result.Error);
+            Assert.IsTrue(args.Result.GetReturnValue<bool>());
+        }
+        
+        [TestMethod]
+        public void Value1EndsWithValue2()
+        {
+            var item = XElement.Parse("<condition value1=\"Test\" operator=\"endswith\" value2=\"st\"   />");
+            var data = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, data);
+
+            this.plugin.Run(args);
+            var result = args.Result;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(RunStatus.Sucessful, result.Status);
+            Assert.IsNull(result.Error);
+            Assert.IsTrue(args.Result.GetReturnValue<bool>());
+        }
+        
+        [TestMethod]
+        public void Value1IsIntegerAndValue2IsString()
+        {
+            var item = XElement.Parse("<condition  operator=\"equals\" value2=\"23\"   />");
+            var data = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, data);
+            args.Command.Parameters["value1"] = 23;
+
+            this.plugin.Run(args);
+            var result = args.Result;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(RunStatus.Sucessful, result.Status);
+            Assert.IsNull(result.Error);
+            Assert.IsTrue(args.Result.GetReturnValue<bool>());
+        }
+
+        [TestMethod]
         public void InvalidOperator()
         {
             var item = XElement.Parse("<condition value1=\"Test\" operator=\"invalid\" value2=\"Test\"   />");
