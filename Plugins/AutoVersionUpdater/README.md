@@ -1,5 +1,7 @@
 ## Version Updater Plugin
 
+Automatically updates the versions in a project file using the format YEAR.MONTH.DAY.REVISION. Updating the version multiple times on the same day updates only the revision number.
+
 ### Usage
 
     <updateversion ProjectFileName="$(ProjectPath)"/>
@@ -15,3 +17,4 @@
 
 * Project file must contain a FileVersion, AssemblyVersion or PackageVersion specified otherwise this plugin will not generate one.
 * A version number must consist of 4 numbers (Example: 1.2.3.201) otherwise an error occurs.
+* Version numbers are expected to be integers otherwise a parsing error will occur.
