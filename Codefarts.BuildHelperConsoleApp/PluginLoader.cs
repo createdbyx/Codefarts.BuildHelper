@@ -12,8 +12,8 @@ namespace Codefarts.BuildHelperConsoleApp
     using System.Linq;
     using System.Reflection;
     using System.Runtime.Loader;
-    using Codefarts.BuildHelper;
-    using Codefarts.DependencyInjection;
+    using BuildHelper;
+    using DependencyInjection;
 
     internal class PluginLoader
     {
@@ -30,14 +30,14 @@ namespace Codefarts.BuildHelperConsoleApp
 
         public PluginCollection Load()
         {
-            if (status == null)
+            if (this.status == null)
             {
-                throw new ArgumentNullException(nameof(status));
+                throw new ArgumentNullException(nameof(this.status));
             }
 
-            if (ioc == null)
+            if (this.ioc == null)
             {
-                throw new ArgumentNullException(nameof(ioc));
+                throw new ArgumentNullException(nameof(this.ioc));
             }
 
             if (!Directory.Exists(this.PluginFolder))
@@ -50,29 +50,32 @@ namespace Codefarts.BuildHelperConsoleApp
             AssemblyLoadContext.Default.Resolving += this.ResolveAssemblies;
 
             // find types
-            var pluginTypes = asmFiles.SelectMany(f =>
-            {
-                var asm = AssemblyLoadContext.Default.LoadFromAssemblyPath(f);
-                return asm.GetTypes().Where(t => t.IsPublic && t.IsClass && !t.IsSealed && typeof(ICommandPlugin).IsAssignableFrom(t));
-            }).ToArray();
+            var pluginTypes = asmFiles
+                              .Where(f => !AssemblyLoadContext.Default.Assemblies.Any(
+                                         x => x.Location.Equals(f, StringComparison.InvariantCultureIgnoreCase)))
+                              .SelectMany(f =>
+                              {
+                                  var asm = AssemblyLoadContext.Default.LoadFromAssemblyPath(f);
+                                  return asm.GetTypes()
+                                            .Where(t => t.IsPublic && t.IsClass && !t.IsAbstract && typeof(ICommandPlugin).IsAssignableFrom(t));
+                              }).ToArray();
 
             // create them
             var plugins = pluginTypes.Select(t =>
             {
                 try
                 {
-                    return ioc.Resolve(t) as ICommandPlugin;
+                    return this.ioc.Resolve(t) as ICommandPlugin;
                 }
                 catch
                 {
-                    status.Report($"Failed to instantiate {t.FullName} from assembly '{t.Assembly.Location}'.");
+                    this.status.Report($"Failed to instantiate {t.FullName} from assembly '{t.Assembly.Location}'.");
                     AssemblyLoadContext.Default.Resolving -= this.ResolveAssemblies;
                     return null;
                 }
             }).Where(x => x != null);
 
-            status.Report($"{plugins.Count()} plugins loaded.");
-            status.Report(string.Join("\r\n", plugins.Select(x => x.Name)));
+            this.status.Report($"{plugins.Count()} plugins loaded.\r\n" + string.Join("\r\n", plugins.Select(x => x.Name)));
 
             AssemblyLoadContext.Default.Resolving -= this.ResolveAssemblies;
             return new PluginCollection(plugins);
