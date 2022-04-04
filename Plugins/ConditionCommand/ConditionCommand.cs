@@ -10,7 +10,7 @@ namespace ConditionCommand
     using Codefarts.BuildHelper;
 
     [NamedParameter("value1", typeof(object), true, "The first value to be compared.")]
-    [NamedParameter("value2", typeof(object), true, "THe second value to be compared.")]
+    [NamedParameter("value2", typeof(object), true, "The second value to be compared.")]
     [NamedParameter("operator", typeof(string), true, "The operator that defines how values will be compared.")]
     [NamedParameter("ignorecase", typeof(bool), false, "Ignores casing if comparing strings.")]
     public class ConditionCommand : ICommandPlugin

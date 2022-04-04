@@ -85,7 +85,7 @@ namespace Codefarts.BuildHelper
             // check if we should clear the folder first
             var doClear = args.GetParameter("clean", false);
 
-            this.status?.Report($"Clearing before copy ({doClear}): {destPath}");
+            this.status.Report($"Clearing before copy ({doClear}): {destPath}");
             try
             {
                 var di = new DirectoryInfo(destPath);
@@ -119,7 +119,7 @@ namespace Codefarts.BuildHelper
 
                     // report progress
                     var progress = ((float)index / allFiles.Length) * 100;
-                    this.status?.ReportProgress("Copying: " + src + " ==> " + dest, progress); // check conditionals
+                    this.status.ReportProgress("Copying: " + src + " ==> " + dest, progress); // check conditionals
 
                     // check to ignore conditions
                     if (ignoreConditions)
