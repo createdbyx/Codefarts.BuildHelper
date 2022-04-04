@@ -17,6 +17,7 @@ namespace AutoVersionUpdater
     [NamedParameter("ProjectFileName", typeof(string), true, "The file path to the project file.")]
     [NamedParameter("file", typeof(bool), false, "If true will increment the file version. Default is true.")]
     [NamedParameter("assembly", typeof(bool), false, "If true will increment the assembly version. Default is true.")]
+    [NamedParameter("package", typeof(bool), false, "If true will increment the package version. Default is true.")]
     public class VersionUpdaterCommand : ICommandPlugin
     {
         public string Name
@@ -44,6 +45,7 @@ namespace AutoVersionUpdater
 
             var updateFile = args.GetParameter("file", true);
             var updateAssembly = args.GetParameter("assembly", true);
+            var updatePackage = args.GetParameter("package", true);
 
             // read project file
             XDocument doc;
@@ -61,6 +63,7 @@ namespace AutoVersionUpdater
             var propGroups = Enumerable.Where(doc.Root.Elements(), x => x.Name == "PropertyGroup").ToArray();
             var fileVersion = propGroups.SelectMany(x => x.Elements().Where(y => y.Name == "FileVersion")).FirstOrDefault();
             var assemblyVersion = propGroups.SelectMany(x => x.Elements().Where(y => y.Name == "AssemblyVersion")).FirstOrDefault();
+            var packageVersion = propGroups.SelectMany(x => x.Elements().Where(y => y.Name == "PackageVersion")).FirstOrDefault();
 
             // change version info
             if (updateFile && fileVersion != null)
@@ -85,6 +88,19 @@ namespace AutoVersionUpdater
                 }
 
                 assemblyVersion.Value = result;
+            }
+
+            // change package version info
+            if (updatePackage && packageVersion != null)
+            {
+                string result;
+                if (!this.UpdateVersion(packageVersion.Value, out result))
+                {
+                    args.Result = RunResult.Errored(new BuildException("PackageVersion could not be understood."));
+                    return;
+                }
+
+                packageVersion.Value = result;
             }
 
             // save project file
