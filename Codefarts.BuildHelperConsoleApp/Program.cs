@@ -21,6 +21,7 @@ namespace Codefarts.BuildHelperConsoleApp
         static void Main(string[] args)
         {
             var ioc = new DependencyInjectorShim(new Container());
+            ioc.Register<IDependencyInjectionProvider>(() => ioc);
             ioc.Register<IStatusReporter, ConsoleStatusReporter>();
 
             var status = ioc.Resolve<IStatusReporter>();
@@ -53,7 +54,7 @@ namespace Codefarts.BuildHelperConsoleApp
             var buildFileCommands = root.Elements().Select(x => BuildCommandNode(x, null));
 
             var buildEventValue = variables.GetValue<string>("BuildEvent", null);
-            status.ReportHeader($"START {buildEventValue} BUILD"); 
+            status.ReportHeader($"START {buildEventValue} BUILD");
             buildFileCommands.Run(variables, commandPlugins, status);
             status.ReportHeader($"END {buildEventValue} BUILD");
         }
