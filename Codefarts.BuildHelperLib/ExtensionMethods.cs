@@ -216,7 +216,7 @@ namespace Codefarts.BuildHelper
 
         public static bool SatifiesConditions(this CommandData data, IDictionary<string, object> variables)
         {
-            return data.SatifiesConditions(variables, true);
+            return SatifiesConditions(data, variables, true);
         }
 
         public static bool SatifiesConditions(this CommandData data, IDictionary<string, object> variables, string compareValue)
