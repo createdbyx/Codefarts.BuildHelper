@@ -10,9 +10,11 @@
 
     <LangVersion>default</LangVersion>
 
-    <TargetFrameworks>net5.0</TargetFrameworks>
-
     <OutputType>Library</OutputType>
+
+    <TargetFramework>net6.0</TargetFramework>
+
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

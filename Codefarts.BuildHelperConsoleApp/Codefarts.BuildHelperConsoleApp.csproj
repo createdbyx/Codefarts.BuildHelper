@@ -2,10 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyVersion>2021.1.25.0</AssemblyVersion>
     <FileVersion>2021.1.25.0</FileVersion>
     <AssemblyName>BuildHelper</AssemblyName>
+    <LangVersion>default</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,5 +31,9 @@
     <ProjectReference Include="..\Codefarts.BuildHelperLib\Codefarts.BuildHelperLib.csproj" />
     <ProjectReference Include="..\Codefats.BuildHelper.ConsoleReporter\Codefats.BuildHelper.ConsoleReporter.csproj" />
   </ItemGroup>
-
+   
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    
+<!--    <Exec Command="powershell.exe -ExecutionPolicy Unrestricted -noprofile -nologo -noninteractive -Command .'$(ProjectDir)deploy.ps1'" />-->
+  </Target>
 </Project>

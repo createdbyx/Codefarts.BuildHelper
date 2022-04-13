@@ -3,7 +3,8 @@
   <PropertyGroup>
     <AssemblyVersion>2021.1.25.0</AssemblyVersion>
     <FileVersion>2021.1.25.0</FileVersion>
-    <TargetFrameworks>net5.0</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
