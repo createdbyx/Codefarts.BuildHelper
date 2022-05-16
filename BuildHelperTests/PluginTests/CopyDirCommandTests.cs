@@ -164,7 +164,7 @@ namespace BuildHelperTests
             Assert.IsNull(args.Result.Error);
 
             var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
-            Assert.AreEqual(2, fileCount);
+            Assert.AreEqual(3, fileCount);
         }
 
         [TestMethod]
@@ -197,6 +197,40 @@ namespace BuildHelperTests
         {
             var command = new CopyDirCommand();
             var data = "<copydir source=\"$(TempPath)\" destination=\"$(DestPath)\" clean=\"true\" />";
+
+            var item = XElement.Parse(data);
+            var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
+
+            // create dest folder
+            Directory.CreateDirectory(this.destDir);
+
+            // create dest files to be cleared
+            var cleanFile = Path.Combine(this.destDir, "clean.txt");
+            File.WriteAllText(cleanFile, "contents");
+
+            var cleanDir = Path.Combine(this.destDir, "CleanSubFolder");
+            Directory.CreateDirectory(cleanDir);
+
+            command.Run(args);
+
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Sucessful, args.Result.Status);
+            Assert.IsNull(args.Result.Error);
+
+            // ensure clear ile does not exist
+            Assert.IsFalse(File.Exists(cleanFile));
+            Assert.IsFalse(Directory.Exists(cleanDir));
+
+            var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
+            Assert.AreEqual(5, fileCount);
+        }
+        
+        [TestMethod]
+        public void NoConditionsWithCleanParameterButDotDotInDestPath()
+        {
+            var command = new CopyDirCommand();
+            var data = "<copydir source=\"$(TempPath)\" destination=\"$(DestPath)\\temp\\..\\\" clean=\"true\" />";
 
             var item = XElement.Parse(data);
             var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
