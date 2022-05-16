@@ -18,7 +18,7 @@ namespace Codefarts.BuildHelperConsoleApp
 
     static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var ioc = new DependencyInjectorShim(new Container());
             ioc.Register<IDependencyInjectionProvider>(() => ioc);
@@ -59,7 +59,7 @@ namespace Codefarts.BuildHelperConsoleApp
             status.ReportHeader($"END {buildEventValue} BUILD");
         }
 
-        public static void ReportHeader(this IStatusReporter status, string message, params object[] args)
+        private static void ReportHeader(this IStatusReporter status, string message, params object[] args)
         {
             var formattedString = string.Format(message, args);
             var maxLen = Math.Max(formattedString.Length + 10, 100);

@@ -18,7 +18,7 @@ namespace Codefarts.BuildHelperConsoleApp
     internal class PluginLoader
     {
         private IStatusReporter status;
-        IDependencyInjectionProvider ioc;
+        private IDependencyInjectionProvider ioc;
 
         public PluginLoader(IDependencyInjectionProvider ioc)
         {
