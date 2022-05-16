@@ -18,3 +18,6 @@ Automatically updates the versions in a project file using the format YEAR.MONTH
 * Project file must contain a FileVersion, AssemblyVersion or PackageVersion specified otherwise this plugin will not generate one.
 * A version number must consist of 4 numbers (Example: 1.2.3.201) otherwise an error occurs.
 * Version numbers are expected to be integers otherwise a parsing error will occur.
+
+### Remarks
+* Revision will be set to zero if the stored date is different from the current date.~~~~

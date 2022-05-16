@@ -126,18 +126,50 @@ namespace AutoVersionUpdater
                 return false;
             }
 
-            int part3Value;
-            if (!int.TryParse(parts[3], out part3Value))
+            int yearValue;
+            if (!int.TryParse(parts[0], out yearValue))
             {
                 result = value;
                 return false;
             }
 
+            int monthValue;
+            if (!int.TryParse(parts[1], out monthValue))
+            {
+                result = value;
+                return false;
+            }
+
+            int dayValue;
+            if (!int.TryParse(parts[2], out dayValue))
+            {
+                result = value;
+                return false;
+            }
+
+            int revisionValue;
+            if (!int.TryParse(parts[3], out revisionValue))
+            {
+                result = value;
+                return false;
+            }
+
+            // we use min/max comparison to prevent exceptions with possible bad numeric values that are to be converted into a date
+            var year = Math.Max(1, yearValue);
+            var month = Math.Max(1, monthValue);
+            var day = Math.Max(1, dayValue);
+
+            year = Math.Min(9999, year);
+            month = Math.Min(12, month);
+            day = Math.Min(31, day);
+
+            var storedTime = new DateTime(year, month, day);
+
             var date = DateTime.Now;
             parts[0] = date.Year.ToString();
             parts[1] = date.Month.ToString();
             parts[2] = date.Day.ToString();
-            parts[3] = (part3Value + 1).ToString();
+            parts[3] = (storedTime != date ? 0 : revisionValue + 1).ToString();
 
             result = string.Join(".", parts);
             return true;
