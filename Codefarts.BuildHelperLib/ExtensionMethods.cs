@@ -229,11 +229,11 @@ namespace Codefarts.BuildHelper
             if (allConditions)
             {
                 return data.Children.Where(condition => condition.Name == "condition")
-                              .All(condition => condition.SatifiesCondition(variables));
+                           .All(condition => condition.SatifiesCondition(variables));
             }
 
             return data.Children.Where(condition => condition.Name == "condition")
-                          .Any(condition => condition.SatifiesCondition(variables));
+                       .Any(condition => condition.SatifiesCondition(variables));
         }
 
         public static bool SatifiesConditions(this CommandData data, IDictionary<string, object> variables, bool allConditions,
@@ -241,12 +241,12 @@ namespace Codefarts.BuildHelper
         {
             if (allConditions)
             {
-                return data.Children.Where(condition => condition.Name == "condition")
-                              .All(condition => condition.SatifiesCondition(variables, compareValue));
+                return data.Children.Count == 0 || data.Children.Where(condition => condition.Name == "condition")
+                                                       .All(condition => condition.SatifiesCondition(variables, compareValue));
             }
 
-            return data.Children.Where(condition => condition.Name == "condition")
-                          .Any(condition => condition.SatifiesCondition(variables, compareValue));
+            return data.Children.Count == 0 || data.Children.Where(condition => condition.Name == "condition")
+                                                   .Any(condition => condition.SatifiesCondition(variables, compareValue));
         }
 
         public static bool SatifiesCondition(this CommandData data, IDictionary<string, object> variables)
