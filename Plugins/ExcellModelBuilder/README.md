@@ -19,5 +19,5 @@ Extracts data from Excel
 ### Requirements
 
 * Source and destination paths cannot contain invalid path characters or an error will occur.
-* If singlefile argument is true then the destination argument must point to a filename that ends with "~~~~.cs".
+* If singlefile argument is true then the destination argument must point to a filename that ends with ".cs".
 ~~~~
