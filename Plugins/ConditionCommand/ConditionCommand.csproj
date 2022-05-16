@@ -24,6 +24,6 @@
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="xcopy &quot;$(ProjectDir)$(OutDir)$(ProjectName).*&quot; &quot;$(SolutionDir)Codefarts.BuildHelperConsoleApp\bin\$(ConfigurationName)\net5.0\Plugins\$(ProjectName)\&quot; /e /y" />
+        <Exec Command="xcopy &quot;$(ProjectDir)$(OutDir)$(ProjectName).*&quot; &quot;$(SolutionDir)Codefarts.BuildHelperConsoleApp\bin\$(ConfigurationName)\net6.0\Plugins\$(ProjectName)\&quot; /e /y" />
     </Target>
 </Project>
