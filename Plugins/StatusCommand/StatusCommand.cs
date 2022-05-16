@@ -25,6 +25,10 @@ namespace Codefarts.BuildHelper
             this.status = status ?? throw new ArgumentNullException(nameof(status));
         }
 
+        public StatusCommand()
+        {
+        }
+
         public string Name => "status";
 
         public void Run(RunCommandArgs args)
@@ -40,7 +44,10 @@ namespace Codefarts.BuildHelper
             var categoryValue = args.GetParameter<string>("category", null);
             var progressValue = args.GetParameter<float>("progress", 0f);
 
-            this.status.Report(messageValue, typeValue, categoryValue, progressValue);
+            messageValue = messageValue?.ReplaceVariableStrings(args.Variables);
+            categoryValue = categoryValue?.ReplaceVariableStrings(args.Variables);
+
+            this.status?.Report(messageValue, typeValue, categoryValue, progressValue);
 
             args.Result = RunResult.Sucessful();
         }

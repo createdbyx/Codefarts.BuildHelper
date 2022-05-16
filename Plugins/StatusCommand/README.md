@@ -12,3 +12,6 @@ Reports messages to a IStatusReporter implementation.
 * type - The message type. Default is message.
 * category - The message category. Default is null.
 * progress - The progress being reported. Default is zero.
+
+### Notes
+* Variables specified inside of text or category arguments will be replaced. 
