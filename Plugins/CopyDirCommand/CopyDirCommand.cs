@@ -4,6 +4,10 @@
 // http://www.codefarts.com
 // </copyright>
 
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Text;
+
 namespace Codefarts.BuildHelper
 {
     using System;
@@ -41,6 +45,7 @@ namespace Codefarts.BuildHelper
 
         public void Run(RunCommandArgs args)
         {
+          //  Debugger.Launch();
             if (args == null)
             {
                 throw new ArgumentNullException(nameof(args));
@@ -106,19 +111,21 @@ namespace Codefarts.BuildHelper
                 // var relativePaths = args.GetParameter("relativepaths", false);
 
                 var searchOption = copySubFolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                srcPath = Path.GetFullPath(srcPath);
                 var allFiles = Directory.GetFiles(srcPath, "*.*", searchOption)
                                         // .Select(d => relativePaths ? d.Remove(0, srcPath.Length + 1) : d)
                                         .ToArray();
                 var variables = new VariablesDictionary(args.Variables);
+                var pathChars = new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
                 for (var index = 0; index < allFiles.Length; index++)
                 {
                     var src = allFiles[index];
-                    var dest = Path.Combine(destPath, src.Substring(srcPath.Length + 1));
-
+                    var path = src.Remove(0, srcPath.Length).TrimStart().TrimStart(pathChars);
+                    var dest = Path.GetFullPath(Path.Combine(destPath, path));
                     var directoryName = Path.GetDirectoryName(dest) ?? dest;
 
                     // report progress
-                    var progress = ((float)index / allFiles.Length) * 100;
+                    var progress = (float)Math.Round(((float)index / allFiles.Length) * 100, 2);
                     this.status?.ReportProgress("Copying: " + src + " ==> " + dest, progress); // check conditionals
 
                     // check to ignore conditions
@@ -130,8 +137,8 @@ namespace Codefarts.BuildHelper
                         continue;
                     }
 
-                    // check if conditions are NOT satisfied
-                    if (!args.Command.SatifiesConditions(variables, allConditions, src))
+                    // check if conditions are satisfied
+                    if (args.Command.SatifiesConditions(variables, allConditions, src))
                     {
                         // do copy
                         Directory.CreateDirectory(directoryName);
