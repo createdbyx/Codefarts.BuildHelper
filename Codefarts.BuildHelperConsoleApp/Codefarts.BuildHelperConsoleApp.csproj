@@ -33,7 +33,6 @@
   </ItemGroup>
    
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    
-<!--    <Exec Command="powershell.exe -ExecutionPolicy Unrestricted -noprofile -nologo -noninteractive -Command .'$(ProjectDir)deploy.ps1'" />-->
+    <Exec Command="powershell.exe -ExecutionPolicy Unrestricted -noprofile -nologo -noninteractive -Command .'$(ProjectDir)deploy.ps1'" />
   </Target>
 </Project>
