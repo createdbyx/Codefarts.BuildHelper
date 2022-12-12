@@ -12,6 +12,8 @@ Automatically updates the versions in a project file using the format YEAR.MONTH
 * file - If true will increment the file version. Default is true.
 * assembly - If true will increment the assembly version. Default is true.
 * package - If true will increment the package version. Default is true.
+* version - If true will increment the version. Default is true.
+* usecurrentdate = If true will set the year/month/day values to current date. Default is true.
 
 ### Requirements
 

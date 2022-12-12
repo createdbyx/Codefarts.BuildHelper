@@ -18,6 +18,7 @@ namespace AutoVersionUpdater
     [NamedParameter("file", typeof(bool), false, "If true will increment the file version. Default is true.")]
     [NamedParameter("assembly", typeof(bool), false, "If true will increment the assembly version. Default is true.")]
     [NamedParameter("package", typeof(bool), false, "If true will increment the package version. Default is true.")]
+    [NamedParameter("version", typeof(bool), false, "If true will increment the version. Default is true.")]
     public class VersionUpdaterCommand : ICommandPlugin
     {
         public string Name
@@ -46,6 +47,8 @@ namespace AutoVersionUpdater
             var updateFile = args.GetParameter("file", true);
             var updateAssembly = args.GetParameter("assembly", true);
             var updatePackage = args.GetParameter("package", true);
+            var updateVersion = args.GetParameter("version", true);
+            var useCurrentDate = args.GetParameter("usecurrentdate", true);
 
             // read project file
             XDocument doc;
@@ -64,12 +67,13 @@ namespace AutoVersionUpdater
             var fileVersion = propGroups.SelectMany(x => x.Elements().Where(y => y.Name == "FileVersion")).FirstOrDefault();
             var assemblyVersion = propGroups.SelectMany(x => x.Elements().Where(y => y.Name == "AssemblyVersion")).FirstOrDefault();
             var packageVersion = propGroups.SelectMany(x => x.Elements().Where(y => y.Name == "PackageVersion")).FirstOrDefault();
+            var version = propGroups.SelectMany(x => x.Elements().Where(y => y.Name == "Version")).FirstOrDefault();
 
-            // change version info
+            // change file version info
             if (updateFile && fileVersion != null)
             {
                 string result;
-                if (!this.UpdateVersion(fileVersion.Value, out result))
+                if (!this.UpdateVersion(fileVersion.Value, useCurrentDate, out result))
                 {
                     args.Result = RunResult.Errored(new BuildException("FileVersion could not be understood."));
                     return;
@@ -78,10 +82,11 @@ namespace AutoVersionUpdater
                 fileVersion.Value = result;
             }
 
+            // change assembly version info
             if (updateAssembly && assemblyVersion != null)
             {
                 string result;
-                if (!this.UpdateVersion(assemblyVersion.Value, out result))
+                if (!this.UpdateVersion(assemblyVersion.Value, useCurrentDate, out result))
                 {
                     args.Result = RunResult.Errored(new BuildException("AssemblyVersion could not be understood."));
                     return;
@@ -94,13 +99,26 @@ namespace AutoVersionUpdater
             if (updatePackage && packageVersion != null)
             {
                 string result;
-                if (!this.UpdateVersion(packageVersion.Value, out result))
+                if (!this.UpdateVersion(packageVersion.Value, useCurrentDate, out result))
                 {
                     args.Result = RunResult.Errored(new BuildException("PackageVersion could not be understood."));
                     return;
                 }
 
                 packageVersion.Value = result;
+            }
+            
+            // change version info
+            if (updateVersion && version != null)
+            {
+                string result;
+                if (!this.UpdateVersion(version.Value, useCurrentDate, out result))
+                {
+                    args.Result = RunResult.Errored(new BuildException("Version could not be understood."));
+                    return;
+                }
+
+                version.Value = result;
             }
 
             // save project file
@@ -117,7 +135,7 @@ namespace AutoVersionUpdater
             args.Result = RunResult.Sucessful();
         }
 
-        private bool UpdateVersion(string value, out string result)
+        private bool UpdateVersion(string value, bool useCurrentDate, out string result)
         {
             var parts = value.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 4)
@@ -166,10 +184,10 @@ namespace AutoVersionUpdater
             var storedTime = new DateTime(year, month, day);
 
             var date = DateTime.Now;
-            parts[0] = date.Year.ToString();
-            parts[1] = date.Month.ToString();
-            parts[2] = date.Day.ToString();
-            parts[3] = (storedTime != date ? 0 : revisionValue + 1).ToString();
+            parts[0] = (useCurrentDate ? date.Year : storedTime.Year).ToString();
+            parts[1] = (useCurrentDate ? date.Month : storedTime.Month).ToString();
+            parts[2] = (useCurrentDate ? date.Day : storedTime.Day).ToString();
+            parts[3] = (useCurrentDate && storedTime.Date != date.Date ? 0 : revisionValue + 1).ToString();
 
             result = string.Join(".", parts);
             return true;
