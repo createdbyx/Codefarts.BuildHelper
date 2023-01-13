@@ -7,6 +7,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
+using Codefarts.BuildHelper.Exceptions;
 
 namespace Codefarts.BuildHelper
 {

@@ -4,6 +4,8 @@
 // http://www.codefarts.com
 // </copyright>
 
+using Codefarts.BuildHelper.Exceptions;
+
 namespace AutoVersionUpdater
 {
     using System;

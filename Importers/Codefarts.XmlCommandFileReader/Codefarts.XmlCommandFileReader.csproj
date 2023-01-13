@@ -4,14 +4,33 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <LangVersion>default</LangVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Version>1.0.0.0</Version>
+        <Authors>Dean Lunz</Authors>
+        <Copyright>Codefarts</Copyright>
+        <PackageProjectUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</RepositoryUrl>
+        <Company>Codefarts</Company>
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <FileVersion>1.0.0.0</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Codefarts.DependenceyInjection" Version="2022.4.22.22" />
+      <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Codefarts.BuildHelperLib\Codefarts.BuildHelperLib.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="C:\Users\Dean\.nuget\packages\codefarts.dependenceyinjection\2022.4.22.22\contentFiles\any\net6.0\stylecop.json" />
+      <AdditionalFiles Include="C:\Users\Dean\.nuget\packages\codefarts.dependenceyinjection\2022.4.22.22\contentFiles\any\net6.0\stylecop.json" />
     </ItemGroup>
 
 </Project>

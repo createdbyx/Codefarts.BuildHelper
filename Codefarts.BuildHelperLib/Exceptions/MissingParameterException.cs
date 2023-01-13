@@ -4,10 +4,10 @@
 // http://www.codefarts.com
 // </copyright>
 
-namespace Codefarts.BuildHelper;
-
 using System;
 using System.Runtime.Serialization;
+
+namespace Codefarts.BuildHelper.Exceptions;
 
 public class MissingParameterException : Exception
 {
