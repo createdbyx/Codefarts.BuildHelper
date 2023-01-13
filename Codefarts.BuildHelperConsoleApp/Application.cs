@@ -23,7 +23,14 @@ public class Application
 
     public RunResult Run()
     {
-        var status = this.ioc.Resolve<IStatusReporter>();
+        IStatusReporter status = null;
+        try
+        {
+            status = this.ioc.Resolve<IStatusReporter>();
+        }
+        catch
+        {
+        }
 
         // load command plugins
         var pluginLoader = this.ioc.Resolve<PluginLoader>();
@@ -52,8 +59,8 @@ public class Application
         var rootCommand = result.ReturnValue as CommandData;
         if (rootCommand == null)
         {
-            throw new NullReferenceException("Import was successfull but the importer return a null or invalid return value. " +
-                                             $"Value: {result.ReturnValue}");
+            return RunResult.Errored(new NullReferenceException("Import was successfull but the importer return a null or invalid return value. " +
+                                                                $"Value: {result.ReturnValue}"));
         }
 
         var buildEventValue = variables.GetValue<string>("BuildEvent", null);

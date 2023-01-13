@@ -15,7 +15,7 @@ namespace Codefarts.BuildHelperConsoleApp
     using BuildHelper;
     using DependencyInjection;
 
-    internal class PluginLoader
+    public class PluginLoader
     {
         private IStatusReporter status;
         private IDependencyInjectionProvider ioc;
@@ -23,28 +23,23 @@ namespace Codefarts.BuildHelperConsoleApp
         public PluginLoader(IDependencyInjectionProvider ioc)
         {
             this.ioc = ioc ?? throw new ArgumentNullException(nameof(ioc));
-            this.status = ioc.Resolve<IStatusReporter>();
+            try
+            {
+                this.status = ioc.Resolve<IStatusReporter>();
+            }
+            catch
+            {
+            }
         }
 
         public string PluginFolder { get; set; }
 
         public string PluginContextName { get; set; }
 
-        public bool UseSeparatePluginContext { get; set; }  
+        public bool UseSeparatePluginContext { get; set; }
 
         public PluginCollection Load()
         {
-            if (this.ioc == null)
-            {
-                throw new ArgumentNullException(nameof(this.ioc));
-            }
-
-            // if (UseSeparatePluginContext && string.IsNullOrWhiteSpace(this.PluginContextName))
-            // {
-            //     throw new ArgumentException($"If the {nameof(UseSeparatePluginContext)} property is true the {PluginContextName} property" +
-            //                                 " can not be null or whitespace.");
-            // }
-
             if (!Directory.Exists(this.PluginFolder))
             {
                 return new PluginCollection();
@@ -121,4 +116,5 @@ namespace Codefarts.BuildHelperConsoleApp
             return null;
         }
     }
+
 }
