@@ -7,19 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Codefarts.BuildHelperLib\Codefarts.BuildHelperLib.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <AdditionalFiles Include="..\..\stylecop.json">
         <Link>stylecop.json</Link>
       </AdditionalFiles>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="ExcelDataReader" Version="3.6.0" />
-      <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
-      <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
+      <ProjectReference Include="..\..\Codefarts.BuildHelperLib\Codefarts.BuildHelperLib.csproj" />
     </ItemGroup>
 
 </Project>
