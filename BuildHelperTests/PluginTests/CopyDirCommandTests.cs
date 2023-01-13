@@ -17,6 +17,7 @@ namespace BuildHelperTests
     [TestClass, TestCategory("CopyDir Command")]
     public class CopyDirCommandTests
     {
+        private const int ExpectedFileCount = 7;
         private VariablesDictionary variables;
         private string tempDir;
         private string destDir;
@@ -98,7 +99,7 @@ namespace BuildHelperTests
             Assert.IsNull(args.Result.Error);
 
             var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
-            Assert.AreEqual(5, fileCount);
+            Assert.AreEqual(ExpectedFileCount, fileCount);
         }
 
         [TestMethod]
@@ -192,7 +193,7 @@ namespace BuildHelperTests
             Assert.IsNull(args.Result.Error);
 
             var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
-            Assert.AreEqual(5, fileCount);
+            Assert.AreEqual(ExpectedFileCount, fileCount);
         }
         
         [TestMethod]
@@ -216,7 +217,7 @@ namespace BuildHelperTests
             Assert.IsNull(args.Result.Error);
 
             var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
-            Assert.AreEqual(1, fileCount);
+            Assert.AreEqual(2, fileCount);
         }
         
         [TestMethod]
@@ -303,7 +304,7 @@ namespace BuildHelperTests
             Assert.IsFalse(Directory.Exists(cleanDir));
 
             var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
-            Assert.AreEqual(5, fileCount);
+            Assert.AreEqual(ExpectedFileCount, fileCount);
         }
         
         [TestMethod]
@@ -337,7 +338,7 @@ namespace BuildHelperTests
             Assert.IsFalse(Directory.Exists(cleanDir));
 
             var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
-            Assert.AreEqual(5, fileCount);
+            Assert.AreEqual(ExpectedFileCount, fileCount);
         }
 
         [TestMethod]
@@ -424,7 +425,7 @@ namespace BuildHelperTests
             Assert.IsTrue(File.Exists(cleanFile));
 
             var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
-            Assert.AreEqual(6, fileCount);
+            Assert.AreEqual(ExpectedFileCount+1, fileCount);
         }
 
         [TestMethod]
