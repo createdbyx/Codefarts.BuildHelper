@@ -46,7 +46,7 @@ namespace Codefarts.BuildHelperConsoleApp
             var buildFileReader = ioc.Resolve<BuildFileReader>();
             if (!buildFileReader.TryReadBuildFile(buildFile, out root))
             {
-                status.Report($"ERROR: Reading Build File. {buildFile}");
+                status?.Report($"ERROR: Reading Build File. {buildFile}");
                 Environment.ExitCode = 1;
                 return;
             }
@@ -54,9 +54,9 @@ namespace Codefarts.BuildHelperConsoleApp
             var buildFileCommands = root.Elements().Select(x => BuildCommandNode(x, null));
 
             var buildEventValue = variables.GetValue<string>("BuildEvent", null);
-            status.ReportHeader($"START {buildEventValue} BUILD");
+            status?.ReportHeader($"START {buildEventValue} BUILD");
             buildFileCommands.Run(variables, commandPlugins, status);
-            status.ReportHeader($"END {buildEventValue} BUILD");
+            status?.ReportHeader($"END {buildEventValue} BUILD");
         }
 
         private static void ReportHeader(this IStatusReporter status, string message, params object[] args)
