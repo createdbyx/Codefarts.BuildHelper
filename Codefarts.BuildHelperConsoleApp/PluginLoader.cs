@@ -28,12 +28,22 @@ namespace Codefarts.BuildHelperConsoleApp
 
         public string PluginFolder { get; set; }
 
+        public string PluginContextName { get; set; }
+
+        public bool UseSeparatePluginContext { get; set; }  
+
         public PluginCollection Load()
         {
             if (this.ioc == null)
             {
                 throw new ArgumentNullException(nameof(this.ioc));
             }
+
+            // if (UseSeparatePluginContext && string.IsNullOrWhiteSpace(this.PluginContextName))
+            // {
+            //     throw new ArgumentException($"If the {nameof(UseSeparatePluginContext)} property is true the {PluginContextName} property" +
+            //                                 " can not be null or whitespace.");
+            // }
 
             if (!Directory.Exists(this.PluginFolder))
             {
@@ -42,15 +52,19 @@ namespace Codefarts.BuildHelperConsoleApp
 
             var asmFiles = Directory.GetFiles(this.PluginFolder, "*.dll", SearchOption.AllDirectories);
 
-            AssemblyLoadContext.Default.Resolving += this.ResolveAssemblies;
+            var pluginContext = this.UseSeparatePluginContext
+                ? AssemblyLoadContext.All.FirstOrDefault(x => x.Name.Equals(this.PluginContextName)) ??
+                  new AssemblyLoadContext(this.PluginContextName, true)
+                : AssemblyLoadContext.Default;
+            pluginContext.Resolving += this.ResolveAssemblies;
 
             // find types
             var pluginTypes = asmFiles
-                              .Where(f => !AssemblyLoadContext.Default.Assemblies.Any(
+                              .Where(f => !pluginContext.Assemblies.Any(
                                          x => x.Location.Equals(f, StringComparison.InvariantCultureIgnoreCase)))
                               .SelectMany(f =>
                               {
-                                  var asm = AssemblyLoadContext.Default.LoadFromAssemblyPath(f);
+                                  var asm = pluginContext.LoadFromAssemblyPath(f);
                                   return asm.GetTypes()
                                             .Where(t => t.IsPublic && t.IsClass && !t.IsAbstract && typeof(ICommandPlugin).IsAssignableFrom(t));
                               }).ToArray();
@@ -72,16 +86,16 @@ namespace Codefarts.BuildHelperConsoleApp
 
             this.status?.Report($"{plugins.Count()} plugins loaded.\r\n" + string.Join("\r\n", plugins.Select(x => x.Name)));
 
-            AssemblyLoadContext.Default.Resolving -= this.ResolveAssemblies;
+            pluginContext.Resolving -= this.ResolveAssemblies;
             return new PluginCollection(plugins);
         }
 
-        private Assembly? ResolveAssemblies(AssemblyLoadContext arg1, AssemblyName arg2)
+        private Assembly? ResolveAssemblies(AssemblyLoadContext context, AssemblyName assemblyName)
         {
             var folderPaths = new List<string>();
             folderPaths.Add(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
             folderPaths.Add(this.PluginFolder);
-            var filter = arg2;
+            var filter = assemblyName;
 
             switch (Path.GetExtension(filter.Name.ToLowerInvariant()))
             {
@@ -100,7 +114,7 @@ namespace Codefarts.BuildHelperConsoleApp
                 var assemblyPath = fileMatches.FirstOrDefault();
                 if (!string.IsNullOrWhiteSpace(assemblyPath) && File.Exists(assemblyPath))
                 {
-                    return arg1.LoadFromAssemblyPath(assemblyPath);
+                    return context.LoadFromAssemblyPath(assemblyPath);
                 }
             }
 
