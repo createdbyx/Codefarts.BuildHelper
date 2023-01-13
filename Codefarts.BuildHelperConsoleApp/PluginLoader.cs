@@ -30,11 +30,6 @@ namespace Codefarts.BuildHelperConsoleApp
 
         public PluginCollection Load()
         {
-            if (this.status == null)
-            {
-                throw new ArgumentNullException(nameof(this.status));
-            }
-
             if (this.ioc == null)
             {
                 throw new ArgumentNullException(nameof(this.ioc));
@@ -69,13 +64,13 @@ namespace Codefarts.BuildHelperConsoleApp
                 }
                 catch
                 {
-                    this.status.Report($"Failed to instantiate {t.FullName} from assembly '{t.Assembly.Location}'.");
+                    this.status?.Report($"Failed to instantiate {t.FullName} from assembly '{t.Assembly.Location}'.");
                     AssemblyLoadContext.Default.Resolving -= this.ResolveAssemblies;
                     return null;
                 }
             }).Where(x => x != null);
 
-            this.status.Report($"{plugins.Count()} plugins loaded.\r\n" + string.Join("\r\n", plugins.Select(x => x.Name)));
+            this.status?.Report($"{plugins.Count()} plugins loaded.\r\n" + string.Join("\r\n", plugins.Select(x => x.Name)));
 
             AssemblyLoadContext.Default.Resolving -= this.ResolveAssemblies;
             return new PluginCollection(plugins);
