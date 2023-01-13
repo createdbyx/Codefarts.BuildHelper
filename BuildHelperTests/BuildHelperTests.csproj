@@ -65,6 +65,10 @@
     <Content Include="SampleData\DataModels.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Remove="SampleData\Build_DeployWithOneCondition.xml" />
+    <Content Include="SampleData\Build_DeployWithOneCondition.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
