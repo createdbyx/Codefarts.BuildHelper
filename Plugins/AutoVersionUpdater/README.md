@@ -22,4 +22,4 @@ Automatically updates the versions in a project file using the format YEAR.MONTH
 * Version numbers are expected to be integers otherwise a parsing error will occur.
 
 ### Remarks
-* Revision will be set to zero if the stored date is different from the current date.~~~~
+* Revision will be set to zero if the stored date is different from the current date.
