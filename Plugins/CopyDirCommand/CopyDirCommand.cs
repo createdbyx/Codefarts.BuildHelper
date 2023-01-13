@@ -20,6 +20,7 @@ namespace Codefarts.BuildHelper
     [NamedParameter("subfolders", typeof(bool), false, "If true will copy subfolders as well. Default is true.")]
     [NamedParameter("allconditions", typeof(bool), false, "Specifies weather or not all conditions must be satisfied. Default is false.")]
     [NamedParameter("ignoreconditions", typeof(bool), false, "Specifies weather to ignore conditions. Default is false.")]
+    [NamedParameter("test", typeof(bool), false, "Specifies weather to run in test mode. Default is false.")]
     //  [NamedParameter("relativepaths", typeof(bool), false,
     //                  "Specifies weather condition checks will compare against relative paths or full file paths. Default is false.")]
     public class CopyDirCommand : ICommandPlugin
@@ -45,7 +46,7 @@ namespace Codefarts.BuildHelper
 
         public void Run(RunCommandArgs args)
         {
-          //  Debugger.Launch();
+            //  Debugger.Launch();
             if (args == null)
             {
                 throw new ArgumentNullException(nameof(args));
@@ -86,11 +87,13 @@ namespace Codefarts.BuildHelper
 
             var allConditions = args.GetParameter("allconditions", false);
             var ignoreConditions = args.GetParameter("ignoreconditions", false);
+            var isTesting = args.GetParameter<bool>("test", false);
+            var testText = isTesting ? "(In Test Mode) " : string.Empty;
 
             // check if we should clear the folder first
             var doClear = args.GetParameter("clean", false);
 
-            this.status?.Report($"Clearing before copy ({doClear}): {destPath}");
+            this.status?.Report($"{testText}Clearing before copy ({doClear}): {destPath}");
             try
             {
                 var di = new DirectoryInfo(destPath);
@@ -98,12 +101,18 @@ namespace Codefarts.BuildHelper
                 {
                     foreach (var file in di.EnumerateFiles())
                     {
-                        file.Delete();
+                        if (!isTesting)
+                        {
+                            file.Delete();
+                        }
                     }
 
                     foreach (var dir in di.GetDirectories())
                     {
-                        dir.Delete(true);
+                        if (!isTesting)
+                        {
+                            dir.Delete(true);
+                        }
                     }
                 }
 
@@ -126,23 +135,31 @@ namespace Codefarts.BuildHelper
 
                     // report progress
                     var progress = (float)Math.Round(((float)index / allFiles.Length) * 100, 2);
-                    this.status?.ReportProgress("Copying: " + src + " ==> " + dest, progress); // check conditionals
 
                     // check to ignore conditions
                     if (ignoreConditions)
                     {
                         // do copy
-                        Directory.CreateDirectory(directoryName);
-                        File.Copy(src, dest, true);
+                        this.status?.ReportProgress(testText + "Copying: " + src + " ==> " + dest, progress); // check conditionals
+                        if (!isTesting)
+                        {
+                            Directory.CreateDirectory(directoryName);
+                            File.Copy(src, dest, true);
+                        }
+
                         continue;
                     }
 
                     // check if conditions are satisfied
                     if (args.Command.SatifiesConditions(variables, allConditions, src))
                     {
+                        this.status?.ReportProgress(testText + "Copying: " + src + " ==> " + dest, progress); // check conditionals
                         // do copy
-                        Directory.CreateDirectory(directoryName);
-                        File.Copy(src, dest, true);
+                        if (!isTesting)
+                        {
+                            Directory.CreateDirectory(directoryName);
+                            File.Copy(src, dest, true);
+                        }
                     }
                 }
             }

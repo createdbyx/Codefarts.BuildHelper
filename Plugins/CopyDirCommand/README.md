@@ -16,6 +16,7 @@ Copies files from one directory to another.
 * subfolders - If true will copy subfolders as well. Default is true.
 * allconditions - Specifies weather or not all conditions must be satisfied. Default is false.
 * ignoreconditions - Specifies weather to ignore conditions. Default is false.
+* test - Specifies weather to run in test mode. Default is false.
 
 ### Requirements
 

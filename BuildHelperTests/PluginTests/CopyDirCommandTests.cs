@@ -32,8 +32,11 @@ namespace BuildHelperTests
             File.WriteAllText(Path.Combine(this.tempDir, "System.File3.dat"), "File3Data"); // \System.File3.dat
             Directory.CreateDirectory(Path.Combine(this.tempDir, "SubFolder")); // \SubFolder\
             Directory.CreateDirectory(Path.Combine(this.tempDir, "SubFolder", "Sub2")); // \SubFolder\Sub2\
+            Directory.CreateDirectory(Path.Combine(this.tempDir, "SubFolder", "SubPath.more")); // \SubFolder\SubPath.more\
             File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "Microsoft.File4.db"), "File4Data"); // \SubFolder\Microsoft.File4.db
             File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "Sub2", "Taxi.File5.pdb"), "File5Data"); // \SubFolder\Sub2\Taxi.File5.pdb
+            File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "SubPath.more", "File6.txt"), "File 6 Data"); // \SubFolder\SubPath.more\File6.txt
+            File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "SubPath.more", "File7.txt"), "File 7 Data"); // \SubFolder\SubPath.more\File7.txt
             this.variables = new VariablesDictionary();
             this.variables["TempPath"] = this.tempDir;
             this.variables["DestPath"] = this.destDir;
@@ -191,6 +194,83 @@ namespace BuildHelperTests
             var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
             Assert.AreEqual(5, fileCount);
         }
+        
+        [TestMethod]
+        public void ConditionsCheckingIfValue2ContainsString_AllConditions_NoSubFolders_IgnoreCase()
+        {
+            var command = new CopyDirCommand();
+            var data = "<copydir  source=\"$(TempPath)\\SubFolder\\SubPath.more\\\" destination=\"$(DestPath)\" " +
+                       "ignoreconditions=\"false\" allconditions=\"true\" subfolders=\"false\" >\r\n" +
+                       "    <condition operator=\"contains\" value2=\"path.\"    ignorecase=\"true\" />\r\n" +
+                       "</copydir>";
+
+
+            var item = XElement.Parse(data);
+            var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
+
+            command.Run(args);
+
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Sucessful, args.Result.Status);
+            Assert.IsNull(args.Result.Error);
+
+            var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
+            Assert.AreEqual(1, fileCount);
+        }
+        
+        [TestMethod]
+        public void MultipleConditionsChecking_ContainsAndNotFound_AllConditions_SubFolders_IgnoreCase()
+        {
+            var command = new CopyDirCommand();
+            var data = "<copydir  source=\"$(TempPath)\" destination=\"$(DestPath)\" " +
+                       "ignoreconditions=\"false\" allconditions=\"true\" subfolders=\"true\" >\r\n" +
+                       "    <condition operator=\"contains\" value2=\"path.\"    ignorecase=\"true\" />\r\n" +
+                       "    <condition operator=\"notfound\" value2=\"file7\"    ignorecase=\"true\" />\r\n" +
+                       "</copydir>";
+
+
+            var item = XElement.Parse(data);
+            var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
+
+            command.Run(args);
+
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Sucessful, args.Result.Status);
+            Assert.IsNull(args.Result.Error);
+
+            var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
+            Assert.AreEqual(1, fileCount);
+        }
+        //
+        // [TestMethod]
+        // public void MultipleConditionsChecking_ContainsAndNotFound_AllConditions_SubFolders_IgnoreCase2()
+        // {
+        //     var command = new CopyDirCommand();
+        //     var data = "<copydir  source=\"P:\\Code Projects\\Codefarts.UIControls New\\Unity\\Codefarts.UIControls.UnityEditorControls\\bin\\Debug\\netstandard2.1\\\" " +
+        //        "destination=\"P:\\Code Projects\\Codefarts.UIControls New\\Unity\\Codefarts.UIControls.UnityEditorControls\\..\\UIControlsProject\\Assets\\References\\Editor\" " +
+        //        "ignoreconditions=\"false\" allconditions=\"true\" subfolders=\"true\" >\r\n" +
+        //        "    <condition operator=\"contains\" value2=\"Codefarts.UIControls.\"    ignorecase=\"true\" />\r\n" +
+        //        "    <condition operator=\"notfound\" value2=\"UnityEngine\"    ignorecase=\"true\" />\r\n" +
+        //        "    <condition operator=\"notfound\" value2=\"UnityEditor.\"    ignorecase=\"true\" />\r\n" +
+        //        "    <condition operator=\"notfound\" value2=\"Unity.Cecil\"    ignorecase=\"true\" />\r\n" +
+        //        "</copydir>";
+        //    
+        //
+        //     var item = XElement.Parse(data);
+        //     var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
+        //     var args = new RunCommandArgs(this.variables, buildFileCommand);
+        //
+        //     command.Run(args);
+        //
+        //     Assert.IsNotNull(args.Result);
+        //     Assert.AreEqual(RunStatus.Sucessful, args.Result.Status);
+        //     Assert.IsNull(args.Result.Error);
+        //
+        //     var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
+        //     Assert.AreEqual(1, fileCount);
+        // }
 
         [TestMethod]
         public void NoConditionsWithCleanParameter()
