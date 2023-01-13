@@ -19,9 +19,11 @@ static class Program
     private static void Main(string[] args)
     {
         var buildFile = args.FirstOrDefault(x => x.StartsWith("-b:"));
+        var solutionFile = args.FirstOrDefault(x => x.StartsWith("-s:"));
         buildFile = string.IsNullOrWhiteSpace(buildFile) ? null : buildFile.Substring(3);
         var values = new Dictionary<string, object>();
         values["filename"] = buildFile;
+        values["solutionfile"] = solutionFile;
 
         var ioc = new DependencyInjectorShim(new Container());
         ioc.Register<IDependencyInjectionProvider>(() => ioc);
