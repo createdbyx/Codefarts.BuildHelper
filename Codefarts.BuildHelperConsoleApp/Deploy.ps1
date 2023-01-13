@@ -24,4 +24,6 @@ Write-Host "Copying"
 
 #attrib -r ($destinationPath + "\*.*")
 cd $sourcePath.FullName
-Copy-Item -Path ($sourcePath.FullName + "*") -Destination $destinationPath.FullName -Recurse -Force  
+Copy-Item -Path ($sourcePath.FullName + "*") -Destination $destinationPath.FullName -Recurse -Force   
+
+Write-Host "Done!"
