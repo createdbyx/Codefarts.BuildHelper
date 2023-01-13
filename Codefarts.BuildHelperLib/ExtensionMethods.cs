@@ -351,6 +351,17 @@ namespace Codefarts.BuildHelper
 
                     return false;
 
+                case "missing":
+                case "ismissing":
+                case "notfound":
+                case "!contains":
+                    if (ignoreCase ? value1.IndexOf(value2, StringComparison.OrdinalIgnoreCase) >=0 : value1.Contains(value2))
+                    {
+                        return false;
+                    }
+
+                    return true;
+
                 case null:
                     throw new ArgumentNullException("Condition is missing 'operator' value.");
 
