@@ -52,6 +52,14 @@ namespace BuildHelperTests
             var node = TestHelpers.BuildCommandNode(item, null);
             Assert.IsFalse(node.SatifiesCondition(this.variables));
         }
+        
+        [TestMethod]
+        public void GoodButValuesDiffer_SubPathString()
+        {
+            var item = XElement.Parse("<condition value1=\"c:\\SomePath\\SubPath.more\\file.txt\" operator=\"contains\" value2=\"path.\" />");
+            var node = TestHelpers.BuildCommandNode(item, null);
+            Assert.IsTrue(node.SatifiesCondition(this.variables));
+        }
 
         [TestMethod]
         public void SameValuesSameCasing_MissingIgnore()
