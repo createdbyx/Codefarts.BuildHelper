@@ -8,56 +8,17 @@ namespace Codefarts.BuildHelper;
 
 using System;
 
-public class RunResult
+public class RunResult : RunResult<object>
 {
     public RunResult()
     {
-        this.Status = RunStatus.Running;
     }
 
-    public RunResult(Exception error)
+    public RunResult(Exception error) : base(error)
     {
-        this.Error = error ?? throw new ArgumentNullException(nameof(error));
-        this.Status = RunStatus.Errored;
     }
 
-    public RunResult(object returnValue)
+    public RunResult(object returnValue) : base(returnValue)
     {
-        this.ReturnValue = returnValue;
-        this.Status = RunStatus.Sucessful;
-    }
-
-    public Exception Error { get; private set; }
-
-    public RunStatus Status { get; private set; }
-
-    public object ReturnValue { get; }
-
-    public static RunResult Sucessful()
-    {
-        var value = new RunResult();
-        value.Status = RunStatus.Sucessful;
-        return value;
-    }
-
-    public static RunResult Sucessful(object returnValue)
-    {
-        return new RunResult(returnValue);
-    }
-
-    public static RunResult Errored(Exception error)
-    {
-        return new RunResult(error);
-    }
-
-    public void Done()
-    {
-        this.Status = RunStatus.Sucessful;
-    }
-
-    public void Done(Exception error)
-    {
-        this.Error = error ?? throw new ArgumentNullException(nameof(error));
-        this.Status = RunStatus.Errored;
     }
 }

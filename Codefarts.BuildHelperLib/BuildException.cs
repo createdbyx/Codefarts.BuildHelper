@@ -9,6 +9,7 @@ namespace Codefarts.BuildHelper;
 using System;
 using System.Runtime.Serialization;
 
+// TODO: This exception should be moved into whatever plug-in needs it it should not be part of the core library 
 public class BuildException : Exception
 {
     /// <summary>
