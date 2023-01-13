@@ -4,6 +4,7 @@
 // http://www.codefarts.com
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 using Codefarts.BuildHelper;
 using Codefarts.DependencyInjection;
@@ -32,7 +33,11 @@ static class Program
         ioc.Register<ICommandImporter>(() => new XmlCommandFileReader(ioc));
 
         var app = ioc.Resolve<Application>();
-        app.Run();
+        var result = app.Run();
+        if (result.Error != null)
+        {
+            Environment.ExitCode = 1;
+        }
     }
 }
 

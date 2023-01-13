@@ -21,7 +21,7 @@ public class Application
         this.ioc = ioc ?? throw new ArgumentNullException(nameof(ioc));
     }
 
-    public void Run()
+    public RunResult Run()
     {
         var status = this.ioc.Resolve<IStatusReporter>();
 
@@ -46,8 +46,7 @@ public class Application
             //if (!buildFileReader.TryReadBuildFile(buildFile, out rootCommand))
         {
             status?.Report($"ERROR: Importing commands.\r\n" + result.Error);
-            Environment.ExitCode = 1;
-            return;
+            return result;
         }
 
         var rootCommand = result.ReturnValue as CommandData;
@@ -59,8 +58,10 @@ public class Application
 
         var buildEventValue = variables.GetValue<string>("BuildEvent", null);
         this.ReportHeader(status, $"START {buildEventValue} BUILD");
-        rootCommand.Run(variables, commandPlugins, status);
+        var args = rootCommand.Run(variables, commandPlugins, status);
         this.ReportHeader(status, $"END {buildEventValue} BUILD");
+
+        return args.Result;
     }
 
     private void ReportHeader(IStatusReporter status, string message, params object[] args)
