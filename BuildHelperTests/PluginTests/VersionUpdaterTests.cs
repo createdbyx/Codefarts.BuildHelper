@@ -198,7 +198,7 @@ namespace BuildHelperTests
             var date = DateTime.Now;
             var command = new VersionUpdaterCommand();
             var vars = new VariablesDictionary();
-            var parameters = new Dictionary<string, object>();
+            var parameters = new Dictionary<string, object>();                      
             parameters["file"] = true;
             parameters["ProjectFileName"] = this.sampleProjectPath;
 
@@ -212,8 +212,8 @@ namespace BuildHelperTests
             // validate data
             var fileData = File.ReadAllText(this.sampleProjectPath);
 
-            Assert.IsTrue(fileData.Contains($"<AssemblyVersion>{date.Year}.{date.Month}.{date.Day}.1</AssemblyVersion>"));
-            Assert.IsTrue(fileData.Contains($"<FileVersion>{date.Year}.{date.Month}.{date.Day}.1</FileVersion>"));
+            Assert.IsTrue(fileData.Contains($"<AssemblyVersion>{date.Year}.{date.Month}.{date.Day}.0</AssemblyVersion>"));
+            Assert.IsTrue(fileData.Contains($"<FileVersion>{date.Year}.{date.Month}.{date.Day}.0</FileVersion>"));
         }
 
         [TestMethod]
@@ -235,8 +235,8 @@ namespace BuildHelperTests
             // validate data
             var fileData = File.ReadAllText(this.sampleProjectPath);
 
-            Assert.IsTrue(fileData.Contains($"<AssemblyVersion>{date.Year}.{date.Month}.{date.Day}.1</AssemblyVersion>"));
-            Assert.IsTrue(fileData.Contains($"<FileVersion>{date.Year}.{date.Month}.{date.Day}.1</FileVersion>"));
+            Assert.IsTrue(fileData.Contains($"<AssemblyVersion>{date.Year}.{date.Month}.{date.Day}.0</AssemblyVersion>"));
+            Assert.IsTrue(fileData.Contains($"<FileVersion>{date.Year}.{date.Month}.{date.Day}.0</FileVersion>"));
         }
 
         [TestMethod]
@@ -258,7 +258,7 @@ namespace BuildHelperTests
             // validate data
             var fileData = File.ReadAllText(this.sampleProjectPath);
 
-            Assert.IsTrue(fileData.Contains($"<AssemblyVersion>{date.Year}.{date.Month}.{date.Day}.1</AssemblyVersion>"));
+            Assert.IsTrue(fileData.Contains($"<AssemblyVersion>{date.Year}.{date.Month}.{date.Day}.0</AssemblyVersion>"));
             Assert.IsTrue(fileData.Contains($"<FileVersion>2021.1.25.0</FileVersion>"));
         }
 
@@ -282,7 +282,7 @@ namespace BuildHelperTests
             var fileData = File.ReadAllText(this.sampleProjectPath);
 
             Assert.IsTrue(fileData.Contains($"<AssemblyVersion>2021.1.25.0</AssemblyVersion>"));
-            Assert.IsTrue(fileData.Contains($"<FileVersion>{date.Year}.{date.Month}.{date.Day}.1</FileVersion>"));
+            Assert.IsTrue(fileData.Contains($"<FileVersion>{date.Year}.{date.Month}.{date.Day}.0</FileVersion>"));
         }
     }
 }
