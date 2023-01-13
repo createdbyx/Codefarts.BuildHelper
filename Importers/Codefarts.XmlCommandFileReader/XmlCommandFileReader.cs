@@ -1,12 +1,9 @@
-﻿// <copyright file="XmlBuildFileReader.cs" company="Codefarts">
+﻿// <copyright file="XmlCommandFileReader.cs" company="Codefarts">
 // Copyright (c) Codefarts
 // contact@codefarts.com
 // http://www.codefarts.com
 // </copyright>
 
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Codefarts.DependencyInjection;
 
 namespace Codefarts.BuildHelperConsoleApp;
@@ -16,30 +13,23 @@ using System.IO;
 using System.Xml.Linq;
 using Codefarts.BuildHelper;
 
-public class XmlBuildFileReader
+public class XmlCommandFileReader : ICommandImporter
 {
     private IStatusReporter status;
     private readonly IDependencyInjectionProvider ioc;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="XmlBuildFileReader"/> class.
-    /// </summary>
-    public XmlBuildFileReader()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="XmlBuildFileReader"/> class.
+    /// Initializes a new instance of the <see cref="XmlCommandFileReader"/> class.
     /// </summary>
     /// <param name="ioc">A reference to a <see cref="IDependencyInjectionProvider"/>.</param>
     /// <exception cref="ArgumentNullException">If the <param name="ioc"/> is null.</exception>
-    public XmlBuildFileReader(IDependencyInjectionProvider ioc)
+    public XmlCommandFileReader(IDependencyInjectionProvider ioc)
     {
         this.ioc = ioc ?? throw new ArgumentNullException(nameof(ioc));
         this.status = ioc.Resolve<IStatusReporter>();
     }
 
-    public bool TryReadBuildFile(string buildFile, out CommandData data)
+    private bool TryReadBuildFile(string buildFile, out CommandData data)
     {
         // ensure file exists
         if (buildFile == null)
@@ -105,5 +95,20 @@ public class XmlBuildFileReader
         }
 
         return node;
+    }
+
+    public RunResult Run()
+    {
+        // ? how do I get the file file anme
+
+        var config = this.ioc.Resolve<IConfigurationManager>();
+        var buildFile = config.GetValue("filename") as string;
+
+        if (!this.TryReadBuildFile(buildFile, out var rootCommand))
+        {
+            return RunResult.Errored(new IOException($"Problem reading file '{buildFile}'."));
+        }
+
+        return RunResult.Sucessful(rootCommand);
     }
 }

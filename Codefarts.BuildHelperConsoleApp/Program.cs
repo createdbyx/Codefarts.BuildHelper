@@ -4,6 +4,7 @@
 // http://www.codefarts.com
 // </copyright>
 
+using System.Collections.Generic;
 using Codefarts.BuildHelper;
 using Codefarts.DependencyInjection;
 using Codefarts.IoC;
@@ -19,13 +20,17 @@ static class Program
     {
         var buildFile = args.FirstOrDefault(x => x.StartsWith("-b:"));
         buildFile = string.IsNullOrWhiteSpace(buildFile) ? null : buildFile.Substring(3);
+        var values = new Dictionary<string, object>();
+        values["filename"] = buildFile;
 
         var ioc = new DependencyInjectorShim(new Container());
         ioc.Register<IDependencyInjectionProvider>(() => ioc);
+        ioc.Register<IConfigurationManager>(() => new ConfigManager(values));
         ioc.Register<IStatusReporter, ConsoleStatusReporter>();
+        ioc.Register<ICommandImporter>(() => new XmlCommandFileReader(ioc));
 
         var app = ioc.Resolve<Application>();
-        app.Run(buildFile);
+        app.Run();
     }
 }
 

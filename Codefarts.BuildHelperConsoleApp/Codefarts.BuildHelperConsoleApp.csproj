@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Codefarts.BuildHelperLib\Codefarts.BuildHelperLib.csproj" />
     <ProjectReference Include="..\Codefats.BuildHelper.ConsoleReporter\Codefats.BuildHelper.ConsoleReporter.csproj" />
+    <ProjectReference Include="..\Importers\Codefarts.XmlCommandFileReader\Codefarts.XmlCommandFileReader.csproj" />
   </ItemGroup>
    
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

@@ -21,10 +21,9 @@ public class Application
         this.ioc = ioc ?? throw new ArgumentNullException(nameof(ioc));
     }
 
-    public void Run(string buildFile)
+    public void Run()
     {
         var status = this.ioc.Resolve<IStatusReporter>();
-
 
         // load command plugins
         var pluginLoader = this.ioc.Resolve<PluginLoader>();
@@ -39,13 +38,23 @@ public class Application
         var variables = new VariablesDictionary();
         variables["Application"] = Path.GetFileName(appPath);
 
-        CommandData rootCommand;
-        var buildFileReader = this.ioc.Resolve<XmlBuildFileReader>();
-        if (!buildFileReader.TryReadBuildFile(buildFile, out rootCommand))
+        // Create and run a command importer 
+        var importer = this.ioc.Resolve<ICommandImporter>();
+        var result = importer.Run();
+
+        if (result.Error != null)
+            //if (!buildFileReader.TryReadBuildFile(buildFile, out rootCommand))
         {
-            status?.Report($"ERROR: Reading Build File. {buildFile}");
+            status?.Report($"ERROR: Importing commands.\r\n" + result.Error);
             Environment.ExitCode = 1;
             return;
+        }
+
+        var rootCommand = result.ReturnValue as CommandData;
+        if (rootCommand == null)
+        {
+            throw new NullReferenceException("Import was successfull but the importer return a null or invalid return value. " +
+                                             $"Value: {result.ReturnValue}");
         }
 
         var buildEventValue = variables.GetValue<string>("BuildEvent", null);

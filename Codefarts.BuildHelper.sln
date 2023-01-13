@@ -48,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcellModelBuilder", "Plugi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetadataGenerator", "Plugins\MetadataGenerator\MetadataGenerator.csproj", "{10A27035-B196-43CA-8ABB-263376B9D574}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codefarts.XmlCommandFileReader", "Importers\Codefarts.XmlCommandFileReader\Codefarts.XmlCommandFileReader.csproj", "{4FA81CFA-3E43-468A-826A-E74100D89A61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,6 +108,10 @@ Global
 		{10A27035-B196-43CA-8ABB-263376B9D574}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10A27035-B196-43CA-8ABB-263376B9D574}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10A27035-B196-43CA-8ABB-263376B9D574}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FA81CFA-3E43-468A-826A-E74100D89A61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FA81CFA-3E43-468A-826A-E74100D89A61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FA81CFA-3E43-468A-826A-E74100D89A61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FA81CFA-3E43-468A-826A-E74100D89A61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
