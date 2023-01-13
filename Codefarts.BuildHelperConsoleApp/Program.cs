@@ -4,67 +4,28 @@
 // http://www.codefarts.com
 // </copyright>
 
-using System.Collections.Generic;
-
-namespace Codefarts.BuildHelperConsoleApp;
-
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using Codefarts.BuildHelper;
 using Codefarts.DependencyInjection;
 using Codefarts.IoC;
 using Codefats.BuildHelper.ConsoleReporter;
 
+namespace Codefarts.BuildHelperConsoleApp;
+
+using System.Linq;
+
 static class Program
 {
     private static void Main(string[] args)
     {
+        var buildFile = args.FirstOrDefault(x => x.StartsWith("-b:"));
+        buildFile = string.IsNullOrWhiteSpace(buildFile) ? null : buildFile.Substring(3);
+
         var ioc = new DependencyInjectorShim(new Container());
         ioc.Register<IDependencyInjectionProvider>(() => ioc);
         ioc.Register<IStatusReporter, ConsoleStatusReporter>();
 
-        var status = ioc.Resolve<IStatusReporter>();
-
-        var buildFile = args.FirstOrDefault(x => x.StartsWith("-b:"));
-        buildFile = string.IsNullOrWhiteSpace(buildFile) ? null : buildFile.Substring(3);
-
-        // load command plugins
-        var pluginLoader = ioc.Resolve<PluginLoader>();
-        var appPath = Process.GetCurrentProcess().MainModule.FileName;
-        var appDir = Path.GetDirectoryName(appPath);
-        var pluginFolder = Path.Combine(appDir, "Plugins");
-
-        pluginLoader.PluginFolder = pluginFolder;
-        var commandPlugins = pluginLoader.Load();
-
-        // read build file
-        var variables = new VariablesDictionary();
-        variables["Application"] = Path.GetFileName(appPath);
-
-        IEnumerable<CommandData> buildFileCommands;
-        var buildFileReader = ioc.Resolve<XmlBuildFileReader>();
-        if (!buildFileReader.TryReadBuildFile(buildFile, out buildFileCommands))
-        {
-            status?.Report($"ERROR: Reading Build File. {buildFile}");
-            Environment.ExitCode = 1;
-            return;
-        }
-
-        var buildEventValue = variables.GetValue<string>("BuildEvent", null);
-        status?.ReportHeader($"START {buildEventValue} BUILD");
-        buildFileCommands.Run(variables, commandPlugins, status);
-        status?.ReportHeader($"END {buildEventValue} BUILD");
-    }
-
-    private static void ReportHeader(this IStatusReporter status, string message, params object[] args)
-    {
-        var formattedString = string.Format(message, args);
-        var maxLen = Math.Max(formattedString.Length + 10, 100);
-        var headPartLen = (maxLen - (formattedString.Length + 2)) / 2;
-        var headerChars = new string('#', headPartLen);
-        status.Report(string.Format($"{headerChars} {message} {headerChars}", args));
+        var app = ioc.Resolve<Application>();
+        app.Run(buildFile);
     }
 }
 
