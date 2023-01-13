@@ -4,85 +4,84 @@
 // http://www.codefarts.com
 // </copyright>
 
-namespace Codefarts.BuildHelper
+namespace Codefarts.BuildHelper;
+
+using System.Collections.ObjectModel;
+
+public class CommandDataCollection : ObservableCollection<CommandData>
 {
-    using System.Collections.ObjectModel;
+    /// <summary>
+    /// The control that owns this collection.
+    /// </summary>
+    private CommandData owner;
 
-    public class CommandDataCollection : ObservableCollection<CommandData>
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CommandDataCollection"/> class.
+    /// </summary>
+    /// <param name="owner">The owner of the collection.</param>
+    public CommandDataCollection(CommandData owner)
     {
-        /// <summary>
-        /// The control that owns this collection.
-        /// </summary>
-        private CommandData owner;
+        this.owner = owner;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandDataCollection"/> class.
-        /// </summary>
-        /// <param name="owner">The owner of the collection.</param>
-        public CommandDataCollection(CommandData owner)
+    /// <summary>
+    /// Gets the owner of this collection.
+    /// </summary>
+    public CommandData Owner
+    {
+        get
         {
-            this.owner = owner;
+            return this.owner;
+        }
+    }
+
+    /// <summary>Inserts an item into the collection at the specified index.</summary>
+    /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+    /// <param name="item">The object to insert.</param>
+    /// <remarks>
+    /// If the item being added has a parent assigned it will remove itself from the parent <see cref="CommandData.Children"/> collection before setting the parent.
+    /// </remarks>
+    protected override void InsertItem(int index, CommandData item)
+    {
+        if (item == null)
+        {
+            return;
         }
 
-        /// <summary>
-        /// Gets the owner of this collection.
-        /// </summary>
-        public CommandData Owner
+        if (item.Parent == this.owner)
         {
-            get
-            {
-                return this.owner;
-            }
+            return;
         }
 
-        /// <summary>Inserts an item into the collection at the specified index.</summary>
-        /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-        /// <param name="item">The object to insert.</param>
-        /// <remarks>
-        /// If the item being added has a parent assigned it will remove itself from the parent <see cref="CommandData.Children"/> collection before setting the parent.
-        /// </remarks>
-        protected override void InsertItem(int index, CommandData item)
+        if (item.Parent != null)
         {
-            if (item == null)
-            {
-                return;
-            }
-
-            if (item.Parent == this.owner)
-            {
-                return;
-            }
-
-            if (item.Parent != null)
-            {
-                item.Parent.Children.Remove(item);
-            }
-
-            base.InsertItem(index, item);
-            item.AssignParent(this.owner);
+            item.Parent.Children.Remove(item);
         }
 
-        /// <summary>Removes all items from the collection.</summary>
-        protected override void ClearItems()
-        {
-            while (this.Count > 0)
-            {
-                this.RemoveItem(0);
-            }
+        base.InsertItem(index, item);
+        item.AssignParent(this.owner);
+    }
 
-            base.ClearItems();
+    /// <summary>Removes all items from the collection.</summary>
+    protected override void ClearItems()
+    {
+        while (this.Count > 0)
+        {
+            this.RemoveItem(0);
         }
 
-        /// <summary>Removes the item at the specified index of the collection.</summary>
-        /// <param name="index">The zero-based index of the element to remove.</param>
-        protected override void RemoveItem(int index)
+        base.ClearItems();
+    }
+
+    /// <summary>Removes the item at the specified index of the collection.</summary>
+    /// <param name="index">The zero-based index of the element to remove.</param>
+    protected override void RemoveItem(int index)
+    {
+        var item = this[index];
+        if (item.Parent == this.owner)
         {
-            var item = this[index];
-            if (item.Parent == this.owner)
-            {
-                base.RemoveItem(index);
-                item.AssignParent(null);
-            }
+            base.RemoveItem(index);
+            item.AssignParent(null);
         }
     }
 }

@@ -4,42 +4,41 @@
 // http://www.codefarts.com
 // </copyright>
 
-namespace Codefarts.BuildHelper
+namespace Codefarts.BuildHelper;
+
+using System;
+using System.Runtime.Serialization;
+
+public class MissingVariableException : Exception
 {
-    using System;
-    using System.Runtime.Serialization;
-
-    public class MissingVariableException : Exception
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MissingVariableException"/> class.
+    /// </summary>
+    public MissingVariableException()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MissingVariableException"/> class.
-        /// </summary>
-        public MissingVariableException()
-        {
-        }
-
-        public MissingVariableException(string variableName)
-            : base($"Command requires a '{variableName}' variable to run.")
-        {
-            this.VariableName = variableName;
-        }
-
-        public MissingVariableException(string variableName, string message)
-            : base(message)
-        {
-            this.VariableName = variableName;
-        }
-
-        public MissingVariableException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
-
-        protected MissingVariableException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
-        public string VariableName { get; }
     }
+
+    public MissingVariableException(string variableName)
+        : base($"Command requires a '{variableName}' variable to run.")
+    {
+        this.VariableName = variableName;
+    }
+
+    public MissingVariableException(string variableName, string message)
+        : base(message)
+    {
+        this.VariableName = variableName;
+    }
+
+    public MissingVariableException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
+
+    protected MissingVariableException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
+    }
+
+    public string VariableName { get; }
 }

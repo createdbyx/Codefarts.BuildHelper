@@ -4,27 +4,26 @@
 // http://www.codefarts.com
 // </copyright>
 
-namespace Codefarts.BuildHelper
+namespace Codefarts.BuildHelper;
+
+using System;
+
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+public class NamedVariable : Attribute
 {
-    using System;
-
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-    public class NamedVariable : Attribute
+    public NamedVariable(string name, Type type, bool required = false, string description = null)
     {
-        public NamedVariable(string name, Type type, bool required = false, string description = null)
-        {
-            this.Name = !string.IsNullOrWhiteSpace(name) ? name : throw new ArgumentNullException(nameof(name));
-            this.Type = type ?? throw new ArgumentNullException(nameof(type));
-            this.Required = required;
-            this.Description = description;
-        }
-
-        public string Name { get; }
-
-        public Type Type { get; }
-
-        public bool Required { get; }
-
-        public string Description { get; }
+        this.Name = !string.IsNullOrWhiteSpace(name) ? name : throw new ArgumentNullException(nameof(name));
+        this.Type = type ?? throw new ArgumentNullException(nameof(type));
+        this.Required = required;
+        this.Description = description;
     }
+
+    public string Name { get; }
+
+    public Type Type { get; }
+
+    public bool Required { get; }
+
+    public string Description { get; }
 }

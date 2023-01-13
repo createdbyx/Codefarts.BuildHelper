@@ -4,12 +4,11 @@
 // http://www.codefarts.com
 // </copyright>
 
-namespace Codefarts.BuildHelper
+namespace Codefarts.BuildHelper;
+
+public enum RunStatus
 {
-    public enum RunStatus
-    {
-        Sucessful = 0,
-        Errored = 1,
-        Running = 2,
-    }
+    Sucessful = 0,
+    Errored = 1,
+    Running = 2,
 }

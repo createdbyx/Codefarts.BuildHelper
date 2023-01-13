@@ -4,29 +4,28 @@
 // http://www.codefarts.com
 // </copyright>
 
-namespace Codefarts.BuildHelper
+namespace Codefarts.BuildHelper;
+
+using System;
+using System.Collections.Generic;
+
+public class RunCommandArgs
 {
-    using System;
-    using System.Collections.Generic;
-
-    public class RunCommandArgs
+    public RunCommandArgs(VariablesDictionary variables, CommandData command)
     {
-        public RunCommandArgs(VariablesDictionary variables, CommandData command)
-        {
-            // we wrap output callback here to ensure any call to it does not throw null reference exceptions
-            this.Variables = variables ?? new VariablesDictionary();
-            this.Command = command ?? throw new ArgumentNullException(nameof(command));
-        }
-
-        public RunCommandArgs(CommandData command)
-            : this(null, command)
-        {
-        }
-
-        public CommandData Command { get; }
-
-        public VariablesDictionary Variables { get; }
-
-        public RunResult Result { get; set; }
+        // we wrap output callback here to ensure any call to it does not throw null reference exceptions
+        this.Variables = variables ?? new VariablesDictionary();
+        this.Command = command ?? throw new ArgumentNullException(nameof(command));
     }
+
+    public RunCommandArgs(CommandData command)
+        : this(null, command)
+    {
+    }
+
+    public CommandData Command { get; }
+
+    public VariablesDictionary Variables { get; }
+
+    public RunResult Result { get; set; }
 }
