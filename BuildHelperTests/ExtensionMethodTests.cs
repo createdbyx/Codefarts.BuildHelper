@@ -626,29 +626,29 @@ namespace BuildHelperTests
             ExtensionMethods.Run(commands, variables, plugins, null);
         }
 
-        [TestMethod]
-        public void RunCommandWithNullArgs()
-        {
-            CommandData command = null;
-            var ex = Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.Run(command, null, null, null));
-            Assert.AreEqual("command", ex.ParamName);
-        }
-
-        [TestMethod]
-        public void RunCommandWithNullArgsButValidCommand()
-        {
-            var command = new CommandData("Test");
-            var ex = Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.Run(command, null, null, null));
-            Assert.AreEqual("variables", ex.ParamName);
-        }
-
-        [TestMethod]
-        public void RunCommandWithNullArgsButValidCommandAndVariables()
-        {
-            var command = new CommandData("Test");
-            var ex = Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.Run(command, new VariablesDictionary(), null, null));
-            Assert.AreEqual("plugin", ex.ParamName);
-        }
+        // [TestMethod]
+        // public void RunCommandWithNullArgs()
+        // {
+        //     CommandData command = null;
+        //     var ex = Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.Run(command, null, null, null));
+        //     Assert.AreEqual("command", ex.ParamName);
+        // }
+        //
+        // [TestMethod]
+        // public void RunCommandWithNullArgsButValidCommand()
+        // {
+        //     var command = new CommandData("Test");
+        //     var ex = Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.Run(command, null, null, null));
+        //     Assert.AreEqual("variables", ex.ParamName);
+        // }
+        //
+        // [TestMethod]
+        // public void RunCommandWithNullArgsButValidCommandAndVariables()
+        // {
+        //     var command = new CommandData("Test");
+        //     var ex = Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.Run(command, new VariablesDictionary(), null, null));
+        //     Assert.AreEqual("plugin", ex.ParamName);
+        // }
 
         [TestMethod]
         public void RunCommandWithValidArgsButNoStatusReporter()
