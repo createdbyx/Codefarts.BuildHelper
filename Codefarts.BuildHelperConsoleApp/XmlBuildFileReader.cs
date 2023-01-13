@@ -7,6 +7,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Codefarts.DependencyInjection;
 
 namespace Codefarts.BuildHelperConsoleApp;
 
@@ -18,6 +19,7 @@ using Codefarts.BuildHelper;
 public class XmlBuildFileReader
 {
     private IStatusReporter status;
+    private readonly IDependencyInjectionProvider ioc;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="XmlBuildFileReader"/> class.
@@ -29,20 +31,21 @@ public class XmlBuildFileReader
     /// <summary>
     /// Initializes a new instance of the <see cref="XmlBuildFileReader"/> class.
     /// </summary>
-    /// <param name="status">A reference to a <see cref="IStatusReporter"/>.</param>
-    /// <exception cref="ArgumentNullException">If the <param name="status"/> is null.</exception>
-    public XmlBuildFileReader(IStatusReporter status)
+    /// <param name="ioc">A reference to a <see cref="IDependencyInjectionProvider"/>.</param>
+    /// <exception cref="ArgumentNullException">If the <param name="ioc"/> is null.</exception>
+    public XmlBuildFileReader(IDependencyInjectionProvider ioc)
     {
-        this.status = status ?? throw new ArgumentNullException(nameof(status));
+        this.ioc = ioc ?? throw new ArgumentNullException(nameof(ioc));
+        this.status = ioc.Resolve<IStatusReporter>();
     }
 
-    public bool TryReadBuildFile(string buildFile, out IEnumerable<CommandData> data)
+    public bool TryReadBuildFile(string buildFile, out CommandData data)
     {
         // ensure file exists
         if (buildFile == null)
         {
             this.status?.Report("Build file not specified.");
-            data = Enumerable.Empty<CommandData>();
+            data = this.ioc.Resolve<CommandData>();
             return false;
         }
 
@@ -52,7 +55,7 @@ public class XmlBuildFileReader
         if (!buildFileInfo.Exists)
         {
             this.status?.Report("Missing build file: " + buildFileInfo.FullName);
-            data = Enumerable.Empty<CommandData>();
+            data = this.ioc.Resolve<CommandData>();
             return false;
         }
 
@@ -68,7 +71,7 @@ public class XmlBuildFileReader
         {
             this.status?.Report("Error reading file: " + buildFileInfo.FullName);
             this.status?.Report(ex.Message);
-            data = Enumerable.Empty<CommandData>();
+            data = this.ioc.Resolve<CommandData>();
             return false;
         }
 
@@ -76,18 +79,19 @@ public class XmlBuildFileReader
         {
             this.status?.Report("Error parsing build file: " + buildFileInfo.FullName);
             this.status?.Report("Root node not 'build'.");
-            data = Enumerable.Empty<CommandData>();
+            data = this.ioc.Resolve<CommandData>();
             return false;
         }
 
         this.status?.Report("... Success!");
-        data = doc.Root.Elements().Select(x => BuildCommandNode(x, null));
+        data = BuildCommandNode(doc.Root, null);
         return true;
     }
 
     private CommandData BuildCommandNode(XElement xElement, CommandData parent)
     {
-        var node = new CommandData(xElement.Name.LocalName);
+        var node = this.ioc.Resolve<CommandData>();
+        node.Name = xElement.Name.LocalName;
         foreach (var attribute in xElement.Attributes())
         {
             node.Parameters[attribute.Name.LocalName] = attribute.Value;
