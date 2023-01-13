@@ -26,7 +26,13 @@ public class XmlCommandFileReader : ICommandImporter
     public XmlCommandFileReader(IDependencyInjectionProvider ioc)
     {
         this.ioc = ioc ?? throw new ArgumentNullException(nameof(ioc));
-        this.status = ioc.Resolve<IStatusReporter>();
+        try
+        {
+            this.status = ioc.Resolve<IStatusReporter>();
+        }
+        catch
+        {
+        }
     }
 
     private bool TryReadBuildFile(string buildFile, out CommandData data)
@@ -101,7 +107,16 @@ public class XmlCommandFileReader : ICommandImporter
     {
         // ? how do I get the file file anme
 
-        var config = this.ioc.Resolve<IConfigurationManager>();
+        IConfigurationManager config;
+        try
+        {
+            config = this.ioc.Resolve<IConfigurationManager>();
+        }
+        catch
+        {
+            return RunResult.Errored(new NullReferenceException($"No {nameof(IConfigurationManager)} is available."));
+        }
+
         var buildFile = config.GetValue("filename") as string;
 
         if (!this.TryReadBuildFile(buildFile, out var rootCommand))
