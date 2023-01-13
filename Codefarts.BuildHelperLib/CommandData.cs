@@ -4,11 +4,14 @@
 // http://www.codefarts.com
 // </copyright>
 
+using System;
+
 namespace Codefarts.BuildHelper;
 
 using System.Collections.Generic;
 using System.ComponentModel;
 
+[Serializable]
 public class CommandData : INotifyPropertyChanged
 {
     private readonly CommandDataCollection children;
@@ -57,19 +60,24 @@ public class CommandData : INotifyPropertyChanged
 
         set
         {
+            // If the parent and value are the same just exit 
             if (this.parent == value)
             {
                 return;
             }
 
+            // If the parent is not null Remove itself from the parent 
+            this.parent?.Children.Remove(this);
+
+            // If the new parent is not null add itself to the parent 
             if (value != null)
             {
                 value.Children.Add(this);
                 return;
             }
 
-            // value is null so we are removing the parent
-            this.parent.Children.Remove(this);
+            // set the value of the parent 
+            this.parent = value;
         }
     }
 
