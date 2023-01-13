@@ -36,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Codefarts.BuildHelperConsoleApp\Codefarts.BuildHelperConsoleApp.csproj" />
     <ProjectReference Include="..\Codefats.BuildHelper.ConsoleReporter\Codefats.BuildHelper.ConsoleReporter.csproj" />
     <ProjectReference Include="..\Plugins\AutoVersionUpdater\AutoVersionUpdater.csproj" />
     <ProjectReference Include="..\Plugins\ConditionCommand\ConditionCommand.csproj" />
