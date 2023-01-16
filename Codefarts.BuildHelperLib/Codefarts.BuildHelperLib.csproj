@@ -5,8 +5,8 @@
     <AssemblyVersion>2021.1.25.0</AssemblyVersion>
     <FileVersion>2021.1.25.0</FileVersion>
     <LangVersion>default</LangVersion>
-    <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
