@@ -15,6 +15,25 @@ using System.Linq;
 
 public static class ExtensionMethods
 {
+    public static T GetValue<T>(this IConfigurationManager config, string name)
+    {
+        return (T)config.GetValue(name);
+    }
+    
+    public static bool TryGetValue<T>(this IConfigurationManager config, string name, out T value)
+    {
+        try
+        {
+             value= (T)config.GetValue(name);
+             return true;
+        }
+        catch
+        {
+            value = default;
+            return false;
+        }
+    }
+    
     public static T GetValue<T>(this IDictionary<string, object> parameters, string name)
     {
         if (parameters == null)
@@ -456,12 +475,10 @@ public static class ExtensionMethods
     public static RunCommandArgs Run(this CommandData command, VariablesDictionary variables, PluginCollection plugins, IStatusReporter status)
     {
         // find the first plugin with the matching name
-        foreach (var plugin in plugins)
+        var plugin = plugins.FirstOrDefault(x => x.Name.Equals(command.Name, StringComparison.OrdinalIgnoreCase));
+        if (plugin != null)
         {
-            if (plugin.Name.Equals(command.Name, StringComparison.OrdinalIgnoreCase))
-            {
-                return command.Run(variables, plugin, status);
-            }
+            return command.Run(variables, plugin, status);
         }
 
         return new RunCommandArgs(command)
