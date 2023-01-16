@@ -22,9 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
     <PackageReference Include="coverlet.collector" Version="3.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -39,6 +39,7 @@
     <ProjectReference Include="..\Codefarts.BuildHelperConsoleApp\Codefarts.BuildHelperConsoleApp.csproj" />
     <ProjectReference Include="..\Codefats.BuildHelper.ConsoleReporter\Codefats.BuildHelper.ConsoleReporter.csproj" />
     <ProjectReference Include="..\Plugins\AutoVersionUpdater\AutoVersionUpdater.csproj" />
+    <ProjectReference Include="..\Plugins\BuildCommand\BuildCommand.csproj" />
     <ProjectReference Include="..\Plugins\ConditionCommand\ConditionCommand.csproj" />
     <ProjectReference Include="..\Plugins\CopyDirCommand\CopyDirCommand.csproj" />
     <ProjectReference Include="..\Plugins\ExcellModelBuilder\ExcellModelBuilder.csproj" />

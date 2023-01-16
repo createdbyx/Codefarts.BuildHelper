@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
 using BuildHelperTests.Mocks;
 using Codefarts.BuildHelper;
@@ -19,7 +19,6 @@ public class XmlCommandFileReaderTests
     [TestInitialize]
     public void Setup()
     {
-//        var tempPath = Path.Combine( Path.GetTempPath(), nameof(XmlCommandFileReaderTests), "_", Guid.NewGuid().ToString("N"), "Build_DeployWithOneCondition.xml");
         this.configFile = Path.Combine(Directory.GetCurrentDirectory(), "SampleData", "Build_DeployWithOneCondition.xml");
     }
 
@@ -44,7 +43,7 @@ public class XmlCommandFileReaderTests
         var xml = new XmlCommandFileReader(ioc);
         Assert.IsNotNull(xml);
     }
-    
+
     [TestMethod]
     public void Ctor_ValidArguments_NoRegisteredConfig()
     {
@@ -53,5 +52,32 @@ public class XmlCommandFileReaderTests
         var result = xml.Run();
         Assert.IsNotNull(xml);
         Assert.IsNotNull(result.Error);
+        Assert.IsInstanceOfType(result.Error, typeof(NullReferenceException), result.Error.Message);
+    }
+
+    [TestMethod]
+    public void Ctor_ValidArguments_WithRegisteredConfig_ButNoData()
+    {
+        var ioc = new DependencyInjectorShim(new Container());
+        var xml = new XmlCommandFileReader(ioc);
+        var config = ioc.Resolve<MockConfigManager>();
+        ioc.Register<IConfigurationManager>(() => config);
+
+        Assert.ThrowsException<KeyNotFoundException>(() => xml.Run());
+    }
+
+    [TestMethod]
+    public void Ctor_ValidArguments_WithRegisteredConfig_WithData()
+    {
+        var ioc = new DependencyInjectorShim(new Container());
+        var xml = new XmlCommandFileReader(ioc);
+        var config = ioc.Resolve<MockConfigManager>();
+        config.Values["filename"] = this.configFile;
+        ioc.Register<IConfigurationManager>(() => config);
+
+        var result = xml.Run();
+        Assert.IsNotNull(xml);
+        Assert.IsNotNull(result.Error);
+        Assert.IsNotNull(result.ReturnValue);
     }
 }

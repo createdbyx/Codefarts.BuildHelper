@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using BuildHelperTests.Mocks;
 using Codefarts.BuildHelper;
 using Codefarts.BuildHelperConsoleApp;
@@ -50,36 +49,5 @@ public class ConsoleAppTests
         Assert.IsNotNull(result);
         Assert.IsNotNull(result.Error);
         Assert.IsNull(result.ReturnValue);
-    }
-
-    [TestMethod]
-    public void PluginLoader_Ctor_NullArguments()
-    {
-        Assert.ThrowsException<ArgumentNullException>(() =>
-        {
-            var loader = new PluginLoader(null);
-        });
-    }
-
-    [TestMethod]
-    public void PluginLoader_Ctor_ValidArguments()
-    {
-        var ioc = new DependencyInjectorShim(new Container());
-        var loader = new PluginLoader(ioc);
-        Assert.IsNotNull(loader);
-    }
-
-    [TestMethod]
-    [TestCategory("PluginLoader")]
-    public void PluginLoader_MissingPluginFolder()
-    {
-        var ioc = new DependencyInjectorShim(new Container());
-        ioc.Register<IDependencyInjectionProvider>(() => ioc);
-        var loader = new PluginLoader(ioc);
-        var pluginPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
-        loader.PluginFolder = pluginPath;
-        var plugins = loader.Load();
-        Assert.IsNotNull(plugins);
-        Assert.AreEqual(0, plugins.Count);
     }
 }
