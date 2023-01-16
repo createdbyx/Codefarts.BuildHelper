@@ -38,10 +38,10 @@ public class XmlCommandFileReader : ICommandImporter
     private bool TryReadBuildFile(string buildFile, out CommandData data)
     {
         // ensure file exists
-        if (buildFile == null)
+        if (string.IsNullOrWhiteSpace( buildFile) == null)
         {
             this.status?.Report("Build file not specified.");
-            data = this.ioc.Resolve<CommandData>();
+            data = null;
             return false;
         }
 
@@ -51,7 +51,7 @@ public class XmlCommandFileReader : ICommandImporter
         if (!buildFileInfo.Exists)
         {
             this.status?.Report("Missing build file: " + buildFileInfo.FullName);
-            data = this.ioc.Resolve<CommandData>();
+            data = null;
             return false;
         }
 
@@ -67,7 +67,7 @@ public class XmlCommandFileReader : ICommandImporter
         {
             this.status?.Report("Error reading file: " + buildFileInfo.FullName);
             this.status?.Report(ex.Message);
-            data = this.ioc.Resolve<CommandData>();
+            data = null;
             return false;
         }
 
@@ -75,7 +75,7 @@ public class XmlCommandFileReader : ICommandImporter
         {
             this.status?.Report("Error parsing build file: " + buildFileInfo.FullName);
             this.status?.Report("Root node not 'build'.");
-            data = this.ioc.Resolve<CommandData>();
+            data = null;
             return false;
         }
 
