@@ -1,0 +1,213 @@
+﻿using System.Xml.Linq;
+using System.Xml.XPath;
+using Codefarts.BuildHelper;
+using Codefarts.DependencyInjection;
+
+namespace BuildCommand;
+
+// [NamedParameter("source", typeof(string), true, "The source folder that will be copied.")]
+// [NamedParameter("destination", typeof(string), true, "The destination folder where files and folder will be copied to.")]
+// [NamedParameter("clean", typeof(bool), false, "If true will delete contents from the destination before copying. Default is false.")]
+// [NamedParameter("subfolders", typeof(bool), false, "If true will copy subfolders as well. Default is true.")]
+// [NamedParameter("allconditions", typeof(bool), false, "Specifies weather or not all conditions must be satisfied. Default is false.")]
+// [NamedParameter("ignoreconditions", typeof(bool), false, "Specifies weather to ignore conditions. Default is false.")]
+// [NamedParameter("test", typeof(bool), false, "Specifies weather to run in test mode. Default is false.")]
+public class BuildCommand : ICommandPlugin
+{
+    private IStatusReporter status;
+    private readonly IDependencyInjectionProvider ioc;
+
+    public string Name
+    {
+        get
+        {
+            return "build";
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BuildCommand"/> class.
+    /// </summary>
+    public BuildCommand(IDependencyInjectionProvider ioc)
+    {
+        this.ioc = ioc ?? throw new ArgumentNullException(nameof(ioc));
+        this.status = ioc.Resolve<IStatusReporter>();
+    }
+
+    public void Run(RunCommandArgs args)
+    {
+        if (args == null)
+        {
+            throw new ArgumentNullException(nameof(args));
+        }
+
+        var config = ioc.Resolve<IConfigurationManager>();
+
+        if (TryGetConfigValue(args, config, "filename", out var buildFile)) return;
+        if (TryGetConfigValue(args, config, "projectfile", out var projectFile)) return;
+        if (TryGetConfigValue(args, config, "targetframework", out var targetFramework)) return;
+
+        // read the project file once for it's info
+        var projectFileRoot = XDocument.Load(projectFile).Root;
+
+        // build filename and path info
+        args.Variables["BuildFile"] = buildFile;
+        args.Variables["TargetFramework"] = targetFramework;
+
+        // post build event type
+        string buildEvent = null;
+        if (buildFile.EndsWith("-postbuild.xml", StringComparison.InvariantCultureIgnoreCase))
+        {
+            buildEvent = "Post";
+        }
+
+        // pre build event type
+        if (buildFile.EndsWith("-prebuild.xml", StringComparison.InvariantCultureIgnoreCase))
+        {
+            buildEvent = "Pre";
+        }
+
+        // check for valid buildevent in filename
+        if (string.IsNullOrWhiteSpace(buildEvent) || buildEvent != "Pre" || buildEvent != "Post")
+        {
+            args.Result = RunResult.Errored(new Exception("Filename has unrecognized or missing build event information."));
+            return;
+        }
+
+        args.Variables["BuildEvent"] = buildEvent;
+
+        // configuration name
+        var configName = buildFile.Substring(0, buildFile.IndexOf($"-{buildEvent}", StringComparison.InvariantCultureIgnoreCase));
+        args.Variables["ConfigurationName"] = configName;
+
+        // out directory
+        ParseOutDirectory(args.Variables, projectFileRoot);
+
+        // project name
+        args.Variables["ProjectName"] = Path.GetFileNameWithoutExtension(projectFile);
+
+        // the target name
+        var assemblyNameElement = projectFileRoot.Descendants("AssemblyName").FirstOrDefault();
+        args.Variables["TargetName"] = assemblyNameElement != null ? assemblyNameElement.Value : args.Variables["ProjectName"];
+
+        ParseTargetExt(args.Variables, projectFileRoot);
+
+        // the target path
+        args.Variables["TargatPath"] = Path.Combine(
+            Path.GetDirectoryName(projectFile),
+            args.GetVariable<string>("OutDir"),
+            args.GetVariable<string>("TargetName"),
+            args.GetVariable<string>("TargetExt"));
+
+        // project path
+        args.Variables["ProjectPath"] = projectFile;
+
+        // project filename
+        args.Variables["ProjectFileName"] = Path.GetFileName(projectFile);
+
+        // target filename
+        args.Variables["TargetFileName"] = Path.GetFileName(args.GetVariable<string>("TargetPath"));
+
+        // target directory
+        args.Variables["TargetDir"] = Path.GetDirectoryName(args.GetVariable<string>("TargetPath")) + "\\";
+
+        // project directory
+        args.Variables["ProjectDir"] = Path.GetDirectoryName(args.GetVariable<string>("ProjectPath")) + "\\";
+
+        // project filename extension
+        args.Variables["ProjectExt"] = Path.GetExtension(args.GetVariable<string>("ProjectPath"));
+                      
+        // get plugins
+        foreach (var child in args.Command.Children)
+        {
+            child.Run(new VariablesDictionary(args.Variables), plugins,this.status);
+        }
+    }
+
+    /*       
+<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="buildhelper -b:'$(ProjectDir)$(ConfigurationName)-PostBuild.xml' -p:'$(ProjectPath)' -tf:'$(TargetFramework)'" />
+</Target>
+<Target Name="PostBuild" AfterTargets="PreBuildEvent">
+    <Exec Command="buildhelper -e:Pre -p:'$(ProjectPath)' />
+</Target>
+
+-vs_BuildEvent:Post 
+-vs_ConfigurationName:'$(ConfigurationName)' 
+-vs_OutDir:'$(OutDir)' 
+-vs_ProjectName:'$(ProjectName)' 
+-vs_TargetName:'$(TargetName)' 
+-vs_TargetExt:'$(TargetExt)' 
+-vs_TargetPath:'$(TargetPath)' 
+-vs_ProjectPath:'$(ProjectPath)' 
+-vs_ProjectFileName:'$(ProjectFileName)' 
+-vs_TargetFileName:'$(TargetFileName)' 
+-vs_DevEnvDir:'$(DevEnvDir)' 
+-vs_TargetDir:'$(TargetDir)' 
+-vs_ProjectDir:'$(ProjectDir)' 
+-vs_SolutionFileName:'$(SolutionFileName)' 
+-vs_SolutionPath:'$(SolutionPath)' 
+-vs_SolutionDir:'$(SolutionDir)' 
+-vs_SolutionName:'$(SolutionName)' 
+-vs_PlatformName:'$(PlatformName)' 
+-vs_ProjectExt:'$(ProjectExt)' 
+-vs_SolutionExt:'$(SolutionExt)'" 
+
+<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="powershell.exe -ExecutionPolicy Unrestricted -noprofile -nologo -noninteractive -Command .'P:\PowerShell\post-build.ps1' -vs_BuildEvent:Post -vs_OutDir:'$(OutDir)' -vs_ConfigurationName:'$(ConfigurationName)' -vs_ProjectName:'$(ProjectName)' -vs_TargetName:'$(TargetName)' -vs_TargetPath:'$(TargetPath)' -vs_ProjectPath:'$(ProjectPath)' -vs_ProjectFileName:'$(ProjectFileName)' -vs_TargetExt:'$(TargetExt)' -vs_TargetFileName:'$(TargetFileName)' -vs_DevEnvDir:'$(DevEnvDir)' -vs_TargetDir:'$(TargetDir)' -vs_ProjectDir:'$(ProjectDir)' -vs_SolutionFileName:'$(SolutionFileName)' -vs_SolutionPath:'$(SolutionPath)' -vs_SolutionDir:'$(SolutionDir)' -vs_SolutionName:'$(SolutionName)' -vs_PlatformName:'$(PlatformName)' -vs_ProjectExt:'$(ProjectExt)' -vs_SolutionExt:'$(SolutionExt)'" />
+</Target>
+<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="powershell.exe -ExecutionPolicy Unrestricted -noprofile -nologo -noninteractive -Command .'P:\PowerShell\post-build.ps1' -vs_BuildEvent:Pre -vs_OutDir:'$(OutDir)' -vs_ConfigurationName:'$(ConfigurationName)' -vs_ProjectName:'$(ProjectName)' -vs_TargetName:'$(TargetName)' -vs_TargetPath:'$(TargetPath)' -vs_ProjectPath:'$(ProjectPath)' -vs_ProjectFileName:'$(ProjectFileName)' -vs_TargetExt:'$(TargetExt)' -vs_TargetFileName:'$(TargetFileName)' -vs_DevEnvDir:'$(DevEnvDir)' -vs_TargetDir:'$(TargetDir)' -vs_ProjectDir:'$(ProjectDir)' -vs_SolutionFileName:'$(SolutionFileName)' -vs_SolutionPath:'$(SolutionPath)' -vs_SolutionDir:'$(SolutionDir)' -vs_SolutionName:'$(SolutionName)' -vs_PlatformName:'$(PlatformName)' -vs_ProjectExt:'$(ProjectExt)' -vs_SolutionExt:'$(SolutionExt)'&#xD;&#xA;" />
+</Target>
+*/
+    private static bool TryGetConfigValue(RunCommandArgs args, IConfigurationManager config, string key, out string buildFile)
+    {
+        if (!config.TryGetValue(key, out buildFile))
+        {
+            args.Result = RunResult.Errored(new ArgumentNullException($"Error fetching '{key}' from configuration."));
+            return true;
+        }
+
+        return false;
+    }
+
+    private void ParseOutDirectory(VariablesDictionary variables, XElement projectFileRoot)
+    {
+        // extract config name from build filename
+        variables.TryGetValue("ConfigurationName", out var configName);
+        variables.TryGetValue("TargetFramework", out var targetFramework);
+
+        // check if there is a condition attribute that ends with the configuration name
+        var item = projectFileRoot.Descendants("OutputPath").Where(x =>
+        {
+            var att = x.Attribute("Condition");
+            return att == null || att.Value.Trim().EndsWith($" == '{configName}'");
+        }).FirstOrDefault();
+
+        // if one was found use it
+        if (item != null)
+        {
+            variables["OutDir"] = item.Value;
+            return;
+        }
+
+        // otherwise set default value based on config name
+        variables["OutDir"] = $@"bin\{configName}\{targetFramework}";
+    }
+
+    private void ParseTargetExt(VariablesDictionary variables, XElement projectFileRoot)
+    {
+        // check if there is a condition attribute that ends with the configuration name
+        var item = projectFileRoot.Descendants("OutputType").FirstOrDefault();
+
+        // if one was found use it
+        if (item != null)
+        {
+            variables["TargetExt"] = item.Value;
+            return;
+        }
+
+        // otherwise set default value to dll
+        variables["TargetExt"] = ".dll";
+    }
+}
