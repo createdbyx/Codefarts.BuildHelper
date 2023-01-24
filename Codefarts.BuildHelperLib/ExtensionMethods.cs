@@ -4,6 +4,7 @@
 // http://www.codefarts.com
 // </copyright>
 
+using System.Runtime.InteropServices;
 using Codefarts.BuildHelper.Exceptions;
 
 namespace Codefarts.BuildHelper;
@@ -15,74 +16,6 @@ using System.Linq;
 
 public static class ExtensionMethods
 {
-    public static T GetValue<T>(this IConfigurationManager config, string name)
-    {
-        return (T)config.GetValue(name);
-    }
-    
-    public static bool TryGetValue<T>(this IConfigurationManager config, string name, out T value)
-    {
-        try
-        {
-             value= (T)config.GetValue(name);
-             return true;
-        }
-        catch
-        {
-            value = default;
-            return false;
-        }
-    }
-    
-    public static T GetValue<T>(this IDictionary<string, object> parameters, string name)
-    {
-        if (parameters == null)
-        {
-            throw new ArgumentNullException(nameof(parameters));
-        }
-
-        object value;
-        if (!parameters.TryGetValue(name, out value))
-        {
-            throw new KeyNotFoundException(name);
-        }
-
-        if (value is IConvertible)
-        {
-            return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
-        }
-
-        return (T)value;
-    }
-
-    public static T GetValue<T>(this IDictionary<string, object> parameters, string name, T defaultValue)
-    {
-        if (parameters == null)
-        {
-            throw new ArgumentNullException(nameof(parameters));
-        }
-
-        object value;
-        if (parameters.TryGetValue(name, out value))
-        {
-            try
-            {
-                if (value is IConvertible)
-                {
-                    return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
-                }
-
-                return (T)value;
-            }
-            catch
-            {
-                return defaultValue;
-            }
-        }
-
-        return defaultValue;
-    }
-
     public static T GetReturnValue<T>(this RunResult result)
     {
         if (result == null)
@@ -442,7 +375,7 @@ public static class ExtensionMethods
     public static void Run(
         this IEnumerable<CommandData> commands,
         VariablesDictionary variables,
-        PluginCollection plugins,
+        IEnumerable<ICommandPlugin> plugins,
         IStatusReporter status)
     {
         Run(commands, variables, plugins, status, null);
@@ -451,18 +384,13 @@ public static class ExtensionMethods
     public static void Run(
         this IEnumerable<CommandData> commands,
         VariablesDictionary variables,
-        PluginCollection plugins,
+        IEnumerable<ICommandPlugin> plugins,
         IStatusReporter status,
         Action<RunCommandArgs> resultCallback)
     {
         commands = commands ?? throw new ArgumentNullException(nameof(commands));
         variables = variables ?? throw new ArgumentNullException(nameof(variables));
         plugins = plugins ?? throw new ArgumentNullException(nameof(plugins));
-
-        if (plugins.Count == 0)
-        {
-            return;
-        }
 
         // process file elements
         foreach (var command in commands)
@@ -472,10 +400,11 @@ public static class ExtensionMethods
         }
     }
 
-    public static RunCommandArgs Run(this CommandData command, VariablesDictionary variables, PluginCollection plugins, IStatusReporter status)
+    public static RunCommandArgs Run(this CommandData command, VariablesDictionary variables, IEnumerable<ICommandPlugin> plugins,
+                                     IStatusReporter status)
     {
         // find the first plugin with the matching name
-        var plugin = plugins.FirstOrDefault(x => x.Name.Equals(command.Name, StringComparison.OrdinalIgnoreCase));
+        var plugin = plugins?.FirstOrDefault(x => x.Name.Equals(command.Name, StringComparison.OrdinalIgnoreCase));
         if (plugin != null)
         {
             return command.Run(variables, plugin, status);
@@ -506,14 +435,6 @@ public static class ExtensionMethods
         var executeCommandArgs = new RunCommandArgs(variables, command);
         try
         {
-            // // check if the command has an attached message and if so output the message before executing
-            // var message = command.GetParameter("message", string.Empty);
-            // if (!string.IsNullOrWhiteSpace(message))
-            // {
-            //     message = message.ReplaceVariableStrings(variables);
-            //     status?.Report($"Message: {message}");
-            // }
-
             // execute the command plugin
             plugin.Run(executeCommandArgs);
             var result = executeCommandArgs.Result;
