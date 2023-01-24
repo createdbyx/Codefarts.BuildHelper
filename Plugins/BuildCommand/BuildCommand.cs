@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System.Collections.ObjectModel;
+using System.Xml.Linq;
 using System.Xml.XPath;
 using Codefarts.BuildHelper;
 using Codefarts.DependencyInjection;
@@ -31,7 +32,13 @@ public class BuildCommand : ICommandPlugin
     public BuildCommand(IDependencyInjectionProvider ioc)
     {
         this.ioc = ioc ?? throw new ArgumentNullException(nameof(ioc));
-        this.status = ioc.Resolve<IStatusReporter>();
+        try
+        {
+            this.status = ioc.Resolve<IStatusReporter>();
+        }
+        catch
+        {
+        }
     }
 
     public void Run(RunCommandArgs args)
@@ -41,7 +48,16 @@ public class BuildCommand : ICommandPlugin
             throw new ArgumentNullException(nameof(args));
         }
 
-        var config = ioc.Resolve<IConfigurationManager>();
+        IConfigurationProvider config;
+        try
+        {
+            config = this.ioc.Resolve<IConfigurationProvider>();
+        }
+        catch (Exception ex)
+        {
+            args.Result = RunResult.Errored(ex);
+            return;
+        }
 
         if (TryGetConfigValue(args, config, "filename", out var buildFile)) return;
         if (TryGetConfigValue(args, config, "projectfile", out var projectFile)) return;
@@ -93,7 +109,7 @@ public class BuildCommand : ICommandPlugin
         ParseTargetExt(args.Variables, projectFileRoot);
 
         // the target path
-        args.Variables["TargatPath"] = Path.Combine(
+        args.Variables["TargetPath"] = Path.Combine(
             Path.GetDirectoryName(projectFile),
             args.GetVariable<string>("OutDir"),
             args.GetVariable<string>("TargetName"),
@@ -116,11 +132,17 @@ public class BuildCommand : ICommandPlugin
 
         // project filename extension
         args.Variables["ProjectExt"] = Path.GetExtension(args.GetVariable<string>("ProjectPath"));
-                      
-        // get plugins
+
+        // get plugin manager
+        var pluginManager = this.ioc.Resolve<IPluginManager>();
+
+        var pluginCollection = new ReadOnlyCollection<ICommandPlugin>(pluginManager.Plugins.ToList());
+
+        // run children
         foreach (var child in args.Command.Children)
         {
-            child.Run(new VariablesDictionary(args.Variables), plugins,this.status);
+            var variables = new VariablesDictionary(args.Variables);
+            child.Run(variables, pluginCollection, this.status);
         }
     }
 
@@ -129,7 +151,7 @@ public class BuildCommand : ICommandPlugin
     <Exec Command="buildhelper -b:'$(ProjectDir)$(ConfigurationName)-PostBuild.xml' -p:'$(ProjectPath)' -tf:'$(TargetFramework)'" />
 </Target>
 <Target Name="PostBuild" AfterTargets="PreBuildEvent">
-    <Exec Command="buildhelper -e:Pre -p:'$(ProjectPath)' />
+    <Exec Command="buildhelper -b:'$(ProjectDir)$(ConfigurationName)-PreBuild.xml' -p:'$(ProjectPath)' -tf:'$(TargetFramework)'" />
 </Target>
 
 -vs_BuildEvent:Post 
@@ -160,7 +182,7 @@ public class BuildCommand : ICommandPlugin
     <Exec Command="powershell.exe -ExecutionPolicy Unrestricted -noprofile -nologo -noninteractive -Command .'P:\PowerShell\post-build.ps1' -vs_BuildEvent:Pre -vs_OutDir:'$(OutDir)' -vs_ConfigurationName:'$(ConfigurationName)' -vs_ProjectName:'$(ProjectName)' -vs_TargetName:'$(TargetName)' -vs_TargetPath:'$(TargetPath)' -vs_ProjectPath:'$(ProjectPath)' -vs_ProjectFileName:'$(ProjectFileName)' -vs_TargetExt:'$(TargetExt)' -vs_TargetFileName:'$(TargetFileName)' -vs_DevEnvDir:'$(DevEnvDir)' -vs_TargetDir:'$(TargetDir)' -vs_ProjectDir:'$(ProjectDir)' -vs_SolutionFileName:'$(SolutionFileName)' -vs_SolutionPath:'$(SolutionPath)' -vs_SolutionDir:'$(SolutionDir)' -vs_SolutionName:'$(SolutionName)' -vs_PlatformName:'$(PlatformName)' -vs_ProjectExt:'$(ProjectExt)' -vs_SolutionExt:'$(SolutionExt)'&#xD;&#xA;" />
 </Target>
 */
-    private static bool TryGetConfigValue(RunCommandArgs args, IConfigurationManager config, string key, out string buildFile)
+    private static bool TryGetConfigValue(RunCommandArgs args, IConfigurationProvider config, string key, out string buildFile)
     {
         if (!config.TryGetValue(key, out buildFile))
         {
