@@ -27,7 +27,7 @@ namespace Codefarts.BuildHelper
         /// </summary>
         public PurgeCommand(IStatusReporter status)
         {
-            this.status = status ?? throw new ArgumentNullException(nameof(status));
+            this.status = status; 
         }
 
         /// <summary>
