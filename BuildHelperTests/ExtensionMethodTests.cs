@@ -96,7 +96,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void GetValueWithNullParameters()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => { ExtensionMethods.GetValue(null, "test", string.Empty); });
+            Assert.ThrowsException<ArgumentNullException>(() => { IDictionaryExtensionMethods.GetValue(null, "test", string.Empty); });
         }
 
         [TestMethod]
@@ -188,7 +188,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 IDictionary<string, object> dic = null;
-                ExtensionMethods.GetValue(dic, "test", string.Empty);
+                IDictionaryExtensionMethods.GetValue(dic, "test", string.Empty);
             });
         }
 
@@ -199,7 +199,7 @@ namespace BuildHelperTests
             {
                 var dic = new VariablesDictionary();
                 dic["test"] = new CommandData("Command");
-                var value = ExtensionMethods.GetValue<bool>(dic, "test");
+                var value = IDictionaryExtensionMethods.GetValue<bool>(dic, "test");
                 Assert.Fail($"Should have thrown {nameof(InvalidCastException)}.");
             });
         }
@@ -290,7 +290,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 IDictionary<string, object> dic = null;
-                ExtensionMethods.GetValue<string>(dic, "test");
+                IDictionaryExtensionMethods.GetValue<string>(dic, "test");
             });
         }
 
@@ -300,7 +300,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<KeyNotFoundException>(() =>
             {
                 var dic = new Dictionary<string, object>();
-                ExtensionMethods.GetValue<string>(dic, "test");
+                IDictionaryExtensionMethods.GetValue<string>(dic, "test");
             });
         }
 
@@ -308,7 +308,7 @@ namespace BuildHelperTests
         public void GetValueWithValidArgsAndDefaultValue()
         {
             var dic = new Dictionary<string, object>();
-            var value = ExtensionMethods.GetValue(dic, "test", "default");
+            var value = IDictionaryExtensionMethods.GetValue(dic, "test", "default");
             Assert.AreEqual("default", value);
         }
 
@@ -317,7 +317,7 @@ namespace BuildHelperTests
         {
             var dic = new Dictionary<string, object>();
             dic["test"] = "value";
-            var value = ExtensionMethods.GetValue<string>(dic, "test");
+            var value = IDictionaryExtensionMethods.GetValue<string>(dic, "test");
             Assert.AreEqual("value", value);
         }
 
@@ -326,7 +326,7 @@ namespace BuildHelperTests
         {
             var dic = new Dictionary<string, object>();
             dic["test"] = "value";
-            Assert.ThrowsException<FormatException>(() => { ExtensionMethods.GetValue<bool>(dic, "test"); });
+            Assert.ThrowsException<FormatException>(() => { IDictionaryExtensionMethods.GetValue<bool>(dic, "test"); });
         }
 
         [TestMethod]
@@ -435,7 +435,7 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
-        public void SatisfiesConditionWithNullCommandData()
+        public void SatisfiesCondition_WithNullCommandData()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
@@ -444,13 +444,33 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
-        public void SatisfiesConditionInvalidCommandDataName()
+        public void SatisfiesCondition_InvalidCommandDataName()
         {
             Assert.ThrowsException<ArgumentException>(() =>
             {
                 var com = new CommandData("test");
                 var value = ExtensionMethods.SatifiesCondition(com, new VariablesDictionary(), "test");
             });
+        }
+
+        [TestMethod]
+        public void SatisfiesCondition_NullCommandData()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
+            {
+                var value = ExtensionMethods.SatifiesCondition(null, new VariablesDictionary());
+            });
+        }
+
+        [TestMethod]
+        public void SatisfiesCondition_ValidEqualityComparison_IgnoreCase()
+        {
+            var com = new CommandData("condition");
+            com.Parameters["value1"] = "one";
+            com.Parameters["operator"] = "=";
+            com.Parameters["value2"] = "one";
+            com.Parameters["ignorecase"] = "true";
+            var value = ExtensionMethods.SatifiesCondition(com, new VariablesDictionary());
         }
 
         [TestMethod]

@@ -60,8 +60,8 @@ public class XmlCommandFileReaderTests
     {
         var ioc = new DependencyInjectorShim(new Container());
         var xml = new XmlCommandFileReader(ioc);
-        var config = ioc.Resolve<MockConfigManager>();
-        ioc.Register<IConfigurationManager>(() => config);
+        var config = ioc.Resolve<MockConfigProvider>();
+        ioc.Register<IConfigurationProvider>(() => config);
 
         Assert.ThrowsException<KeyNotFoundException>(() => xml.Run());
     }
@@ -71,13 +71,14 @@ public class XmlCommandFileReaderTests
     {
         var ioc = new DependencyInjectorShim(new Container());
         var xml = new XmlCommandFileReader(ioc);
-        var config = ioc.Resolve<MockConfigManager>();
+        var config = ioc.Resolve<MockConfigProvider>();
         config.Values["filename"] = this.configFile;
-        ioc.Register<IConfigurationManager>(() => config);
+        ioc.Register<IConfigurationProvider>(() => config);
 
         var result = xml.Run();
-        Assert.IsNotNull(xml);
-        Assert.IsNotNull(result.Error);
+        Assert.IsNotNull(result);
+        Assert.IsNull(result.Error);
         Assert.IsNotNull(result.ReturnValue);
+        Assert.IsInstanceOfType<CommandData>(result.ReturnValue);
     }
 }

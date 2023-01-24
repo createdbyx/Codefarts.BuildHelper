@@ -34,9 +34,8 @@ public class BuildCommandTests
     {
         var ioc = new DependencyInjectorShim(new Container());
         var b = new BuildCommand.BuildCommand(ioc);
-        
     }
-    
+
     [TestMethod]
     public void ValidateCommandName()
     {
@@ -53,18 +52,21 @@ public class BuildCommandTests
         var b = new BuildCommand.BuildCommand(ioc);
         Assert.ThrowsException<ArgumentNullException>(() => b.Run(null));
     }
-    
+
     [TestMethod]
     public void RunWithValidArguments_NoConfigManager()
     {
         var ioc = new DependencyInjectorShim(new Container());
-        ioc.Register(typeof(ICommandImporter) ,()=> new XmlCommandFileReader(ioc));
+        ioc.Register(typeof(ICommandImporter), () => new XmlCommandFileReader(ioc));
 
         var importer = ioc.Resolve(typeof(ICommandImporter)) as ICommandImporter;
         var importResult = importer.Run();
-        
-        var b = new BuildCommand.BuildCommand(ioc);
-        var args=new RunCommandArgs(new CommandData());
-        Assert.ThrowsException<ArgumentNullException>(() => b.Run(args));
+
+        var command = new BuildCommand.BuildCommand(ioc);
+        var args = new RunCommandArgs(new CommandData());
+        command.Run(args);
+        Assert.IsNotNull(args.Result);
+        Assert.IsNotNull(args.Result.Error);
+        Assert.IsInstanceOfType<ContainerResolutionException>(args.Result.Error);
     }
 }

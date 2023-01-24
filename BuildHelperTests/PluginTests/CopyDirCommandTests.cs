@@ -38,8 +38,10 @@ namespace BuildHelperTests
             Directory.CreateDirectory(Path.Combine(this.tempDir, "SubFolder", "SubPath.more")); // \SubFolder\SubPath.more\
             File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "Microsoft.File4.db"), "File4Data"); // \SubFolder\Microsoft.File4.db
             File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "Sub2", "Taxi.File5.pdb"), "File5Data"); // \SubFolder\Sub2\Taxi.File5.pdb
-            File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "SubPath.more", "File6.txt"), "File 6 Data"); // \SubFolder\SubPath.more\File6.txt
-            File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "SubPath.more", "File7.txt"), "File 7 Data"); // \SubFolder\SubPath.more\File7.txt
+            File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "SubPath.more", "File6.txt"),
+                              "File 6 Data"); // \SubFolder\SubPath.more\File6.txt
+            File.WriteAllText(Path.Combine(this.tempDir, "SubFolder", "SubPath.more", "File7.txt"),
+                              "File 7 Data"); // \SubFolder\SubPath.more\File7.txt
             this.variables = new VariablesDictionary();
             this.variables["TempPath"] = this.tempDir;
             this.variables["DestPath"] = this.destDir;
@@ -65,9 +67,10 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
-        public void NullStatusThrowsException()
+        public void NullStatusDoesNotThrowException()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new CopyDirCommand(null));
+            var cd = new CopyDirCommand(null);
+            Assert.IsNotNull(cd);
         }
 
         [TestMethod]
@@ -197,7 +200,7 @@ namespace BuildHelperTests
             var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
             Assert.AreEqual(ExpectedFileCount, fileCount);
         }
-        
+
         [TestMethod]
         public void ConditionsCheckingIfValue2ContainsString_AllConditions_NoSubFolders_IgnoreCase()
         {
@@ -221,7 +224,7 @@ namespace BuildHelperTests
             var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
             Assert.AreEqual(2, fileCount);
         }
-        
+
         [TestMethod]
         public void MultipleConditionsChecking_ContainsAndNotFound_AllConditions_SubFolders_IgnoreCase()
         {
@@ -308,7 +311,7 @@ namespace BuildHelperTests
             var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
             Assert.AreEqual(ExpectedFileCount, fileCount);
         }
-        
+
         [TestMethod]
         public void NoConditionsWithCleanParameterButDotDotInDestPath()
         {
@@ -427,7 +430,7 @@ namespace BuildHelperTests
             Assert.IsTrue(File.Exists(cleanFile));
 
             var fileCount = Directory.GetFiles(this.destDir, "*.*", SearchOption.AllDirectories).Length;
-            Assert.AreEqual(ExpectedFileCount+1, fileCount);
+            Assert.AreEqual(ExpectedFileCount + 1, fileCount);
         }
 
         [TestMethod]

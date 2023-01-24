@@ -4,6 +4,7 @@
 // http://www.codefarts.com
 // </copyright>
 
+using System.Runtime.Loader;
 using Codefarts.BuildHelper.Exceptions;
 
 namespace BuildHelperTests
@@ -52,9 +53,10 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
-        public void NullStatusThrowsException()
+        public void NullStatusDoesNotThrowException()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new PurgeCommand(null));
+            var p = new PurgeCommand(null);
+            Assert.IsNotNull(p);
         }
 
         [TestMethod]
