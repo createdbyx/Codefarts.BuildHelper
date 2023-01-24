@@ -107,14 +107,14 @@ public class XmlCommandFileReader : ICommandImporter
     {
         // ? how do I get the file file anme
 
-        IConfigurationManager config;
+        IConfigurationProvider config;
         try
         {
-            config = this.ioc.Resolve<IConfigurationManager>();
+            config = this.ioc.Resolve<IConfigurationProvider>();
         }
         catch
         {
-            return RunResult.Errored(new NullReferenceException($"No {nameof(IConfigurationManager)} is available."));
+            return RunResult.Errored(new NullReferenceException($"No {nameof(IConfigurationProvider)} is available."));
         }
 
         var buildFile = config.GetValue("filename") as string;
