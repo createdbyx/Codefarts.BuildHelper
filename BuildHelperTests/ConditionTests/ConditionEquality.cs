@@ -178,7 +178,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void NullArgs()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.SatifiesCondition(null, null));
+            Assert.ThrowsException<ArgumentNullException>(() => CommandDataExtensionMethods.SatifiesCondition(null, null));
         }
 
         [TestMethod]
@@ -192,7 +192,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void ElementArgNull()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.SatifiesCondition(null, this.varibles));
+            Assert.ThrowsException<ArgumentNullException>(() => CommandDataExtensionMethods.SatifiesCondition(null, this.varibles));
         }
 
         [TestMethod]

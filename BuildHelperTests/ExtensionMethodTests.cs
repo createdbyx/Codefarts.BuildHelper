@@ -9,8 +9,6 @@ using Codefarts.BuildHelper.Exceptions;
 namespace BuildHelperTests
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
     using BuildHelperTests.Mocks;
     using Codefarts.BuildHelper;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,92 +18,12 @@ namespace BuildHelperTests
     public class ExtensionMethodTests
     {
         [TestMethod]
-        public void ReplaceVariableStringsNull()
-        {
-            var vars = new Dictionary<string, object>();
-            vars["ProjectDir"] = Path.GetTempPath();
-            vars["ConfigurationName"] = "DEBUG";
-            vars["OutDir"] = "bin";
-
-            string text = null;
-            text = ExtensionMethods.ReplaceVariableStrings(text, vars);
-
-            Assert.IsNull(text);
-        }
-
-        [TestMethod]
-        public void ReplaceVariableStringsEmpty()
-        {
-            var vars = new Dictionary<string, object>();
-            vars["ProjectDir"] = Path.GetTempPath();
-            vars["ConfigurationName"] = "DEBUG";
-            vars["OutDir"] = "bin";
-
-            var text = string.Empty;
-            text = ExtensionMethods.ReplaceVariableStrings(text, vars);
-
-            Assert.AreEqual(string.Empty, text);
-        }
-
-        [TestMethod]
-        public void ReplaceVariableStringsWhitespace()
-        {
-            var vars = new Dictionary<string, object>();
-            vars["ProjectDir"] = Path.GetTempPath();
-            vars["ConfigurationName"] = "DEBUG";
-            vars["OutDir"] = "bin";
-
-            var text = "   ";
-            text = ExtensionMethods.ReplaceVariableStrings(text, vars);
-
-            Assert.AreEqual("   ", text);
-        }
-
-        [TestMethod]
-        public void ReplaceVariableStringsVarCustomVar()
-        {
-            var vars = new Dictionary<string, object>();
-            var tempPath = Path.GetTempPath();
-            vars["ProjectDir"] = tempPath;
-            vars["ConfigurationName"] = "DEBUG";
-            vars["OutDir"] = "bin";
-
-            var text = @"$(ProjectDir)DeployPath_$(ConfigurationName)";
-            text = ExtensionMethods.ReplaceVariableStrings(text, vars);
-
-            var expected = Path.Combine(tempPath, "DeployPath_DEBUG");
-            Assert.AreEqual(expected, text);
-        }
-
-        [TestMethod]
-        public void ReplaceVariableStringsKeepUnsetVaribles()
-        {
-            var vars = new Dictionary<string, object>();
-            var tempPath = Path.GetTempPath();
-            //vars["ProjectDir"] = tempPath;
-            //vars["ConfigurationName"] = "DEBUG";
-            //  vars["OutDir"] = "bin";
-
-            var text = "$(ProjectDir)";
-            text = ExtensionMethods.ReplaceVariableStrings(text, vars);
-
-            var expected = "$(ProjectDir)";
-            Assert.AreEqual(expected, text);
-        }
-
-        [TestMethod]
-        public void GetValueWithNullParameters()
-        {
-            Assert.ThrowsException<ArgumentNullException>(() => { IDictionaryExtensionMethods.GetValue(null, "test", string.Empty); });
-        }
-
-        [TestMethod]
         public void RunCommandArgsGetParameterWithNullArgsAndDefaultValue()
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 RunCommandArgs args = null;
-                ExtensionMethods.GetParameter(args, "test", string.Empty);
+                RunCommandArgsExtensionMethods.GetParameter(args, "test", string.Empty);
             });
         }
 
@@ -114,7 +32,7 @@ namespace BuildHelperTests
         {
             var data = new CommandData();
             var args = new RunCommandArgs(new VariablesDictionary(), data);
-            var value = ExtensionMethods.GetParameter(args, "test", "default");
+            var value = RunCommandArgsExtensionMethods.GetParameter(args, "test", "default");
             Assert.AreEqual("default", value);
         }
 
@@ -124,7 +42,7 @@ namespace BuildHelperTests
             var data = new CommandData();
             data.Parameters["test"] = "value";
             var args = new RunCommandArgs(new VariablesDictionary(), data);
-            var value = ExtensionMethods.GetParameter<string>(args, "test");
+            var value = RunCommandArgsExtensionMethods.GetParameter<string>(args, "test");
             Assert.AreEqual("value", value);
         }
 
@@ -134,7 +52,7 @@ namespace BuildHelperTests
             var data = new CommandData();
             data.Parameters["test"] = "value";
             var args = new RunCommandArgs(new VariablesDictionary(), data);
-            Assert.ThrowsException<FormatException>(() => { ExtensionMethods.GetParameter<bool>(args, "test"); });
+            Assert.ThrowsException<FormatException>(() => { RunCommandArgsExtensionMethods.GetParameter<bool>(args, "test"); });
         }
 
         [TestMethod]
@@ -142,7 +60,7 @@ namespace BuildHelperTests
         {
             var data = new CommandData();
             var args = new RunCommandArgs(new VariablesDictionary(), data);
-            Assert.ThrowsException<MissingParameterException>(() => { ExtensionMethods.GetParameter<string>(args, "test"); });
+            Assert.ThrowsException<MissingParameterException>(() => { RunCommandArgsExtensionMethods.GetParameter<string>(args, "test"); });
         }
 
         [TestMethod]
@@ -151,7 +69,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 RunCommandArgs args = null;
-                ExtensionMethods.GetParameter<string>(args, "test");
+                RunCommandArgsExtensionMethods.GetParameter<string>(args, "test");
             });
         }
 
@@ -161,7 +79,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 CommandData args = null;
-                ExtensionMethods.GetParameter(args, "test", string.Empty);
+                CommandDataExtensionMethods.GetParameter(args, "test", string.Empty);
             });
         }
 
@@ -170,7 +88,7 @@ namespace BuildHelperTests
         {
             var args = new CommandData();
             args.Parameters["test"] = "value";
-            var value = ExtensionMethods.GetParameter<string>(args, "test");
+            var value = CommandDataExtensionMethods.GetParameter<string>(args, "test");
             Assert.AreEqual("value", value);
         }
 
@@ -178,30 +96,8 @@ namespace BuildHelperTests
         public void CommandDataGetParameterWithValidArgsAndDefaultValue()
         {
             var args = new CommandData();
-            var value = ExtensionMethods.GetParameter(args, "test", "default");
+            var value = CommandDataExtensionMethods.GetParameter(args, "test", "default");
             Assert.AreEqual("default", value);
-        }
-
-        [TestMethod]
-        public void GetValueWithNullArgsAndDefaultValue()
-        {
-            Assert.ThrowsException<ArgumentNullException>(() =>
-            {
-                IDictionary<string, object> dic = null;
-                IDictionaryExtensionMethods.GetValue(dic, "test", string.Empty);
-            });
-        }
-
-        [TestMethod]
-        public void GetValueThatDoesNotImplementIConvertableWithoutDefaultValue()
-        {
-            Assert.ThrowsException<InvalidCastException>(() =>
-            {
-                var dic = new VariablesDictionary();
-                dic["test"] = new CommandData("Command");
-                var value = IDictionaryExtensionMethods.GetValue<bool>(dic, "test");
-                Assert.Fail($"Should have thrown {nameof(InvalidCastException)}.");
-            });
         }
 
         [TestMethod]
@@ -213,7 +109,7 @@ namespace BuildHelperTests
                 var com = new CommandData("Command");
                 com.Parameters["test"] = new Random();
                 var args = new RunCommandArgs(dic, com);
-                var value = ExtensionMethods.GetParameter<bool>(args, "test");
+                var value = RunCommandArgsExtensionMethods.GetParameter<bool>(args, "test");
                 Assert.Fail($"Should have thrown {nameof(InvalidCastException)}.");
             });
         }
@@ -224,7 +120,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<InvalidCastException>(() =>
             {
                 var result = new RunResult(new VariablesDictionary());
-                var value = ExtensionMethods.GetReturnValue<bool>(result);
+                var value = RunResultExtensionMethods.GetReturnValue<bool>(result);
                 Assert.Fail($"Should have thrown {nameof(InvalidCastException)}.");
             });
         }
@@ -233,7 +129,7 @@ namespace BuildHelperTests
         public void GetReturnValueThatDoesNotImplementIConvertableAndADefaultValue()
         {
             var result = new RunResult(new VariablesDictionary());
-            var value = ExtensionMethods.GetReturnValue<bool>(result, true);
+            var value = RunResultExtensionMethods.GetReturnValue<bool>(result, true);
             Assert.IsTrue(value);
         }
 
@@ -246,7 +142,7 @@ namespace BuildHelperTests
                 var com = new CommandData("Command");
                 dic["test"] = new Random();
                 var args = new RunCommandArgs(dic, com);
-                var value = ExtensionMethods.GetVariable<bool>(args, "test");
+                var value = RunCommandArgsExtensionMethods.GetVariable<bool>(args, "test");
                 Assert.Fail($"Should have thrown {nameof(InvalidCastException)}.");
             });
         }
@@ -258,7 +154,7 @@ namespace BuildHelperTests
             var com = new CommandData("Command");
             dic["test"] = new Random();
             var args = new RunCommandArgs(dic, com);
-            var value = ExtensionMethods.GetVariable<bool>(args, "test", true);
+            var value = RunCommandArgsExtensionMethods.GetVariable<bool>(args, "test", true);
             Assert.IsTrue(value);
         }
 
@@ -269,7 +165,7 @@ namespace BuildHelperTests
             var com = new CommandData("Command");
             dic["test"] = new Random();
             var args = new RunCommandArgs(dic, com);
-            var value = ExtensionMethods.GetVariable<bool>(args, "missing", true);
+            var value = RunCommandArgsExtensionMethods.GetVariable<bool>(args, "missing", true);
             Assert.IsTrue(value);
         }
 
@@ -280,53 +176,8 @@ namespace BuildHelperTests
             var com = new CommandData("Command");
             dic["test"] = 82;
             var args = new RunCommandArgs(dic, com);
-            var value = ExtensionMethods.GetVariable<string>(args, "test", "24");
+            var value = RunCommandArgsExtensionMethods.GetVariable<string>(args, "test", "24");
             Assert.AreEqual("82", value);
-        }
-
-        [TestMethod]
-        public void GetValueWithNullArgsAndNoDefaultValue()
-        {
-            Assert.ThrowsException<ArgumentNullException>(() =>
-            {
-                IDictionary<string, object> dic = null;
-                IDictionaryExtensionMethods.GetValue<string>(dic, "test");
-            });
-        }
-
-        [TestMethod]
-        public void GetValueWithValidArgsAndNoDefaultValue()
-        {
-            Assert.ThrowsException<KeyNotFoundException>(() =>
-            {
-                var dic = new Dictionary<string, object>();
-                IDictionaryExtensionMethods.GetValue<string>(dic, "test");
-            });
-        }
-
-        [TestMethod]
-        public void GetValueWithValidArgsAndDefaultValue()
-        {
-            var dic = new Dictionary<string, object>();
-            var value = IDictionaryExtensionMethods.GetValue(dic, "test", "default");
-            Assert.AreEqual("default", value);
-        }
-
-        [TestMethod]
-        public void GetValueWithValidArgsExistingKeyAndNoDefaultValue()
-        {
-            var dic = new Dictionary<string, object>();
-            dic["test"] = "value";
-            var value = IDictionaryExtensionMethods.GetValue<string>(dic, "test");
-            Assert.AreEqual("value", value);
-        }
-
-        [TestMethod]
-        public void GetValueWithValidArgsExistingKeyAndNoDefaultValueBadCasting()
-        {
-            var dic = new Dictionary<string, object>();
-            dic["test"] = "value";
-            Assert.ThrowsException<FormatException>(() => { IDictionaryExtensionMethods.GetValue<bool>(dic, "test"); });
         }
 
         [TestMethod]
@@ -335,7 +186,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 RunResult result = null;
-                ExtensionMethods.GetReturnValue<bool>(result);
+                RunResultExtensionMethods.GetReturnValue<bool>(result);
             });
         }
 
@@ -345,7 +196,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 RunResult result = null;
-                ExtensionMethods.GetReturnValue(result, "default");
+                RunResultExtensionMethods.GetReturnValue(result, "default");
             });
         }
 
@@ -353,14 +204,14 @@ namespace BuildHelperTests
         public void GetNonBooleanReturnValueStringAsBooleanWithNoDefaultValue()
         {
             var result = RunResult.Sucessful("test");
-            Assert.ThrowsException<FormatException>(() => { ExtensionMethods.GetReturnValue<bool>(result); });
+            Assert.ThrowsException<FormatException>(() => { RunResultExtensionMethods.GetReturnValue<bool>(result); });
         }
 
         [TestMethod]
         public void GetReturnValueWithValidArgsBadCastingNoDefaultValue()
         {
             var result = RunResult.Sucessful("true");
-            var value = ExtensionMethods.GetReturnValue<bool>(result);
+            var value = RunResultExtensionMethods.GetReturnValue<bool>(result);
             Assert.IsTrue(value);
         }
 
@@ -368,7 +219,7 @@ namespace BuildHelperTests
         public void GetReturnValueWithValidArgsCastingWithDefaultValue()
         {
             var result = RunResult.Sucessful(true);
-            var value = ExtensionMethods.GetReturnValue(result, "default");
+            var value = RunResultExtensionMethods.GetReturnValue(result, "default");
             Assert.AreSame(typeof(string), value.GetType());
             Assert.AreEqual("True", value);
         }
@@ -379,7 +230,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 RunCommandArgs args = null;
-                ExtensionMethods.GetVariable(args, "test", string.Empty);
+                RunCommandArgsExtensionMethods.GetVariable(args, "test", string.Empty);
             });
         }
 
@@ -389,7 +240,7 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 RunCommandArgs args = null;
-                ExtensionMethods.GetVariable<string>(args, "test");
+                RunCommandArgsExtensionMethods.GetVariable<string>(args, "test");
             });
         }
 
@@ -397,7 +248,7 @@ namespace BuildHelperTests
         public void GetVariableThatReturnsDefaultValue()
         {
             var args = new RunCommandArgs(new VariablesDictionary(), new CommandData());
-            var value = ExtensionMethods.GetVariable(args, "test", "defaultValue");
+            var value = RunCommandArgsExtensionMethods.GetVariable(args, "test", "defaultValue");
             Assert.AreEqual("defaultValue", value);
         }
 
@@ -407,7 +258,7 @@ namespace BuildHelperTests
             var args = new RunCommandArgs(new VariablesDictionary(), new CommandData());
             Assert.ThrowsException<MissingVariableException>(() =>
             {
-                var value = ExtensionMethods.GetVariable<string>(args, "test");
+                var value = RunCommandArgsExtensionMethods.GetVariable<string>(args, "test");
             });
         }
 
@@ -418,7 +269,7 @@ namespace BuildHelperTests
             variables["test"] = "someValue";
             var args = new RunCommandArgs(variables, new CommandData());
 
-            var value = ExtensionMethods.GetVariable<string>(args, "test");
+            var value = RunCommandArgsExtensionMethods.GetVariable<string>(args, "test");
             Assert.AreEqual("someValue", value);
         }
 
@@ -430,7 +281,7 @@ namespace BuildHelperTests
             var args = new RunCommandArgs(variables, new CommandData());
             Assert.ThrowsException<FormatException>(() =>
             {
-                var value = ExtensionMethods.GetVariable<int>(args, "test");
+                var value = RunCommandArgsExtensionMethods.GetVariable<int>(args, "test");
             });
         }
 
@@ -439,7 +290,7 @@ namespace BuildHelperTests
         {
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
-                var value = ExtensionMethods.SatifiesCondition(null, new VariablesDictionary(), "test");
+                var value = CommandDataExtensionMethods.SatifiesCondition(null, new VariablesDictionary(), "test");
             });
         }
 
@@ -449,17 +300,14 @@ namespace BuildHelperTests
             Assert.ThrowsException<ArgumentException>(() =>
             {
                 var com = new CommandData("test");
-                var value = ExtensionMethods.SatifiesCondition(com, new VariablesDictionary(), "test");
+                var value = CommandDataExtensionMethods.SatifiesCondition(com, new VariablesDictionary(), "test");
             });
         }
 
         [TestMethod]
         public void SatisfiesCondition_NullCommandData()
         {
-            Assert.ThrowsException<ArgumentNullException>(() =>
-            {
-                var value = ExtensionMethods.SatifiesCondition(null, new VariablesDictionary());
-            });
+            Assert.ThrowsException<ArgumentNullException>(() => CommandDataExtensionMethods.SatifiesCondition(null, new VariablesDictionary()));
         }
 
         [TestMethod]
@@ -470,13 +318,14 @@ namespace BuildHelperTests
             com.Parameters["operator"] = "=";
             com.Parameters["value2"] = "one";
             com.Parameters["ignorecase"] = "true";
-            var value = ExtensionMethods.SatifiesCondition(com, new VariablesDictionary());
+            var value = CommandDataExtensionMethods.SatifiesCondition(com, new VariablesDictionary());
+            Assert.IsTrue(value);
         }
 
         [TestMethod]
         public void ReportErrorResultJustMessageWithNullStatus()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.ReportError(null, "test"));
+            Assert.ThrowsException<ArgumentNullException>(() => IStatusReporterExtensionMethods.ReportError(null, "test"));
         }
 
         [TestMethod]
@@ -579,7 +428,7 @@ namespace BuildHelperTests
         public void RunCommandArrayWithNullArgs()
         {
             CommandData[] commands = null;
-            var ex = Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.Run(commands, null, null, null));
+            var ex = Assert.ThrowsException<ArgumentNullException>(() => CommandDataExtensionMethods.Run(commands, null, null, null));
             Assert.AreEqual("commands", ex.ParamName);
         }
 
@@ -593,7 +442,7 @@ namespace BuildHelperTests
                 new CommandData("Three"),
             };
 
-            var ex = Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.Run(commands, null, null, null));
+            var ex = Assert.ThrowsException<ArgumentNullException>(() => CommandDataExtensionMethods.Run(commands, null, null, null));
             Assert.AreEqual("variables", ex.ParamName);
         }
 
@@ -607,7 +456,8 @@ namespace BuildHelperTests
                 new CommandData("Three"),
             };
 
-            var ex = Assert.ThrowsException<ArgumentNullException>(() => ExtensionMethods.Run(commands, new VariablesDictionary(), null, null));
+            var ex = Assert.ThrowsException<ArgumentNullException>(
+                () => CommandDataExtensionMethods.Run(commands, new VariablesDictionary(), null, null));
             Assert.AreEqual("plugins", ex.ParamName);
         }
 
@@ -626,7 +476,7 @@ namespace BuildHelperTests
             var plugins = new PluginCollection();
             plugins.Add(new MockCommandPlugin("One", x => returnValue = x.Command.Name));
 
-            ExtensionMethods.Run(commands, variables, plugins, null);
+            CommandDataExtensionMethods.Run(commands, variables, plugins, null);
             Assert.IsNotNull(returnValue);
             Assert.AreEqual("One", returnValue);
         }
@@ -645,7 +495,7 @@ namespace BuildHelperTests
             var variables = new VariablesDictionary();
             var plugins = new PluginCollection();
 
-            ExtensionMethods.Run(commands, variables, plugins, null);
+            CommandDataExtensionMethods.Run(commands, variables, plugins, null);
         }
 
         // [TestMethod]
@@ -678,7 +528,7 @@ namespace BuildHelperTests
             var called = false;
             var command = new CommandData("Test");
             var plugin = new MockCommandPlugin("Test", x => called = true);
-            ExtensionMethods.Run(command, new VariablesDictionary(), plugin, null);
+            CommandDataExtensionMethods.Run(command, new VariablesDictionary(), plugin, null);
             Assert.IsTrue(called);
         }
 
@@ -695,7 +545,7 @@ namespace BuildHelperTests
 #pragma warning restore 162
             });
 
-            Assert.ThrowsException<NotImplementedException>(() => ExtensionMethods.Run(command, new VariablesDictionary(), plugin, null));
+            Assert.ThrowsException<NotImplementedException>(() => CommandDataExtensionMethods.Run(command, new VariablesDictionary(), plugin, null));
             Assert.IsFalse(called);
         }
 
@@ -713,7 +563,8 @@ namespace BuildHelperTests
 #pragma warning restore 162
             });
 
-            Assert.ThrowsException<NotImplementedException>(() => ExtensionMethods.Run(command, new VariablesDictionary(), plugin, reporter));
+            Assert.ThrowsException<NotImplementedException>(
+                () => CommandDataExtensionMethods.Run(command, new VariablesDictionary(), plugin, reporter));
             Assert.IsFalse(called);
             Assert.AreEqual(2, reporter.CallCount);
         }
@@ -730,7 +581,7 @@ namespace BuildHelperTests
                 called = true;
             });
 
-            var args = ExtensionMethods.Run(command, new VariablesDictionary(), plugin, reporter);
+            var args = CommandDataExtensionMethods.Run(command, new VariablesDictionary(), plugin, reporter);
             Assert.IsTrue(called);
             Assert.AreEqual(1, reporter.CallCount);
             Assert.IsNotNull(args.Result);
@@ -749,7 +600,7 @@ namespace BuildHelperTests
                 called = true;
             });
 
-            var args = ExtensionMethods.Run(command, new VariablesDictionary(), plugin, reporter);
+            var args = CommandDataExtensionMethods.Run(command, new VariablesDictionary(), plugin, reporter);
             Assert.IsTrue(called);
             Assert.AreEqual(2, reporter.CallCount);
             Assert.IsNotNull(args.Result);
@@ -769,7 +620,7 @@ namespace BuildHelperTests
                 called = true;
             });
 
-            var args = ExtensionMethods.Run(command, plugin, reporter);
+            var args = CommandDataExtensionMethods.Run(command, plugin, reporter);
             Assert.IsTrue(called);
             Assert.AreEqual(1, reporter.CallCount);
             Assert.IsNotNull(args.Result);
