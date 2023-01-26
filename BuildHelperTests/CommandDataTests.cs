@@ -31,14 +31,40 @@ namespace BuildHelperTests
             var parentA = new CommandData();
             var parentB = new CommandData();
             var child = new CommandData();
-
-
+                                                                          
             Assert.IsNull(child.Parent);
             parentA.Children.Add(child);
 
             Assert.IsNotNull(child.Parent);
             Assert.AreSame(parentA, child.Parent);
             Assert.AreNotSame(parentB, child.Parent);
+        }
+        
+        [TestMethod]
+        public void AddChildViaCollectionThenAddChildToDifferentCollection()
+        {
+            var parentA = new CommandData();
+            var parentB = new CommandData();
+            var child = new CommandData();
+                                                                          
+            // validate the child hos no parent
+            Assert.IsNull(child.Parent);
+            
+            // add child to parent a via children collection
+            parentA.Children.Add(child);
+
+            // validate that child has a parent property set and that is parent a not parent b
+            Assert.IsNotNull(child.Parent);
+            Assert.AreSame(parentA, child.Parent);
+            Assert.AreNotSame(parentB, child.Parent);
+            
+            // now add child to parent b's children collection
+            parentB.Children.Add(child);
+
+            // validate that child has a parent property set and that is parent b not parent a
+            Assert.IsNotNull(child.Parent);
+            Assert.AreNotSame(parentA, child.Parent);
+            Assert.AreSame(parentB, child.Parent);
         }
 
         [TestMethod]
@@ -137,7 +163,7 @@ namespace BuildHelperTests
             Assert.AreSame(parentA, child.Parent);
             Assert.AreNotSame(parentB, child.Parent);
 
-            // validate patent children collections
+            // validate parent children collections
             Assert.AreEqual(1, parentA.Children.Count);
             Assert.AreEqual(0, parentB.Children.Count);
 

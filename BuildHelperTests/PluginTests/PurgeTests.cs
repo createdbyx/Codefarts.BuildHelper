@@ -289,6 +289,25 @@ namespace BuildHelperTests
             Assert.IsFalse(File.Exists(Path.Combine(this.tempDir, "SubFolder", "Microsoft.File4.db")));
             Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "SubFolder", "Sub2", "Taxi.File5.pdb")));
         }
+        
+        [TestMethod]
+        public void Purge1File_AllConditionsTrue()
+        {
+            var purge = new PurgeCommand();
+            var data = "<purge path=\"$(TempPath)\" subfolders=\"true\" allconditions=\"true\" fullpaths=\"false\" type=\"files\">\r\n" +
+                       "    <condition value1=\"$(PurgeEntry)\" operator=\"startswith\" value2=\"System.\" ignorecase=\"true\" />\r\n" +
+                       "    <condition value1=\"$(PurgeEntry)\" operator=\"endswith\" value2=\".dat\" ignorecase=\"true\" />\r\n" +
+                       "</purge>";
+
+            var item = XElement.Parse(data);
+            var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
+            purge.Run(new RunCommandArgs(this.variables, buildFileCommand));
+            Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File1.txt")));
+            Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "File2.xml")));
+            Assert.IsFalse(File.Exists(Path.Combine(this.tempDir, "System.File3.dat")));
+            Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "SubFolder", "Microsoft.File4.db")));
+            Assert.IsTrue(File.Exists(Path.Combine(this.tempDir, "SubFolder", "Sub2", "Taxi.File5.pdb")));
+        }
 
         [TestMethod]
         public void Purge2Files_FullPathsTrue()

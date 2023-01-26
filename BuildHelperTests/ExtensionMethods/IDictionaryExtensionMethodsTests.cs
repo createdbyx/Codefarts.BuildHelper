@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace BuildHelperTests;
 
 [TestClass]
-[TestCategory("Extension Methods - IDictionaryExtensionMethods")]
+[TestCategory("Extension Methods - IDictionary")]
 public class IDictionaryExtensionMethodsTests
 {
     [TestMethod]

@@ -12,7 +12,7 @@ namespace BuildHelperTests
     using Codefarts.BuildHelper;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    [TestClass, TestCategory("Extension Methods")]
+    [TestClass, TestCategory("Extension Methods - CommandData.SatifiesCondition")]
     public class ConditionContains
     {
         private IDictionary<string, object> variables;

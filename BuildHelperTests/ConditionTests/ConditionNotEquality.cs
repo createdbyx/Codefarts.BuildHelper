@@ -12,7 +12,7 @@ namespace BuildHelperTests
     using Codefarts.BuildHelper;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    [TestClass, TestCategory("Extension Methods")]
+    [TestClass, TestCategory("Extension Methods - CommandData.SatifiesCondition")]
     public class ConditionNotEquality
     {
         private IDictionary<string, object> varibles;
