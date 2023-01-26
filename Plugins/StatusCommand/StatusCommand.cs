@@ -22,7 +22,7 @@ namespace Codefarts.BuildHelper
         /// </summary>
         public StatusCommand(IStatusReporter status)
         {
-            this.status = status ?? throw new ArgumentNullException(nameof(status));
+            this.status = status ;//?? throw new ArgumentNullException(nameof(status));
         }
 
         public StatusCommand()
