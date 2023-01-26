@@ -4,29 +4,28 @@
 // http://www.codefarts.com
 // </copyright>
 
-namespace BuildHelperTests.Mocks
+namespace BuildHelperTests.Mocks;
+
+using Codefarts.BuildHelper;
+
+public class MockStatusReporter : IStatusReporter
 {
-    using Codefarts.BuildHelper;
+    public int CallCount { get; set; }
 
-    public class MockStatusReporter : IStatusReporter
+    public void Report(string message, ReportStatusType type, string category, float progress)
     {
-        public int CallCount { get; set; }
-
-        public void Report(string message, ReportStatusType type, string category, float progress)
-        {
-            this.Message = message;
-            this.Type = type;
-            this.Category = category;
-            this.Progress = progress;
-            this.CallCount++;
-        }
-
-        public string Message { get; set; }
-
-        public ReportStatusType Type { get; set; }
-
-        public string Category { get; set; }
-
-        public float Progress { get; set; }
+        this.Message = message;
+        this.Type = type;
+        this.Category = category;
+        this.Progress = progress;
+        this.CallCount++;
     }
+
+    public string Message { get; set; }
+
+    public ReportStatusType Type { get; set; }
+
+    public string Category { get; set; }
+
+    public float Progress { get; set; }
 }
