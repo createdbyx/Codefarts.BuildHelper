@@ -41,7 +41,13 @@ public static class IDictionaryExtensionMethods
             {
                 if (value is IConvertible)
                 {
-                    return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+                    var enumType = typeof(T);
+                    if (enumType.IsEnum)
+                    {
+                        return (T)Enum.Parse(enumType, value.ToString(), false);
+                    }
+                    
+                    return (T)Convert.ChangeType(value, enumType, CultureInfo.InvariantCulture);
                 }
 
                 return (T)value;
