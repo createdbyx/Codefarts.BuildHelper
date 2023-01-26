@@ -38,7 +38,7 @@ public class XmlCommandFileReader : ICommandImporter
     private bool TryReadBuildFile(string buildFile, out CommandData data)
     {
         // ensure file exists
-        if (string.IsNullOrWhiteSpace( buildFile) == null)
+        if (string.IsNullOrWhiteSpace(buildFile))
         {
             this.status?.Report("Build file not specified.");
             data = null;
@@ -117,7 +117,7 @@ public class XmlCommandFileReader : ICommandImporter
             return RunResult.Errored(new NullReferenceException($"No {nameof(IConfigurationProvider)} is available."));
         }
 
-        var buildFile = config.GetValue("filename") as string;
+        var buildFile = config.GetValue("filename", default(string));
 
         if (!this.TryReadBuildFile(buildFile, out var rootCommand))
         {
