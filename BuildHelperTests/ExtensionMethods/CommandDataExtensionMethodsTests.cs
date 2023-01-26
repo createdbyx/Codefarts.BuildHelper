@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Xml.Linq;
 using BuildHelperTests.Mocks;
 using Codefarts.BuildHelper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -274,5 +276,39 @@ public class CommandDataExtensionMethodsTests
         var args = new CommandData();
         var value = CommandDataExtensionMethods.GetParameter(args, "test", "default");
         Assert.AreEqual("default", value);
+    }
+
+    [TestMethod]
+    public void SatifiesConditions_JustEmptyVariblesDictionary_ChecksAllConditions()
+    {
+        var data = "<dummy>\r\n" +
+                   "    <condition value1=\"System.Data.xml\" operator=\"startswith\" value2=\"System.\" ignorecase=\"true\" />\r\n" +
+                   "    <condition value1=\"System.Data.xml\" operator=\"endswith\" value2=\".xml\" ignorecase=\"true\" />\r\n" +
+                   "</dummy>";
+
+        var item = XElement.Parse(data);
+        var node = TestHelpers.BuildCommandNode(item, null);
+        var variables = new VariablesDictionary();
+
+        var result = node.SatifiesConditions(variables);
+
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public void SatifiesConditions_JustEmptyVariblesDictionary_ChecksAllConditions_SpecifiedCompareValue()
+    {
+        var data = "<dummy>\r\n" +
+                   "    <condition operator=\"startswith\" value2=\"System.\" ignorecase=\"true\" />\r\n" +
+                   "    <condition operator=\"endswith\" value2=\".xml\" ignorecase=\"true\" />\r\n" +
+                   "</dummy>";
+
+        var item = XElement.Parse(data);
+        var node = TestHelpers.BuildCommandNode(item, null);
+        var variables = new VariablesDictionary();
+
+        var result = node.SatifiesConditions(variables, "System.Data.xml");
+
+        Assert.IsTrue(result);
     }
 }

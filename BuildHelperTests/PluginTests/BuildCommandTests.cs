@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Dynamic;
+using BuildHelperTests.Mocks;
 using Codefarts.BuildHelper;
 using Codefarts.BuildHelperConsoleApp;
 using Codefarts.IoC;
@@ -37,6 +37,14 @@ public class BuildCommandTests
     }
 
     [TestMethod]
+    public void CtorValidArgs_WithRegisteredStatusReporter()
+    {
+        var ioc = new DependencyInjectorShim(new Container());
+        ioc.Register(typeof(IStatusReporter), typeof(MockStatusReporter));
+        var b = new BuildCommand.BuildCommand(ioc);
+    }
+
+    [TestMethod]
     public void ValidateCommandName()
     {
         var ioc = new DependencyInjectorShim(new Container());
@@ -59,14 +67,30 @@ public class BuildCommandTests
         var ioc = new DependencyInjectorShim(new Container());
         ioc.Register(typeof(ICommandImporter), () => new XmlCommandFileReader(ioc));
 
-        var importer = ioc.Resolve(typeof(ICommandImporter)) as ICommandImporter;
-        var importResult = importer.Run();
+        // var importer = ioc.Resolve(typeof(ICommandImporter)) as ICommandImporter;
+        // var importResult = importer.Run();
 
         var command = new BuildCommand.BuildCommand(ioc);
-        var args = new RunCommandArgs(new CommandData());
+        var args = new RunCommandArgs(new CommandData("build"));
         command.Run(args);
         Assert.IsNotNull(args.Result);
         Assert.IsNotNull(args.Result.Error);
         Assert.IsInstanceOfType<ContainerResolutionException>(args.Result.Error);
+    }
+
+
+    [TestMethod]
+    public void RunWithValidArguments_ConfigManagerWithNoData()
+    {
+        var ioc = new DependencyInjectorShim(new Container());
+        ioc.Register(typeof(ICommandImporter), () => new XmlCommandFileReader(ioc));
+        ioc.Register(typeof(IConfigurationProvider), typeof(MockConfigProvider));
+
+        var command = new BuildCommand.BuildCommand(ioc);
+        var args = new RunCommandArgs(new CommandData("build"));
+        command.Run(args);
+        Assert.IsNotNull(args.Result);
+        Assert.IsNotNull(args.Result.Error);
+        Assert.IsInstanceOfType<ArgumentNullException>(args.Result.Error);
     }
 }
