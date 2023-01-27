@@ -48,6 +48,13 @@ public class BuildCommand : ICommandPlugin
             throw new ArgumentNullException(nameof(args));
         }
 
+        // validate command node name is expected
+        if (!args.Command.Name.Equals(this.Name, StringComparison.InvariantCultureIgnoreCase))
+        {
+            args.Result = RunResult.Errored(new ArgumentException($"Command name passed in args is invalid. Command name: {args.Command.Name}"));
+            return;
+        }
+
         IConfigurationProvider config;
         try
         {
@@ -59,9 +66,9 @@ public class BuildCommand : ICommandPlugin
             return;
         }
 
-        if (TryGetConfigValue(args, config, "filename", out var buildFile)) return;
-        if (TryGetConfigValue(args, config, "projectfile", out var projectFile)) return;
-        if (TryGetConfigValue(args, config, "targetframework", out var targetFramework)) return;
+        if (!TryGetConfigValue(args, config, "filename", out var buildFile)) return;
+        if (!TryGetConfigValue(args, config, "projectfile", out var projectFile)) return;
+        if (!TryGetConfigValue(args, config, "targetframework", out var targetFramework)) return;
 
         // read the project file once for it's info
         var projectFileRoot = XDocument.Load(projectFile).Root;
@@ -84,7 +91,7 @@ public class BuildCommand : ICommandPlugin
         }
 
         // check for valid buildevent in filename
-        if (string.IsNullOrWhiteSpace(buildEvent) || buildEvent != "Pre" || buildEvent != "Post")
+        if (string.IsNullOrWhiteSpace(buildEvent) || (buildEvent != "Pre" && buildEvent != "Post"))
         {
             args.Result = RunResult.Errored(new Exception("Filename has unrecognized or missing build event information."));
             return;
@@ -93,7 +100,8 @@ public class BuildCommand : ICommandPlugin
         args.Variables["BuildEvent"] = buildEvent;
 
         // configuration name
-        var configName = buildFile.Substring(0, buildFile.IndexOf($"-{buildEvent}", StringComparison.InvariantCultureIgnoreCase));
+        var justFileName = Path.GetFileName(buildFile);
+        var configName = justFileName.Substring(0, justFileName.IndexOf($"-{buildEvent}", StringComparison.InvariantCultureIgnoreCase));
         args.Variables["ConfigurationName"] = configName;
 
         // out directory
@@ -112,7 +120,7 @@ public class BuildCommand : ICommandPlugin
         args.Variables["TargetPath"] = Path.Combine(
             Path.GetDirectoryName(projectFile),
             args.GetVariable<string>("OutDir"),
-            args.GetVariable<string>("TargetName"),
+            args.GetVariable<string>("TargetName") +
             args.GetVariable<string>("TargetExt"));
 
         // project path
@@ -134,7 +142,16 @@ public class BuildCommand : ICommandPlugin
         args.Variables["ProjectExt"] = Path.GetExtension(args.GetVariable<string>("ProjectPath"));
 
         // get plugin manager
-        var pluginManager = this.ioc.Resolve<IPluginManager>();
+        IPluginManager pluginManager;
+        try
+        {
+            pluginManager = this.ioc.Resolve<IPluginManager>();
+        }
+        catch (Exception e)
+        {
+            args.Result = RunResult.Errored(e);
+            return;
+        }
 
         var pluginCollection = new ReadOnlyCollection<ICommandPlugin>(pluginManager.Plugins.ToList());
 
@@ -144,6 +161,8 @@ public class BuildCommand : ICommandPlugin
             var variables = new VariablesDictionary(args.Variables);
             child.Run(variables, pluginCollection, this.status);
         }
+
+        args.Result = RunResult.Sucessful();
     }
 
     /*       
@@ -184,12 +203,12 @@ public class BuildCommand : ICommandPlugin
 */
     private static bool TryGetConfigValue(RunCommandArgs args, IConfigurationProvider config, string key, out string buildFile)
     {
-        if (!config.TryGetValue(key, out buildFile))
+        if (config.TryGetValue(key, out buildFile))
         {
-            args.Result = RunResult.Errored(new ArgumentNullException($"Error fetching '{key}' from configuration."));
             return true;
         }
 
+        args.Result = RunResult.Errored(new ArgumentNullException($"Error fetching '{key}' from configuration."));
         return false;
     }
 
