@@ -63,11 +63,31 @@ public class XmlCommandFileReaderTests
         var config = ioc.Resolve<MockConfigProvider>();
         ioc.Register<IConfigurationProvider>(() => config);
 
-        Assert.ThrowsException<KeyNotFoundException>(() => xml.Run());
+        var result = xml.Run();
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.Error);
+        Assert.IsNull(result.ReturnValue);
+        Assert.IsInstanceOfType<IOException>(result.Error);
     }
 
     [TestMethod]
-    public void Ctor_ValidArguments_WithRegisteredConfig_WithData()
+    public void Ctor_ValidArguments_WithRegisteredConfig_MissingFile()
+    {
+        var ioc = new DependencyInjectorShim(new Container());
+        var xml = new XmlCommandFileReader(ioc);
+        var config = ioc.Resolve<MockConfigProvider>();
+        config.SetValue("filename", Path.Combine(Path.GetTempPath(), $"SomeRandomMissingFile_{Guid.NewGuid().ToString("N")}.xml"));
+        ioc.Register<IConfigurationProvider>(() => config);
+
+        var result = xml.Run();
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(result.Error);
+        Assert.IsNull(result.ReturnValue);
+        Assert.IsInstanceOfType<IOException>(result.Error);
+    }
+
+    [TestMethod]
+    public void Ctor_ValidArguments_WithRegisteredConfig_WithValidFileData()
     {
         var ioc = new DependencyInjectorShim(new Container());
         var xml = new XmlCommandFileReader(ioc);
