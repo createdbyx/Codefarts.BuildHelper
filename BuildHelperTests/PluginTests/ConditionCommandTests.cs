@@ -47,6 +47,21 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
+        public void BadCommandName()
+        {
+            var item = XElement.Parse("<badconditionname value1=\"Test\" operator=\"contains\" />");
+            var data = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, data);
+
+            this.plugin.Run(args);
+
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Errored, args.Result.Status);
+            Assert.IsNotNull(args.Result.Error);
+            Assert.IsInstanceOfType<ArgumentException>(args.Result.Error);
+        }
+        
+        [TestMethod]
         public void MissingValue2()
         {
             var item = XElement.Parse("<condition value1=\"Test\" operator=\"contains\" />");

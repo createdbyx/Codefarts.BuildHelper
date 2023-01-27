@@ -72,6 +72,24 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
+        public void BadCommandName()
+        {
+            var command = new VersionUpdaterCommand();
+            var vars = new VariablesDictionary();
+            var parameters = new Dictionary<string, object>();
+            var cmdNode = new CommandData("badname", parameters);
+            var args = new RunCommandArgs( vars, cmdNode);
+
+            // run
+            command.Run(args);
+
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Errored, args.Result.Status);
+            Assert.IsNotNull(args.Result.Error);
+            Assert.IsInstanceOfType<ArgumentException>(args.Result.Error);
+        }
+        
+        [TestMethod]
         public void DefaultNoParameters()
         {
             var command = new VersionUpdaterCommand();

@@ -32,6 +32,13 @@ namespace ConditionCommand
                 throw new ArgumentNullException(nameof(args));
             }
 
+            // validate command node name is expected
+            if (!args.Command.Name.Equals(this.Name, StringComparison.InvariantCultureIgnoreCase))
+            {
+                args.Result = RunResult.Errored(new ArgumentException($"Command name passed in args is invalid. Command name: {args.Command.Name}"));
+                return;
+            }
+
             // get values
             var value1 = args.GetParameter<object>("value1", null);
             var value2 = args.GetParameter<object>("value2", null);

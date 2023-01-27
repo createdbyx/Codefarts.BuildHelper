@@ -88,6 +88,24 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
+        public void BadCommandName()
+        {
+            var command = new CopyDirCommand();
+            var data = "<badcopydirname source=\"$(TempPath)\" destination=\"$(DestPath)\" />";
+
+            var item = XElement.Parse(data);
+            var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, buildFileCommand);
+
+            command.Run(args);
+
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Errored, args.Result.Status);
+            Assert.IsNotNull(args.Result.Error);
+            Assert.IsInstanceOfType<ArgumentException>(args.Result.Error);
+        }
+        
+        [TestMethod]
         public void NoConditionsOrAdditionalParameters()
         {
             var command = new CopyDirCommand();

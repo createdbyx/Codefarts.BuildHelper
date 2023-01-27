@@ -78,7 +78,25 @@ public class BuildModelFromExcelFileCommandTests
         var status = new ConsoleStatusReporter();
         var command = new BuildModelFromExcelFileCommand(status);
     }
+               
+    [TestMethod]
+    public void BadCommandName()
+    {
+        var command = new BuildModelFromExcelFileCommand();
+        var data = $"<badname source=\"{this.sampleExcelPath}\" destination=\"$(DestPath)\" />";
 
+        var item = XElement.Parse(data);
+        var buildFileCommand = TestHelpers.BuildCommandNode(item, null);
+        var args = new RunCommandArgs(this.variables, buildFileCommand);
+
+        command.Run(args);
+
+        Assert.IsNotNull(args.Result);
+        Assert.AreEqual(RunStatus.Errored, args.Result.Status);
+        Assert.IsNotNull(args.Result.Error);
+        Assert.IsInstanceOfType<ArgumentException>(args.Result.Error);
+    }
+    
     [TestMethod]
     public void NoConditionsOrAdditionalParameters()
     {

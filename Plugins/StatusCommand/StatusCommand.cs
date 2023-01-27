@@ -22,7 +22,7 @@ namespace Codefarts.BuildHelper
         /// </summary>
         public StatusCommand(IStatusReporter status)
         {
-            this.status = status ;//?? throw new ArgumentNullException(nameof(status));
+            this.status = status; //?? throw new ArgumentNullException(nameof(status));
         }
 
         public StatusCommand()
@@ -36,6 +36,13 @@ namespace Codefarts.BuildHelper
             if (args == null)
             {
                 throw new ArgumentNullException(nameof(args));
+            }
+
+            // validate command node name is expected
+            if (!args.Command.Name.Equals(this.Name, StringComparison.InvariantCultureIgnoreCase))
+            {
+                args.Result = RunResult.Errored(new ArgumentException($"Command name passed in args is invalid. Command name: {args.Command.Name}"));
+                return;
             }
 
             // get the variable name parameter

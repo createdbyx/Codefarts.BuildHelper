@@ -53,6 +53,13 @@ namespace Codefarts.BuildHelper
                 throw new ArgumentNullException(nameof(args));
             }
 
+            // validate command node name is expected
+            if (!args.Command.Name.Equals(this.Name, StringComparison.InvariantCultureIgnoreCase))
+            {
+                args.Result = RunResult.Errored(new ArgumentException($"Command name passed in args is invalid. Command name: {args.Command.Name}"));
+                return;
+            }
+
             var srcPath = args.GetParameter<string>("source", null);
             var destPath = args.GetParameter<string>("destination", null);
 

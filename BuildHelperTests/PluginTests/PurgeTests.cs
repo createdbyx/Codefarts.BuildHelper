@@ -72,7 +72,29 @@ namespace BuildHelperTests
             var status = new ConsoleStatusReporter();
             var purge = new PurgeCommand(status);
         }
+        
+        [TestMethod]
+        public void BadCommandName()
+        {
+            var command = new PurgeCommand( );
+            var data =
+                "<badpurgename ignoreconditions=\"true\" path=\"$(TempPath)\" subfolders=\"true\" allconditions=\"false\" fullpaths=\"false\" type=\"files\">\r\n" +
+                "    <condition value1=\"$(PurgeEntry)\" operator=\"startswith\" value2=\"System.\" ignorecase=\"true\" />\r\n" +
+                "    <condition value1=\"$(PurgeEntry)\" operator=\"startswith\" value2=\"Microsoft.\" ignorecase=\"true\" />\r\n" +
+                "    <condition value1=\"$(PurgeEntry)\" operator=\"endswith\" value2=\".xml\" ignorecase=\"true\" />\r\n" +
+                "</badpurgename>";
+            var item = XElement.Parse(data);
+            var node = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, node);
 
+            command.Run(args);
+
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Errored, args.Result.Status);
+            Assert.IsNotNull(args.Result.Error);
+            Assert.IsInstanceOfType<ArgumentException>(args.Result.Error);
+        }
+        
         [TestMethod]
         public void TryPurgeReadOnlyFile()
         {

@@ -105,6 +105,25 @@ namespace BuildHelperTests
             Assert.AreEqual(null, reporter.Category);
             Assert.AreEqual(0f, reporter.Progress);
         }
+        
+        [TestMethod]
+        public void BadCommandName()
+        {
+            var reporter = new MockStatusReporter();
+            var command = new StatusCommand(reporter);
+            var data = "<badstatusname text=\"test\" />";
+
+            var item = XElement.Parse(data);
+            var node = TestHelpers.BuildCommandNode(item, null);
+            var args = new RunCommandArgs(this.variables, node);
+
+            command.Run(args);
+
+            Assert.IsNotNull(args.Result);
+            Assert.AreEqual(RunStatus.Errored, args.Result.Status);
+            Assert.IsNotNull(args.Result.Error);
+            Assert.IsInstanceOfType<ArgumentException>(args.Result.Error);
+        }
 
         [TestMethod]
         public void ComplexMessage()
