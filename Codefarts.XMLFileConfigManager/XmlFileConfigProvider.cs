@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Security.Principal;
 using System.Xml.Linq;
 using Codefarts.BuildHelper;
 using Codefarts.DependencyInjection;
@@ -10,7 +11,6 @@ public class XmlFileConfigProvider : IConfigurationProvider
     private IStatusReporter status;
     private readonly IDependencyInjectionProvider ioc;
     private IDictionary<string, object> values;
-    private string fileName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="XmlCommandFileReader"/> class.
@@ -29,10 +29,10 @@ public class XmlFileConfigProvider : IConfigurationProvider
         }
 
         this.values = new ConcurrentDictionary<string, object>();
-        var config = ioc.Resolve<IConfigurationProvider>();
-        this.fileName = config.GetValue<string>("configfile");
+        //var config = ioc.Resolve<IConfigurationProvider>();
+        // this.fileName = config.GetValue<string>("configfile");
 
-        DoLoad();
+        // DoLoad();
     }
 
     public object GetValue(string name)
@@ -40,7 +40,7 @@ public class XmlFileConfigProvider : IConfigurationProvider
         return this.values[name];
     }
 
-    private void DoLoad()
+    public void Load(string fileName)
     {
         var fileInfo = new FileInfo(fileName);
         if (!fileInfo.Exists)
@@ -49,7 +49,7 @@ public class XmlFileConfigProvider : IConfigurationProvider
         }
 
         // load file
-        var doc = XDocument.Load(this.fileName);
+        var doc = XDocument.Load(fileName);
         var newValues = new ConcurrentDictionary<string, object>();
         foreach (var x in doc.Root.Elements())
         {
