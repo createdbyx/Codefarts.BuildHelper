@@ -50,12 +50,12 @@ public class XmlCommandFileReader : ICommandImporter
         // ensure file exists
         if (!buildFileInfo.Exists)
         {
-            this.status?.Report("Missing build file: " + buildFileInfo.FullName);
+            this.status?.Report($"Missing build file: {buildFileInfo.FullName}");
             data = null;
             return false;
         }
 
-        this.status?.Report("Reading build file: {0}", buildFileInfo.FullName);
+        this.status?.Report($"Reading build file: {buildFileInfo.FullName}");
 
         // read file
         XDocument doc;
@@ -65,7 +65,7 @@ public class XmlCommandFileReader : ICommandImporter
         }
         catch (Exception ex)
         {
-            this.status?.Report("Error reading file: " + buildFileInfo.FullName);
+            this.status?.Report($"Error reading file: {buildFileInfo.FullName}");
             this.status?.Report(ex.Message);
             data = null;
             return false;
@@ -73,7 +73,7 @@ public class XmlCommandFileReader : ICommandImporter
 
         if (!doc.Root.Name.LocalName.Equals("build", StringComparison.OrdinalIgnoreCase))
         {
-            this.status?.Report("Error parsing build file: " + buildFileInfo.FullName);
+            this.status?.Report($"Error parsing build file: {buildFileInfo.FullName}");
             this.status?.Report("Root node not 'build'.");
             data = null;
             return false;
