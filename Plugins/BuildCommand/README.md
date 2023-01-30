@@ -18,7 +18,11 @@ be run as part of a pre or post build process.
            ... child commands go here ... 
        </build> 
 
-            
+
+### Arguments
+
+* haltonerror - Specifies weather to stop execution if a command returns an error. Default is true.
+
 ### Requirements
 
 * Needs a registered IConfigurationProvider implementation.

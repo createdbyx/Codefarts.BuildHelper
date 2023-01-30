@@ -13,6 +13,7 @@ namespace BuildCommand;
 // [NamedParameter("allconditions", typeof(bool), false, "Specifies weather or not all conditions must be satisfied. Default is false.")]
 // [NamedParameter("ignoreconditions", typeof(bool), false, "Specifies weather to ignore conditions. Default is false.")]
 // [NamedParameter("test", typeof(bool), false, "Specifies weather to run in test mode. Default is false.")]
+[NamedParameter("haltonerror", typeof(bool), true, "Specifies weather to stop execution if a command returns an error. Default is true.")]
 public class BuildCommand : ICommandPlugin
 {
     private IStatusReporter status;
@@ -54,6 +55,8 @@ public class BuildCommand : ICommandPlugin
             args.Result = RunResult.Errored(new ArgumentException($"Command name passed in args is invalid. Command name: {args.Command.Name}"));
             return;
         }
+
+        var haltOnError = args.GetParameter("haltonerror", true);
 
         IConfigurationProvider config;
         try
@@ -108,7 +111,8 @@ public class BuildCommand : ICommandPlugin
         ParseOutDirectory(args.Variables, projectFileRoot);
 
         // project name
-        args.Variables["ProjectName"] = Path.GetFileNameWithoutExtension(projectFile);
+        var projectName = Path.GetFileNameWithoutExtension(projectFile);
+        args.Variables["ProjectName"] = projectName;
 
         // the target name
         var assemblyNameElement = projectFileRoot.Descendants("AssemblyName").FirstOrDefault();
@@ -155,14 +159,32 @@ public class BuildCommand : ICommandPlugin
 
         var pluginCollection = new ReadOnlyCollection<ICommandPlugin>(pluginManager.Plugins.ToList());
 
+        this.ReportHeader(status, $"START {projectName} - {buildEvent.ToUpper()} BUILD");
+
         // run children
+        RunCommandArgs lastResult = null;
         foreach (var child in args.Command.Children)
         {
             var variables = new VariablesDictionary(args.Variables);
-            child.Run(variables, pluginCollection, this.status);
+            lastResult = child.Run(variables, pluginCollection, this.status);
+            if (lastResult.Result.Status == RunStatus.Errored && haltOnError)
+            {
+                break;
+            }
         }
 
-        args.Result = RunResult.Sucessful();
+        this.ReportHeader(status, $"END {projectName} - {buildEvent.ToUpper()} BUILD");
+
+        args.Result = lastResult != null ? lastResult.Result : RunResult.Sucessful();
+    }
+
+    private void ReportHeader(IStatusReporter status, string message, params object[] args)
+    {
+        var formattedString = string.Format(message, args);
+        var maxLen = Math.Max(formattedString.Length + 10, 100);
+        var headPartLen = (maxLen - (formattedString.Length + 2)) / 2;
+        var headerChars = new string('#', headPartLen);
+        status?.Report(string.Format($"{headerChars} {message} {headerChars}", args));
     }
 
     /*       
@@ -233,7 +255,7 @@ public class BuildCommand : ICommandPlugin
         }
 
         // otherwise set default value based on config name
-        variables["OutDir"] = $@"bin\{configName}\{targetFramework}";
+        variables["OutDir"] = $@"bin\{configName}\{targetFramework}\";
     }
 
     private void ParseTargetExt(VariablesDictionary variables, XElement projectFileRoot)
