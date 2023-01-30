@@ -4,6 +4,8 @@
 // http://www.codefarts.com
 // </copyright>
 
+using System.IO;
+using System.Threading;
 using Codefarts.BuildHelper.Exceptions;
 
 namespace AutoVersionUpdater
@@ -21,6 +23,9 @@ namespace AutoVersionUpdater
     [NamedParameter("assembly", typeof(bool), false, "If true will increment the assembly version. Default is true.")]
     [NamedParameter("package", typeof(bool), false, "If true will increment the package version. Default is true.")]
     [NamedParameter("version", typeof(bool), false, "If true will increment the version. Default is true.")]
+    [NamedParameter("retry", typeof(bool), false, "If true will retry to save the project if it is locked by another process. Default is false.")]
+    [NamedParameter("retrycount", typeof(bool), false, "Specifies the number of times to retry. Default is 3.")]
+    [NamedParameter("retrydelay", typeof(int), false, "Species the retry delay time in milliseconds before retrying. Default is 50ms.")]
     public class VersionUpdaterCommand : ICommandPlugin
     {
         public string Name
@@ -37,7 +42,7 @@ namespace AutoVersionUpdater
             {
                 throw new ArgumentNullException(nameof(args));
             }
-         
+
             // validate command node name is expected
             if (!args.Command.Name.Equals(this.Name, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -58,6 +63,9 @@ namespace AutoVersionUpdater
             var updatePackage = args.GetParameter("package", true);
             var updateVersion = args.GetParameter("version", true);
             var useCurrentDate = args.GetParameter("usecurrentdate", true);
+            var retry = args.GetParameter("retry", false);
+            var retryCount = retry ? args.GetParameter("retrycount", 3) : 1;
+            var retryDelay = args.GetParameter("retrydelay", 50);
 
             // read project file
             XDocument doc;
@@ -116,7 +124,7 @@ namespace AutoVersionUpdater
 
                 packageVersion.Value = result;
             }
-            
+
             // change version info
             if (updateVersion && version != null)
             {
@@ -131,13 +139,35 @@ namespace AutoVersionUpdater
             }
 
             // save project file
-            try
+
+            // retry x number of times waiting x number os milli seconds between each time
+            var wasSaved = false;
+            Exception lastError = null;
+            for (int i = 0; i < retryCount; i++)
             {
-                doc.Save(projectFilePath);
+                try
+                {
+                    using (var fs = new FileStream(projectFilePath, FileMode.Truncate, FileAccess.Write, FileShare.None))
+                    {
+                        doc.Save(fs);
+                        wasSaved = true;
+                        break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    lastError = ex;
+                }
+
+                if (retry)
+                {
+                    Thread.Sleep(retryDelay);
+                }
             }
-            catch (Exception ex)
+
+            if (!wasSaved)
             {
-                args.Result = RunResult.Errored(ex);
+                args.Result = RunResult.Errored(lastError);
                 return;
             }
 

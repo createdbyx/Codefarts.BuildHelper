@@ -14,6 +14,9 @@ Automatically updates the versions in a project file using the format YEAR.MONTH
 * package - If true will increment the package version. Default is true.
 * version - If true will increment the version. Default is true.
 * usecurrentdate = If true will set the year/month/day values to current date. Default is true.
+* retry = If true will retry to save the project if it is locked by another process. Default is false.
+* retrycount = Specifies the number of times to retry. Default is 3.
+* retrydelay = Species the retry delay time in milliseconds before retrying. Default is 50ms.
 
 ### Requirements
 
