@@ -154,7 +154,7 @@ public static class CommandDataExtensionMethods
         IStatusReporter status)
     {
         command = command ?? throw new ArgumentNullException(nameof(command));
-        variables = variables ?? throw new ArgumentNullException(nameof(variables));
+      //  variables = variables ?? throw new ArgumentNullException(nameof(variables));
         plugin = plugin ?? throw new ArgumentNullException(nameof(plugin));
 
         // setup executing args
