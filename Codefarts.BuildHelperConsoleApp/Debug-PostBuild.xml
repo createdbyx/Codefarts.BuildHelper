@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<inline>
+<build>
     <deploy path="E:\BuildHelper\" clean="true" >
         <condition value1="$(Application)" operator="!=" value2="buildhelper.exe" ignorecase="true" />
     </deploy>
-</inline>
+</build>

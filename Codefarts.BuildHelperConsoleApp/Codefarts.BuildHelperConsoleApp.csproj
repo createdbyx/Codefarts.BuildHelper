@@ -1,5 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
@@ -9,15 +9,12 @@
     <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="Options.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Codefarts.DependenceyInjection" Version="2022.4.22.22" />
     <PackageReference Include="Codefarts.IoC" Version="2023.1.12.38" />
@@ -25,14 +22,20 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="7.0.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Codefarts.BuildHelperLib\Codefarts.BuildHelperLib.csproj" />
+    <ProjectReference Include="..\Codefarts.XMLFileConfigManager\Codefarts.XMLFileConfigManager.csproj" />
     <ProjectReference Include="..\Codefats.BuildHelper.ConsoleReporter\Codefats.BuildHelper.ConsoleReporter.csproj" />
     <ProjectReference Include="..\Importers\Codefarts.XmlCommandFileReader\Codefarts.XmlCommandFileReader.csproj" />
   </ItemGroup>
-   
+  <ItemGroup>
+    <None Remove="config.xml" />
+    <Content Include="config.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="powershell.exe -ExecutionPolicy Unrestricted -noprofile -nologo -noninteractive -Command .'$(ProjectDir)deploy.ps1'" />
   </Target>

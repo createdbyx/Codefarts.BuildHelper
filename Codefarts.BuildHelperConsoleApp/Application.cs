@@ -33,50 +33,32 @@ public class Application
         }
 
         // load command plugins
-        var pluginLoader = this.ioc.Resolve<PluginLoader>();
-        var appPath = Process.GetCurrentProcess().MainModule.FileName;
-        var appDir = Path.GetDirectoryName(appPath);
-        var pluginFolder = Path.Combine(appDir, "Plugins");
+        var pluginManager = this.ioc.Resolve<IPluginManager>();
 
-        pluginLoader.PluginFolder = pluginFolder;
-        var commandPlugins = pluginLoader.Load();
-
-        // read build file
-        var variables = new VariablesDictionary();
-        variables["Application"] = Path.GetFileName(appPath);
+        // get plugins
+        var commandPlugins = new PluginCollection(pluginManager.Plugins);
 
         // Create and run a command importer 
         var importer = this.ioc.Resolve<ICommandImporter>();
-        var result = importer.Run();
+        var importResults = importer.Run();
 
-        if (result.Error != null)
+        if (importResults.Error != null)
             //if (!buildFileReader.TryReadBuildFile(buildFile, out rootCommand))
         {
-            status?.Report($"ERROR: Importing commands.\r\n" + result.Error);
-            return result;
+            status?.Report($"ERROR: Importing commands.\r\n" + importResults.Error);
+            return importResults;
         }
 
-        var rootCommand = result.ReturnValue as CommandData;
+        var rootCommand = importResults.ReturnValue as CommandData;
         if (rootCommand == null)
         {
             return RunResult.Errored(new NullReferenceException("Import was successfull but the importer return a null or invalid return value. " +
-                                                                $"Value: {result.ReturnValue}"));
+                                                                $"Value: {importResults.ReturnValue}"));
         }
 
-        var buildEventValue = variables.GetValue<string>("BuildEvent", null);
-        this.ReportHeader(status, $"START {buildEventValue} BUILD");
-        var args = rootCommand.Run(variables, commandPlugins, status);
-        this.ReportHeader(status, $"END {buildEventValue} BUILD");
-
+       // var variables = new VariablesDictionary();
+        var args = rootCommand.Run(null, commandPlugins, status);
         return args.Result;
     }
 
-    private void ReportHeader(IStatusReporter status, string message, params object[] args)
-    {
-        var formattedString = string.Format(message, args);
-        var maxLen = Math.Max(formattedString.Length + 10, 100);
-        var headPartLen = (maxLen - (formattedString.Length + 2)) / 2;
-        var headerChars = new string('#', headPartLen);
-        status?.Report(string.Format($"{headerChars} {message} {headerChars}", args));
-    }
 }
