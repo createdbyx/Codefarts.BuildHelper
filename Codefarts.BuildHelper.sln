@@ -16,6 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codefarts.BuildHelperConsol
 		{1A3671E3-5576-4FDC-A7D3-BA1BCBA7B444} = {1A3671E3-5576-4FDC-A7D3-BA1BCBA7B444}
 		{43D61946-9C29-4185-85A8-ADC82F089537} = {43D61946-9C29-4185-85A8-ADC82F089537}
 		{6FECB241-A55A-42B6-A853-31977CD930D4} = {6FECB241-A55A-42B6-A853-31977CD930D4}
+		{8A6B6763-B9AD-4D08-865F-5850630F34E2} = {8A6B6763-B9AD-4D08-865F-5850630F34E2}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildHelperTests", "BuildHelperTests\BuildHelperTests.csproj", "{DA0EDD97-5ADA-4298-BAA4-B8483D24BB72}"
@@ -39,7 +40,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoVersionUpdater", "Plugi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConditionCommand", "Plugins\ConditionCommand\ConditionCommand.csproj", "{D5CC5013-F220-4841-9064-6A46C93179B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codefats.BuildHelper.ConsoleReporter", "Codefats.BuildHelper.ConsoleReporter\Codefats.BuildHelper.ConsoleReporter.csproj", "{7F3E094E-370E-4526-9524-7ABBFCC7BEB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codefarts.BuildHelper.ConsoleReporter", "Codefarts.BuildHelper.ConsoleReporter\Codefarts.BuildHelper.ConsoleReporter.csproj", "{7F3E094E-370E-4526-9524-7ABBFCC7BEB8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatusCommand", "Plugins\StatusCommand\StatusCommand.csproj", "{8723AC2E-128F-47C3-9B1F-8A71E5F646EB}"
 EndProject
@@ -49,11 +50,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcellModelBuilder", "Plugi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetadataGenerator", "Plugins\MetadataGenerator\MetadataGenerator.csproj", "{10A27035-B196-43CA-8ABB-263376B9D574}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codefarts.XmlCommandFileReader", "Importers\Codefarts.XmlCommandFileReader\Codefarts.XmlCommandFileReader.csproj", "{4FA81CFA-3E43-468A-826A-E74100D89A61}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codefarts.BuildHelper.XmlCommandFileReader", "Importers\Codefarts.BuildHelper.XmlCommandFileReader\Codefarts.BuildHelper.XmlCommandFileReader.csproj", "{4FA81CFA-3E43-468A-826A-E74100D89A61}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildCommand", "Plugins\BuildCommand\BuildCommand.csproj", "{6FECB241-A55A-42B6-A853-31977CD930D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codefarts.XMLFileConfigManager", "Codefarts.XMLFileConfigManager\Codefarts.XMLFileConfigManager.csproj", "{92A5A73E-3195-423B-A911-22D8FAFD1106}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codefarts.BuildHelper.XMLFileConfigManager", "Codefarts.BuildHelper.XMLFileConfigManager\Codefarts.BuildHelper.XMLFileConfigManager.csproj", "{92A5A73E-3195-423B-A911-22D8FAFD1106}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerShellCommand", "Plugins\PowerShellCommand\PowerShellCommand.csproj", "{8A6B6763-B9AD-4D08-865F-5850630F34E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codefarts.BuildHelper.StringBuilderReporter", "StatusReporters\Codefarts.BuildHelper.StringBuilderReporter\Codefarts.BuildHelper.StringBuilderReporter.csproj", "{90BBF2B9-3527-466B-98A1-8199E80DB792}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -125,6 +130,14 @@ Global
 		{92A5A73E-3195-423B-A911-22D8FAFD1106}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92A5A73E-3195-423B-A911-22D8FAFD1106}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92A5A73E-3195-423B-A911-22D8FAFD1106}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A6B6763-B9AD-4D08-865F-5850630F34E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A6B6763-B9AD-4D08-865F-5850630F34E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A6B6763-B9AD-4D08-865F-5850630F34E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A6B6763-B9AD-4D08-865F-5850630F34E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90BBF2B9-3527-466B-98A1-8199E80DB792}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90BBF2B9-3527-466B-98A1-8199E80DB792}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90BBF2B9-3527-466B-98A1-8199E80DB792}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90BBF2B9-3527-466B-98A1-8199E80DB792}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -141,6 +154,8 @@ Global
 		{43D61946-9C29-4185-85A8-ADC82F089537} = {E82CBFB0-7146-4DF0-85EC-C61EC9B2DCE8}
 		{10A27035-B196-43CA-8ABB-263376B9D574} = {E82CBFB0-7146-4DF0-85EC-C61EC9B2DCE8}
 		{6FECB241-A55A-42B6-A853-31977CD930D4} = {E82CBFB0-7146-4DF0-85EC-C61EC9B2DCE8}
+		{8A6B6763-B9AD-4D08-865F-5850630F34E2} = {E82CBFB0-7146-4DF0-85EC-C61EC9B2DCE8}
+		{90BBF2B9-3527-466B-98A1-8199E80DB792} = {C1967FAA-FA70-442E-A53D-85024CE241BF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50DE8B4C-CE16-4FE9-999D-743074D01A5C}

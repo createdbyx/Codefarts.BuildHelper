@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Codefarts.BuildHelper.ConsoleReporter" Version="2023.3.10.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
     <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
@@ -37,12 +38,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Codefarts.BuildHelperConsoleApp\Codefarts.BuildHelperConsoleApp.csproj" />
-    <ProjectReference Include="..\Codefats.BuildHelper.ConsoleReporter\Codefats.BuildHelper.ConsoleReporter.csproj" />
     <ProjectReference Include="..\Plugins\AutoVersionUpdater\AutoVersionUpdater.csproj" />
     <ProjectReference Include="..\Plugins\BuildCommand\BuildCommand.csproj" />
     <ProjectReference Include="..\Plugins\ConditionCommand\ConditionCommand.csproj" />
     <ProjectReference Include="..\Plugins\CopyDirCommand\CopyDirCommand.csproj" />
     <ProjectReference Include="..\Plugins\ExcellModelBuilder\ExcellModelBuilder.csproj" />
+    <ProjectReference Include="..\Plugins\PowerShellCommand\PowerShellCommand.csproj" />
     <ProjectReference Include="..\Plugins\PurgeCommand\PurgeCommand.csproj" />
     <ProjectReference Include="..\Plugins\ReferencesCommands\ReferencesCommands.csproj" />
     <ProjectReference Include="..\Plugins\StatusCommand\StatusCommand.csproj" />

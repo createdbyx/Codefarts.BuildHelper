@@ -5,15 +5,13 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Xml;
 using Codefarts.BuildHelper;
 using Codefarts.DependencyInjection;
 using Codefarts.IoC;
-using Codefarts.XMLFileConfigManager;
-using Codefats.BuildHelper.ConsoleReporter;
+using Codefarts.BuildHelper.XMLFileConfigManager;
+using Codefarts.BuildHelper.ConsoleReporter;
 
 namespace Codefarts.BuildHelperConsoleApp;
 
@@ -63,7 +61,7 @@ static class Program
         var result = app.Run();
         if (result.Error != null)
         {
-            Environment.ExitCode = 2;
+           // Environment.ExitCode = 1;
             if (!silentMode)
             {
                 Console.Write(result.Error.ToString());
@@ -88,7 +86,7 @@ static class Program
         }
 
         // file does not seem to exist
-        Environment.ExitCode = 1;
+       // Environment.ExitCode = 1;
         if (!silentMode)
         {
             var text = buildFile ? "Build" : "Project";
