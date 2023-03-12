@@ -10,7 +10,6 @@ namespace Codefarts.BuildHelper
 {
     using System;
     using System.IO;
-    using System.Linq;
 
     [NamedParameter("source", typeof(string), true, "The source file assembly to extract the metadata from.")]
     [NamedParameter("destination", typeof(string), true, "The destination file where the metadata will be written to.")]

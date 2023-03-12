@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Xml.Linq;
-using System.Xml.XPath;
 using Codefarts.BuildHelper;
 using Codefarts.DependencyInjection;
 

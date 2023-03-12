@@ -5,7 +5,6 @@
 // </copyright>
 
 using System.Data;
-using System.Net;
 using System.Text;
 using Codefarts.BuildHelper.Exceptions;
 using ExcelDataReader;
