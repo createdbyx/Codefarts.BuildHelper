@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>default</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>2023.3.10.3</Version>
+    <Authors>Dean Lunz</Authors>
+    <Copyright>Codefarts</Copyright>
+    <PackageProjectUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</RepositoryUrl>
+    <Company>Codefarts</Company>
+    <AssemblyVersion>2023.3.10.3</AssemblyVersion>
+    <FileVersion>2023.3.10.3</FileVersion>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <RootNamespace>Codefarts.XmlCommandFileReader</RootNamespace>
+    <RepositoryType>C#</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <DebugSymbols>true</DebugSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Codefarts.BuildHelperLib" Version="1.0.0" />
+    <PackageReference Include="Codefarts.DependenceyInjection" Version="2022.4.22.22" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="C:\Users\Dean\.nuget\packages\codefarts.dependenceyinjection\2022.4.22.22\contentFiles\any\net6.0\stylecop.json" />
+    <AdditionalFiles Include="C:\Users\Dean\.nuget\packages\codefarts.dependenceyinjection\2022.4.22.22\contentFiles\any\net6.0\stylecop.json" />
+  </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="buildhelper &quot;-b:$(ProjectDir)$(ConfigurationName)-PreBuild.xml&quot; &quot;-p:$(ProjectPath)&quot; &quot;-tf:$(TargetFramework)&quot;" />
+  </Target>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="buildhelper &quot;-b:$(ProjectDir)$(ConfigurationName)-PostBuild.xml&quot; &quot;-p:$(ProjectPath)&quot; &quot;-tf:$(TargetFramework)&quot;" />
+  </Target>
+</Project>

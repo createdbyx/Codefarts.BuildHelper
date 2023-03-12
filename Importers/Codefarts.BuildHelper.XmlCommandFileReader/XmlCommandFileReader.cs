@@ -5,11 +5,6 @@
 // </copyright>
 
 using Codefarts.DependencyInjection;
-
-namespace Codefarts.BuildHelperConsoleApp;
-
-using System;
-using System.IO;
 using System.Xml.Linq;
 using Codefarts.BuildHelper;
 
@@ -88,6 +83,7 @@ public class XmlCommandFileReader : ICommandImporter
     {
         var node = this.ioc.Resolve<CommandData>();
         node.Name = xElement.Name.LocalName;
+        node.Parameters["Value"] = xElement.Value;
         foreach (var attribute in xElement.Attributes())
         {
             node.Parameters[attribute.Name.LocalName] = attribute.Value;
