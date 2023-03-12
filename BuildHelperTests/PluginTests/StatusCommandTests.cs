@@ -5,15 +5,13 @@
 // </copyright>
 
 using BuildHelperTests.Mocks;
+using Codefarts.BuildHelper.ConsoleReporter;
 
 namespace BuildHelperTests
 {
     using System;
-    using System.IO;
-    using System.Linq;
     using System.Xml.Linq;
     using Codefarts.BuildHelper;
-    using Codefats.BuildHelper.ConsoleReporter;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass, TestCategory("Status Command")]

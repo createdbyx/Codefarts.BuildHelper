@@ -4,6 +4,7 @@
 // http://www.codefarts.com
 // </copyright>
 
+using Codefarts.BuildHelper.ConsoleReporter;
 using Codefarts.BuildHelper.Exceptions;
 
 namespace BuildHelperTests
@@ -13,7 +14,6 @@ namespace BuildHelperTests
     using System.Linq;
     using System.Xml.Linq;
     using Codefarts.BuildHelper;
-    using Codefats.BuildHelper.ConsoleReporter;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass, TestCategory("CopyDir Command")]

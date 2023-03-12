@@ -4,14 +4,13 @@
 // http://www.codefarts.com
 // </copyright>
 
+using Codefarts.BuildHelper.ConsoleReporter;
 using Codefarts.BuildHelper.Exceptions;
 
 namespace BuildHelperTests
 {
     using System;
-    using System.Collections.Generic;
     using Codefarts.BuildHelper;
-    using Codefats.BuildHelper.ConsoleReporter;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass, TestCategory("Variable Tests")]

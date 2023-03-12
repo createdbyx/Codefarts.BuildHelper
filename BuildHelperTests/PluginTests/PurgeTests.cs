@@ -4,7 +4,7 @@
 // http://www.codefarts.com
 // </copyright>
 
-using System.Runtime.Loader;
+using Codefarts.BuildHelper.ConsoleReporter;
 using Codefarts.BuildHelper.Exceptions;
 
 namespace BuildHelperTests
@@ -13,7 +13,6 @@ namespace BuildHelperTests
     using System.IO;
     using System.Xml.Linq;
     using Codefarts.BuildHelper;
-    using Codefats.BuildHelper.ConsoleReporter;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass, TestCategory("Purge Command")]

@@ -5,7 +5,6 @@
 // </copyright>
 
 using System.Runtime.InteropServices;
-using System.Xml.Linq;
 
 namespace Codefarts.BuildHelperConsoleApp;
 

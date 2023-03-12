@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Xml.Linq;
 using BuildHelperTests.Mocks;
 using Codefarts.BuildHelper;

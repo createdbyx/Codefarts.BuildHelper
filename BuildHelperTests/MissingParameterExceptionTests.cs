@@ -9,7 +9,6 @@ using Codefarts.BuildHelper.Exceptions;
 namespace BuildHelperTests
 {
     using System;
-    using Codefarts.BuildHelper;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]

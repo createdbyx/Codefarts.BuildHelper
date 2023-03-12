@@ -105,7 +105,7 @@ public class CommandData : INotifyPropertyChanged
                 this.OnPropertyChanged(nameof(this.Name));
             }
         }
-    }
+    } 
 
     /// <summary>
     /// Assigns the parent to the internal <see cref="parent"/> field.

@@ -3,8 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using Codefarts.BuildHelper;
+using Codefarts.BuildHelper.ConsoleReporter;
 using Codefarts.BuildHelper.Exceptions;
-using Codefats.BuildHelper.ConsoleReporter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BuildHelperTests;

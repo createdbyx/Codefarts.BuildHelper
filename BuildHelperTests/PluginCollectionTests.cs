@@ -6,7 +6,6 @@
 
 namespace BuildHelperTests
 {
-    using System;
     using System.Collections.Generic;
     using BuildHelperTests.Mocks;
     using Codefarts.BuildHelper;

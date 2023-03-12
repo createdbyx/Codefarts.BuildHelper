@@ -5,8 +5,6 @@
 // </copyright>
 
 using System;
-using System.Diagnostics;
-using System.IO;
 using Codefarts.BuildHelper;
 using Codefarts.DependencyInjection;
 
@@ -56,9 +54,8 @@ public class Application
                                                                 $"Value: {importResults.ReturnValue}"));
         }
 
-       // var variables = new VariablesDictionary();
+        // var variables = new VariablesDictionary();
         var args = rootCommand.Run(null, commandPlugins, status);
         return args.Result;
     }
-
 }

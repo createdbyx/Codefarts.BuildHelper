@@ -4,6 +4,7 @@
 // http://www.codefarts.com
 // </copyright>
 
+using AutoVersionUpdater;
 using Codefarts.BuildHelper.Exceptions;
 
 namespace BuildHelperTests
@@ -11,7 +12,6 @@ namespace BuildHelperTests
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using AutoVersionUpdater;
     using Codefarts.BuildHelper;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 

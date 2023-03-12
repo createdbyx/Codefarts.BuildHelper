@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using BuildHelperTests.Mocks;
 using Codefarts.BuildHelper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
