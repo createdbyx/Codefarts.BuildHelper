@@ -12,6 +12,7 @@ namespace BuildCommand;
 // [NamedParameter("allconditions", typeof(bool), false, "Specifies weather or not all conditions must be satisfied. Default is false.")]
 // [NamedParameter("ignoreconditions", typeof(bool), false, "Specifies weather to ignore conditions. Default is false.")]
 // [NamedParameter("test", typeof(bool), false, "Specifies weather to run in test mode. Default is false.")]
+[NamedParameter("newinstance", typeof(bool), false, "Specifies weather to start a new instance of build helper. Default is false.")]
 [NamedParameter("haltonerror", typeof(bool), true, "Specifies weather to stop execution if a command returns an error. Default is true.")]
 public class BuildCommand : ICommandPlugin
 {
