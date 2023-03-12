@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <LangVersion>default</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>2023.3.10.16</Version>
+    <Authors>Dean Lunz</Authors>
+    <Copyright>Codefarts</Copyright>
+    <RepositoryUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</RepositoryUrl>
+    <RepositoryType>C#</RepositoryType>
+    <Company>Codefarts</Company>
+    <AssemblyVersion>2023.3.10.16</AssemblyVersion>
+    <FileVersion>2023.3.10.16</FileVersion>
+    <PackageProjectUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</PackageProjectUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <DebugSymbols>true</DebugSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="C:\Users\Dean\.nuget\packages\codefarts.dependenceyinjection\2022.4.22.22\contentFiles\any\net6.0\stylecop.json">
+      <Link>stylecop.json</Link>
+    </AdditionalFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Codefarts.BuildHelperLib" Version="2023.3.10.5" />
+    <PackageReference Include="Codefarts.DependenceyInjection" Version="2022.4.22.22" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="buildhelper &quot;-b:$(ProjectDir)$(ConfigurationName)-PreBuild.xml&quot; &quot;-p:$(ProjectPath)&quot; &quot;-tf:$(TargetFramework)&quot;" />
+  </Target>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="buildhelper &quot;-b:$(ProjectDir)$(ConfigurationName)-PostBuild.xml&quot; &quot;-p:$(ProjectPath)&quot; &quot;-tf:$(TargetFramework)&quot;" />
+  </Target>
+</Project>

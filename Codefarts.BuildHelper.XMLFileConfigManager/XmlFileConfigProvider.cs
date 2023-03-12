@@ -1,10 +1,8 @@
 ﻿using System.Collections.Concurrent;
-using System.Security.Principal;
 using System.Xml.Linq;
-using Codefarts.BuildHelper;
 using Codefarts.DependencyInjection;
 
-namespace Codefarts.XMLFileConfigManager;
+namespace Codefarts.BuildHelper.XMLFileConfigManager;
 
 public class XmlFileConfigProvider : IConfigurationProvider
 {
