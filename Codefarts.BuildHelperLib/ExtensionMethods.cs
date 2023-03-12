@@ -4,8 +4,6 @@
 // http://www.codefarts.com
 // </copyright>
 
-using System.Runtime.InteropServices;
-
 namespace Codefarts.BuildHelper;
 
 using System;

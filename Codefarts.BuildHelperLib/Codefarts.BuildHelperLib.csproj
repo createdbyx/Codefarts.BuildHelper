@@ -1,29 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <RootNamespace>Codefarts.BuildHelper</RootNamespace>
-    <AssemblyVersion>2021.1.25.0</AssemblyVersion>
-    <FileVersion>2021.1.25.0</FileVersion>
+    <AssemblyVersion>2023.3.10.9</AssemblyVersion>
+    <FileVersion>2023.3.10.9</FileVersion>
     <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>2023.3.10.9</Version>
+    <Authors>Dean Lunz</Authors>
+    <Copyright>Codefarts</Copyright>
+    <PackageProjectUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</RepositoryUrl>
+    <RepositoryType>C#</RepositoryType>
+    <Company>Codefarts</Company>
+    <IncludeSymbols>true</IncludeSymbols>
+    <DebugSymbols>true</DebugSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <Compile Remove="ObservableDictionary.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Remove="OutputEventArgs.cs" />
     <Compile Remove="BuildHelper.cs" />
@@ -31,5 +38,10 @@
     <Compile Remove="NotUsed\OutputEventArgs.cs" />
     <Compile Remove="NotUsed\BuildHelper.cs" />
   </ItemGroup>
- 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="buildhelper &quot;-b:$(ProjectDir)$(ConfigurationName)-PreBuild.xml&quot; &quot;-p:$(ProjectPath)&quot; &quot;-tf:$(TargetFramework)&quot;" />
+  </Target>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="buildhelper &quot;-b:$(ProjectDir)$(ConfigurationName)-PostBuild.xml&quot; &quot;-p:$(ProjectPath)&quot; &quot;-tf:$(TargetFramework)&quot;" />
+  </Target>
 </Project>

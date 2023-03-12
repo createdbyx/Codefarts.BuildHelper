@@ -1,6 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<inline>
-<!--    <deploy path="P:\Codefarts Assemblies\$(ProjectName)\Latest\$(ConfigurationName)\" clean="true" message="Deploying to latest folder" >-->
-<!--    </deploy>-->
-<!--    <deploy path="E:\BuildHelper\" clean="false" />-->
-</inline>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<build>
+    <copydir source="$(ProjectDir)$(OutDir)..\" destination="P:\Codefarts Nuget Packages\" clean="false"
+             allconditions="false" subfolders="false">
+        <condition value=".nupkg" operator="endswith" ignorecase="true"/>
+        <condition value=".snupkg" operator="endswith" ignorecase="true"/>
+    </copydir>
+
+    <updateversion ProjectFileName="$(ProjectPath)" retry="true" retrycount="50"/>
+</build>
