@@ -221,6 +221,11 @@ public class PluginManager : IPluginManager
     {
         public string File;
         public string Type;
+
+        public override string ToString()
+        {
+            return $"{this.Type} from {this.File}";
+        }
     }
 
     private IEnumerable<Entry> FindPluginTypes(IEnumerable<string> asmFiles)
@@ -279,12 +284,12 @@ public class PluginManager : IPluginManager
 
     private Assembly? ResolveAssemblies(AssemblyLoadContext context, AssemblyName assemblyName)
     {
-        if (!Directory.Exists(this.pluginFolder))
-        {
-            return null;
-        }
+        // if (!Directory.Exists(this.pluginFolder))
+        // {
+        //     return null;
+        // }
 
-        var fileMatches = Directory.GetFiles(this.pluginFolder, assemblyName.Name + ".dll", SearchOption.AllDirectories);
+        var fileMatches = Directory.GetFiles(this.applicationPath, assemblyName.Name + ".dll", SearchOption.AllDirectories);
         var assemblyPath = fileMatches.FirstOrDefault();
         return !string.IsNullOrWhiteSpace(assemblyPath) && File.Exists(assemblyPath) ? context.LoadFromAssemblyPath(assemblyPath) : null;
     }
