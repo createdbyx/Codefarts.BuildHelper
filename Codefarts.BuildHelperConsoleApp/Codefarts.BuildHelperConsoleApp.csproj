@@ -16,11 +16,8 @@
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Codefarts.BuildHelper.ConsoleReporter" Version="2023.3.10.4" />
-    <PackageReference Include="Codefarts.BuildHelper.XmlCommandFileReader" Version="1.0.0" />
-    <PackageReference Include="Codefarts.BuildHelper.XMLFileConfigManager" Version="2023.3.10.12" />
-    <PackageReference Include="Codefarts.DependenceyInjection" Version="2022.4.22.22" />
-    <PackageReference Include="Codefarts.IoC" Version="2023.1.12.38" />
+    <PackageReference Include="Codefarts.DependenceyInjection" Version="2023.1.30.5" />
+    <PackageReference Include="Codefarts.IoC" Version="2023.2.12.222" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -32,6 +29,11 @@
     <Content Include="config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Codefarts.BuildHelper.ConsoleReporter\Codefarts.BuildHelper.ConsoleReporter.csproj" />
+    <ProjectReference Include="..\Codefarts.BuildHelper.XMLFileConfigManager\Codefarts.BuildHelper.XMLFileConfigManager.csproj" />
+    <ProjectReference Include="..\Importers\Codefarts.BuildHelper.XmlCommandFileReader\Codefarts.BuildHelper.XmlCommandFileReader.csproj" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="powershell.exe -ExecutionPolicy Unrestricted -noprofile -nologo -noninteractive -Command .'$(ProjectDir)deploy.ps1'" />
