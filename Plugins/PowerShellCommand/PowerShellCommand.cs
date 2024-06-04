@@ -5,6 +5,7 @@
 // </copyright>
 
 using System.Diagnostics;
+using System.Text;
 
 namespace PowerShellCommand;
 
@@ -15,6 +16,7 @@ using Codefarts.BuildHelper;
 /// Provides a command for running powershell scripts.
 /// </summary>
 [NamedParameter("file", typeof(string), false, "Specifies the location of a powershell script.")]
+[NamedParameter("wait", typeof(bool), false, "Specifies weather to wait for the powershell script to finish executing. Default is true.")]
 public class PowerShellCommand : ICommandPlugin
 {
     public string Name
@@ -40,7 +42,16 @@ public class PowerShellCommand : ICommandPlugin
         }
 
         var scriptFile = args.GetParameter("file", default(string)).ReplaceVariableStrings(args.Variables);
-        var buildFile = args.GetVariable("BuildFile", default(string));
+        var waitForCompletion = args.GetParameter("wait", default(string)).ReplaceVariableStrings(args.Variables);
+        var buildFile = args.GetVariable("BuildFile", default(string)).ReplaceVariableStrings(args.Variables);
+
+        // validate wait parameter value
+        var validWaitValues = new[] { "true", "yes", "false", "no" };
+        if (!string.IsNullOrWhiteSpace(waitForCompletion) && !validWaitValues.Contains(waitForCompletion))
+        {
+            args.Result = RunResult.Errored(new ArgumentException($"'wait' parameter is not valid. Command name: {args.Command.Name}"));
+            return;
+        }
 
         var createdTempFile = false;
 
@@ -71,7 +82,14 @@ public class PowerShellCommand : ICommandPlugin
         startInfo.RedirectStandardError = true;
         startInfo.WorkingDirectory = Path.GetDirectoryName(buildFile);
         var process = Process.Start(startInfo);
-        process.WaitForExit();
+
+
+        // check if wait is null or contains valid values otherwise dont wait
+        var validTrueWaitValues = new[] { "true", "yes" };
+        if (string.IsNullOrWhiteSpace(waitForCompletion) || validTrueWaitValues.Contains(waitForCompletion.Trim().ToLowerInvariant()))
+        {
+            process.WaitForExit();
+        }
 
         // clean up script file
         if (createdTempFile)

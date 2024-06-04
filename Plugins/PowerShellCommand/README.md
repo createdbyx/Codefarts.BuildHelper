@@ -12,6 +12,7 @@ Automatically updates the versions in a project file using the format YEAR.MONTH
 ### Arguments
  
 * file - Specifies the location of a powershell script.
+* wait - Specifies weather to wait for the powershell script to finish executing. Default is true. Any value other then true or yes will be interpreted as false.
 
 ### Requirements
 
