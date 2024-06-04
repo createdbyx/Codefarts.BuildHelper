@@ -32,7 +32,12 @@ static class Program
         var configFile = GetArgument(args, "-cf:") ?? Path.Combine(appDir, "config.xml");
 
         // validate files exist
-        if (IsFileMissing(buildFile, true, silentMode) || IsFileMissing(projectFile, false, silentMode))
+        if (IsFileMissing(buildFile, true, silentMode))
+        {
+            return;
+        }
+
+        if (IsFileMissing(projectFile, false, silentMode))
         {
             return;
         }
@@ -40,6 +45,7 @@ static class Program
         // do initialization
         var ioc = new DependencyInjectorShim(new Container());
         ioc.Register<IDependencyInjectionProvider>(() => ioc);
+        ioc.Register<IStatusReporter, ConsoleStatusReporter>();
         var xmlConfigProvider = ioc.Resolve<XmlFileConfigProvider>();
 
         xmlConfigProvider.Load(configFile);
@@ -49,9 +55,8 @@ static class Program
         xmlConfigProvider.SetValue("targetframework", targetFramework);
         xmlConfigProvider.SetValue("applicationpath", appPath);
         xmlConfigProvider.SetValue("configfile", configFile);
-        
+
         ioc.Register<IConfigurationProvider>(() => xmlConfigProvider);
-        ioc.Register<IStatusReporter, ConsoleStatusReporter>();
         ioc.Register<ICommandImporter>(() => new XmlCommandFileReader(ioc));
         var plugManager = ioc.Resolve<PluginManager>();
         ioc.Register<IPluginManager>(() => plugManager);
@@ -61,7 +66,7 @@ static class Program
         var result = app.Run();
         if (result.Error != null)
         {
-           // Environment.ExitCode = 1;
+            // Environment.ExitCode = 1;
             if (!silentMode)
             {
                 Console.Write(result.Error.ToString());
@@ -78,6 +83,11 @@ static class Program
 
     private static bool IsFileMissing(string filename, bool buildFile, bool silentMode)
     {
+        if (string.IsNullOrWhiteSpace(filename))
+        {
+            return true;
+        }
+
         // if file exists we are good to exit
         var buildFileInfo = new FileInfo(filename);
         if (buildFileInfo.Exists)
@@ -86,7 +96,7 @@ static class Program
         }
 
         // file does not seem to exist
-       // Environment.ExitCode = 1;
+        // Environment.ExitCode = 1;
         if (!silentMode)
         {
             var text = buildFile ? "Build" : "Project";
