@@ -12,7 +12,6 @@ namespace Codefarts.BuildHelper
     [NamedParameter("type", typeof(ReportStatusType), false, "The message type. Default is message.")]
     [NamedParameter("category", typeof(string), false, "The message category. Default is null.")]
     [NamedParameter("progress", typeof(float), false, "The progress being reported. Default is zero.")]
-    [NamedParameter(null, null)]
     public class StatusCommand : ICommandPlugin
     {
         private IStatusReporter status;
