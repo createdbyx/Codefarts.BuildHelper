@@ -71,6 +71,8 @@ public class BuildCommand : ICommandPlugin
 
         if (!TryGetConfigValue(args, config, "filename", out var buildFile)) return;
         if (!TryGetConfigValue(args, config, "projectfile", out var projectFile)) return;
+     
+     // TODO:target framework should come from parsing the project file
         if (!TryGetConfigValue(args, config, "targetframework", out var targetFramework)) return;
 
         // read the project file once for it's info
