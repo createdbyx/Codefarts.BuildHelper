@@ -26,7 +26,6 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat> </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Codefarts.BuildHelperLib" Version="1.0.0" />
       <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -37,6 +36,10 @@
       <AdditionalFiles Include="..\..\stylecop.json">
         <Link>stylecop.json</Link>
       </AdditionalFiles>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Codefarts.BuildHelperLib\Codefarts.BuildHelperLib.csproj" />
     </ItemGroup>
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
         <Exec Command="buildhelper &quot;-b:$(ProjectDir)$(ConfigurationName)-PreBuild.xml&quot; &quot;-p:$(ProjectPath)&quot; &quot;-tf:$(TargetFramework)&quot;" />

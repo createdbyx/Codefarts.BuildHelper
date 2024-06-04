@@ -11,6 +11,10 @@ using Codefarts.BuildHelper;
 
 public class ConsoleStatusReporter : IStatusReporter
 {
+    public ConsoleStatusReporter()
+    {
+    }
+
     public string HeaderPrefix { get; set; }
 
     public void Report(string message, ReportStatusType type, string category, float progress)

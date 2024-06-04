@@ -5,21 +5,20 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2023.3.12.0</Version>
+    <Version>2023.5.1.2</Version>
     <Authors>Dean Lunz</Authors>
     <Copyright>Codefarts</Copyright>
     <RepositoryUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</RepositoryUrl>
     <RepositoryType>C#</RepositoryType>
     <Company>Codefarts</Company>
-    <AssemblyVersion>2023.3.12.0</AssemblyVersion>
-    <FileVersion>2023.3.12.0</FileVersion>
+    <AssemblyVersion>2023.5.1.2</AssemblyVersion>
+    <FileVersion>2023.5.1.2</FileVersion>
     <PackageProjectUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</PackageProjectUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <DebugSymbols>true</DebugSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Codefarts.BuildHelperLib" Version="1.0.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -29,6 +28,9 @@
     <AdditionalFiles Include="..\stylecop.json">
       <Link>stylecop.json</Link>
     </AdditionalFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Codefarts.BuildHelperLib\Codefarts.BuildHelperLib.csproj" />
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="buildhelper &quot;-b:$(ProjectDir)$(ConfigurationName)-PreBuild.xml&quot; &quot;-p:$(ProjectPath)&quot; &quot;-tf:$(TargetFramework)&quot;" />

@@ -2,13 +2,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Codefarts.BuildHelper</RootNamespace>
-    <AssemblyVersion>2023.3.10.9</AssemblyVersion>
-    <FileVersion>2023.3.10.9</FileVersion>
+    <AssemblyVersion>2023.5.1.5</AssemblyVersion>
+    <FileVersion>2023.5.1.5</FileVersion>
     <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2023.3.10.9</Version>
+    <Version>2023.5.1.5</Version>
     <Authors>Dean Lunz</Authors>
     <Copyright>Codefarts</Copyright>
     <PackageProjectUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</PackageProjectUrl>
