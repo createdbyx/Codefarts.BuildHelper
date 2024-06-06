@@ -9,7 +9,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Codefarts.AppCore.Wpf" Version="2024.1.26.1" />
+      <PackageReference Include="Codefarts.BuildHelperLib" Version="2024.6.4.1" />
       <PackageReference Include="Codefarts.DependencyInjection.CodefartsIoc" Version="2023.5.25.12" />
+      <PackageReference Include="Codefarts.WPFCommon.Commands" Version="2024.6.3.7" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Views\" />
     </ItemGroup>
 
 </Project>
