@@ -50,7 +50,7 @@ public class Application
         var rootCommand = importResults.ReturnValue as CommandData;
         if (rootCommand == null)
         {
-            return RunResult.Errored(new NullReferenceException("Import was successfull but the importer return a null or invalid return value. " +
+            return RunResult.Errored(new NullReferenceException("Import was successful but the importer return a null or invalid return value. " +
                                                                 $"Value: {importResults.ReturnValue}"));
         }
 

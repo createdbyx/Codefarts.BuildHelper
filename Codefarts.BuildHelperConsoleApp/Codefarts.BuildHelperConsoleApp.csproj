@@ -2,22 +2,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
     <AssemblyVersion>2021.1.25.0</AssemblyVersion>
     <FileVersion>2021.1.25.0</FileVersion>
     <AssemblyName>BuildHelper</AssemblyName>
     <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Options.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Codefarts.DependenceyInjection" Version="2023.1.30.5" />
-    <PackageReference Include="Codefarts.IoC" Version="2023.2.12.222" />
+    <PackageReference Include="Codefarts.DependencyInjection.CodefartsIoc" Version="2023.5.25.12" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
