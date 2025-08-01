@@ -1,7 +1,24 @@
 ﻿Write-Host "Starting deployment"
 
-$sourcePath = New-Object -TypeName System.IO.DirectoryInfo -ArgumentList "P:\Code Projects\Codefarts.BuildHelper\Codefarts.BuildHelperConsoleApp\bin\Debug\net6.0\"
-$destinationPath = New-Object -TypeName System.IO.DirectoryInfo -ArgumentList "E:\BuildHelper\"
+
+
+# detect if we are running in a linux environemnt
+
+$IsRunningLinux = $PSVersionTable.PSCompatibleVersions -match "7." -and $env:OS -eq $null
+
+if ($IsRunningLinux)
+{
+    Write-Host "Running in a Linux environment"
+    $sourcePath = New-Object -TypeName System.IO.DirectoryInfo -ArgumentList "P:\Code Projects\Codefarts.BuildHelper\Codefarts.BuildHelperConsoleApp\bin\Debug\net8.0\"
+    $destinationPath = New-Object -TypeName System.IO.DirectoryInfo -ArgumentList "/usr/local/bin/buildhelper"    
+}
+else
+{
+    Write-Host "Not running in a Linux environment"
+    $sourcePath = New-Object -TypeName System.IO.DirectoryInfo -ArgumentList "P:\Code Projects\Codefarts.BuildHelper\Codefarts.BuildHelperConsoleApp\bin\Debug\net8.0\"
+    $destinationPath = New-Object -TypeName System.IO.DirectoryInfo -ArgumentList "E:\BuildHelper\"    
+}
+
 
 if(!$sourcePath.Exists)
 {
