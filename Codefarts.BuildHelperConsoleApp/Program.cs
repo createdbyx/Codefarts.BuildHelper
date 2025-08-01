@@ -12,6 +12,7 @@ using Codefarts.DependencyInjection;
 using Codefarts.IoC;
 using Codefarts.BuildHelper.XMLFileConfigManager;
 using Codefarts.BuildHelper.ConsoleReporter;
+using Codefarts.DependencyInjection.CodefartsIoc;
 
 namespace Codefarts.BuildHelperConsoleApp;
 
@@ -33,7 +34,7 @@ static class Program
 
         // validate files exist
         if (IsFileMissing(buildFile, true, silentMode))
-        {
+        {   
             return;
         }
 
@@ -85,6 +86,12 @@ static class Program
     {
         if (string.IsNullOrWhiteSpace(filename))
         {
+            if (!silentMode)
+            {
+                var text = buildFile ? "Build" : "Project";
+                Console.WriteLine($"{text} file not specified!");
+            }
+
             return true;
         }
 
