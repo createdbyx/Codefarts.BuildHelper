@@ -1,4 +1,4 @@
-﻿// <copyright file="VersionUpdaterCommand.cs" company="Codefarts">
+// <copyright file="VersionUpdaterCommand.cs" company="Codefarts">
 // Copyright (c) Codefarts
 // contact@codefarts.com
 // http://www.codefarts.com
