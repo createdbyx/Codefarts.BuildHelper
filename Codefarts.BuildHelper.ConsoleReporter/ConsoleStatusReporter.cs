@@ -4,6 +4,8 @@
 // http://www.codefarts.com
 // </copyright>
 
+using System.Diagnostics;
+
 namespace Codefarts.BuildHelper.ConsoleReporter;
 
 using System;
@@ -23,7 +25,9 @@ public class ConsoleStatusReporter : IStatusReporter
         var headerPrefix = string.IsNullOrWhiteSpace(this.HeaderPrefix) ? string.Empty : $"{this.HeaderPrefix}=> ";
         var typeText = $"(Type: {type}) ";
         var progressText = type.HasFlag(ReportStatusType.Progress) ? $"(Progress: {progress}) " : string.Empty;
-        var infoPrefix = $"{headerPrefix}{categoryText}{typeText}{progressText}";
+        // get the process id for the running application
+        var processID = $"(Process: {Process.GetCurrentProcess().Id}) ";
+        var infoPrefix = $"{processID}{headerPrefix}{categoryText}{typeText}{progressText}";
         infoPrefix += !string.IsNullOrEmpty(infoPrefix) ? "- " : infoPrefix;
         Console.WriteLine(infoPrefix + $"{message}");
     }
