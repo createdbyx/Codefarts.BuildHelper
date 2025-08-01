@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Xml.Linq;
 using Codefarts.BuildHelper;
 using Codefarts.DependencyInjection;
