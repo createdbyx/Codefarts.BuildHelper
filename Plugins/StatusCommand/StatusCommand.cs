@@ -1,4 +1,4 @@
-﻿// <copyright file="StatusCommand.cs" company="Codefarts">
+// <copyright file="StatusCommand.cs" company="Codefarts">
 // Copyright (c) Codefarts
 // contact@codefarts.com
 // http://www.codefarts.com
