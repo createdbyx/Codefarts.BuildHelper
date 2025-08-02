@@ -3,8 +3,9 @@
     <PropertyGroup>
         <AssemblyVersion>2021.1.25.0</AssemblyVersion>
         <FileVersion>2021.1.25.0</FileVersion>
-        <TargetFramework>net6.0</TargetFramework>
         <LangVersion>default</LangVersion>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,7 +28,8 @@
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="xcopy &quot;$(ProjectDir)$(OutDir)$(ProjectName).*&quot; &quot;$(SolutionDir)Codefarts.BuildHelperConsoleApp\bin\$(ConfigurationName)\net6.0\Plugins\$(ProjectName)\&quot; /e /y" />
+      <Exec Command="powershell -File &quot;$(SolutionDir)CopyPlugin.ps1&quot; -vs_SolutionDir &quot;'$(SolutionDir)'&quot; -vs_ConfigurationName &quot;'$(ConfigurationName)'&quot; -vs_TargetFramework &quot;'$(TargetFramework)'&quot; -vs_ProjectName &quot;'$(ProjectName)'&quot; -vs_ProjectDir &quot;'$(ProjectDir)'&quot; -vs_OutDir &quot;'$(OutDir)'&quot;" />
     </Target>
-
+ 
 </Project>
+ 

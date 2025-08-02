@@ -30,7 +30,7 @@ namespace Codefarts.BuildHelper
         /// </summary>
         public CopyDirCommand(IStatusReporter status)
         {
-            this.status = status ?? throw new ArgumentNullException(nameof(status)); 
+            this.status = status ?? throw new ArgumentNullException(nameof(status));
         }
 
         /// <summary>
