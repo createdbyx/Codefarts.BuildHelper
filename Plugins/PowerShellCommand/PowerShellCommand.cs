@@ -1,4 +1,4 @@
-﻿// <copyright file="PowerShellCommand.cs" company="Codefarts">
+// <copyright file="PowerShellCommand.cs" company="Codefarts">
 // Copyright (c) Codefarts
 // contact@codefarts.com
 // http://www.codefarts.com
