@@ -54,8 +54,10 @@ namespace BuildHelperTests
         [TestMethod]
         public void NullStatusDoesNotThrowException()
         {
-            var p = new PurgeCommand(null);
-            Assert.IsNotNull(p);
+            Assert.ThrowsException<ArgumentNullException>(() =>
+            {
+                new PurgeCommand(null);
+            }); 
         }
 
         [TestMethod]
