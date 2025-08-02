@@ -1,42 +1,43 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <AssemblyVersion>2021.1.25.0</AssemblyVersion>
-    <FileVersion>2021.1.25.0</FileVersion>
-    <LangVersion>default</LangVersion>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2021.1.25.0</Version>
-    <Authors>Dean Lunz</Authors>
-    <Copyright>Codefarts</Copyright>
-    <PackageProjectUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</RepositoryUrl>
-    <RepositoryType>C#</RepositoryType>
-    <Company>Codefarts</Company>
-  </PropertyGroup>
+    <PropertyGroup>
+        <AssemblyVersion>2021.1.25.0</AssemblyVersion>
+        <FileVersion>2021.1.25.0</FileVersion>
+        <LangVersion>default</LangVersion>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Version>2021.1.25.0</Version>
+        <Authors>Dean Lunz</Authors>
+        <Copyright>Codefarts</Copyright>
+        <PackageProjectUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/createdbyx/Codefarts.BuildHelper.git</RepositoryUrl>
+        <RepositoryType>C#</RepositoryType>
+        <Company>Codefarts</Company>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
-  </ItemGroup>
+    <ItemGroup>
+        <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Codefarts.BuildHelperLib\Codefarts.BuildHelperLib.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\Codefarts.BuildHelperLib\Codefarts.BuildHelperLib.csproj"/>
+    </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)$(OutDir)$(ProjectName).*&quot; &quot;$(SolutionDir)Codefarts.BuildHelperConsoleApp\bin\$(ConfigurationName)\net6.0\Plugins\$(ProjectName)\&quot; /e /y" />
-  </Target>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="powershell -File &quot;$(SolutionDir)CopyPlugin.ps1&quot; -vs_SolutionDir &quot;'$(SolutionDir)'&quot; -vs_ConfigurationName &quot;'$(ConfigurationName)'&quot; -vs_TargetFramework &quot;'$(TargetFramework)'&quot; -vs_ProjectName &quot;'$(ProjectName)'&quot; -vs_ProjectDir &quot;'$(ProjectDir)'&quot; -vs_OutDir &quot;'$(OutDir)'&quot;"/>
+
+    </Target>
 
 </Project>
