@@ -67,10 +67,12 @@ namespace BuildHelperTests
         }
 
         [TestMethod]
-        public void NullStatusDoesNotThrowException()
+        public void NullStatusThrowsException()
         {
-            var cd = new CopyDirCommand(null);
-            Assert.IsNotNull(cd);
+            Assert.ThrowsException<ArgumentNullException>(() =>
+            {
+                 new CopyDirCommand(null);
+            });
         }
 
         [TestMethod]
@@ -104,7 +106,7 @@ namespace BuildHelperTests
             Assert.IsNotNull(args.Result.Error);
             Assert.IsInstanceOfType<ArgumentException>(args.Result.Error);
         }
-        
+
         [TestMethod]
         public void NoConditionsOrAdditionalParameters()
         {
