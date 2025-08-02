@@ -25,6 +25,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BEA3A0B3-BFEB-4FFD-9579-34E192D61981}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\PowerShell\Post-Build.ps1 = ..\..\PowerShell\Post-Build.ps1
+		CopyPlugin.ps1 = CopyPlugin.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{E82CBFB0-7146-4DF0-85EC-C61EC9B2DCE8}"
@@ -64,6 +65,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WPFBuilderIDE", "WPFBuilderIDE", "{55C61850-7FAB-42FC-9D03-F78D06E10EC6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfBuilderIDE", "WpfBuilderIDE\WpfBuilderIDE.csproj", "{2AD06640-8C29-494A-BB2D-EF5CF63AA461}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codefarts.BuildHelper.PowerShell", "Codefarts.BuildHelper.PowerShell\Codefarts.BuildHelper.PowerShell.csproj", "{CE5D2177-9C67-4C32-AF6E-2E8E3452E1F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -147,6 +150,10 @@ Global
 		{2AD06640-8C29-494A-BB2D-EF5CF63AA461}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AD06640-8C29-494A-BB2D-EF5CF63AA461}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AD06640-8C29-494A-BB2D-EF5CF63AA461}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE5D2177-9C67-4C32-AF6E-2E8E3452E1F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE5D2177-9C67-4C32-AF6E-2E8E3452E1F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE5D2177-9C67-4C32-AF6E-2E8E3452E1F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE5D2177-9C67-4C32-AF6E-2E8E3452E1F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
