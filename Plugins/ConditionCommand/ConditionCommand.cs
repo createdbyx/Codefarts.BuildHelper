@@ -1,4 +1,4 @@
-﻿// <copyright file="ConditionCommand.cs" company="Codefarts">
+// <copyright file="ConditionCommand.cs" company="Codefarts">
 // Copyright (c) Codefarts
 // contact@codefarts.com
 // http://www.codefarts.com
