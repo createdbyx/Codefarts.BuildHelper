@@ -1,4 +1,4 @@
-﻿// <copyright file="MetaGeneratorCommand.cs" company="Codefarts">
+// <copyright file="MetaGeneratorCommand.cs" company="Codefarts">
 // Copyright (c) Codefarts
 // contact@codefarts.com
 // http://www.codefarts.com
