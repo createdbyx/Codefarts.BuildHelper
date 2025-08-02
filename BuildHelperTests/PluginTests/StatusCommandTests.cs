@@ -62,8 +62,7 @@ namespace BuildHelperTests
         [TestMethod]
         public void NullStatusThrowsException()
         {
-            var com = new StatusCommand(null);
-            Assert.IsNotNull(com);
+            Assert.ThrowsException<ArgumentNullException>(() => { new StatusCommand(null); });
         }
 
         [TestMethod]
@@ -103,7 +102,7 @@ namespace BuildHelperTests
             Assert.AreEqual(null, reporter.Category);
             Assert.AreEqual(0f, reporter.Progress);
         }
-        
+
         [TestMethod]
         public void BadCommandName()
         {
