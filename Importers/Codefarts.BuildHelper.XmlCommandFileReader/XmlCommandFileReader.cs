@@ -8,6 +8,10 @@ using Codefarts.DependencyInjection;
 using System.Xml.Linq;
 using Codefarts.BuildHelper;
 
+/// <summary>
+/// The <see cref="XmlCommandFileReader"/> class is responsible for reading and importing XML-based command files.
+/// Implements the <see cref="ICommandImporter"/> interface to provide functionality for interpreting and processing build commands defined in XML files.
+/// </summary>
 public class XmlCommandFileReader : ICommandImporter
 {
     private IStatusReporter status;
@@ -101,7 +105,7 @@ public class XmlCommandFileReader : ICommandImporter
 
     public RunResult Run()
     {
-        // ? how do I get the file file anme
+        // ? how do I get the file anme
 
         IConfigurationProvider config;
         try
